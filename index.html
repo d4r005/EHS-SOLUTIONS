@@ -152,56 +152,49 @@
             justify-content: center;
             padding: 4rem 6%;
             position: relative;
-            clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%);
+            clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%, 8% 70%, 2% 50%, 10% 30%);
         }
 
         .hero h1 {
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             font-weight: 800;
             line-height: 1.1;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             text-transform: uppercase;
         }
 
         .hero-logo-box {
             margin-bottom: 2rem;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            width: fit-content;
         }
-
-        .hero-logo-box .logo-white {
-            font-size: 3.5rem;
-            font-weight: 900;
-            color: var(--white);
-            display: flex;
-            align-items: center;
-        }
-
-        .hero-logo-box .logo-white .plus { color: var(--green); }
 
         .hero-slogan-line {
             display: inline-block;
-            border-top: 1px solid var(--green);
-            border-bottom: 1px solid var(--green);
-            padding: 10px 0;
-            font-size: 1.1rem;
-            font-weight: 600;
-            letter-spacing: 1px;
+            border-top: 2px solid var(--green);
+            border-bottom: 2px solid var(--green);
+            padding: 8px 0;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
-            width: 100%;
+            width: fit-content;
         }
 
         .hero .btn-green {
-            margin-top: 2.5rem;
+            margin-top: 2rem;
             display: inline-block;
             background: var(--green);
             color: var(--white);
-            padding: 1.2rem 2.5rem;
+            padding: 1rem 2rem;
             text-decoration: none;
             font-weight: 800;
             text-transform: uppercase;
             border-radius: 4px;
             transition: 0.3s;
             text-align: center;
-            width: fit-content;
         }
 
         .hero .btn-green:hover { background: var(--green-hover); transform: translateY(-3px); }
@@ -399,56 +392,65 @@
     <!-- ===== Hero Section ===== -->
     <section class="hero" id="inicio">
         <div class="hero-graphics">
-            <!-- SVG Network Diagram (Simplified based on photo) -->
-            <svg class="network-svg" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-                <!-- Lines -->
-                <line x1="100" y1="250" x2="250" y2="150" stroke="#002855" stroke-width="2"/>
-                <line x1="100" y1="250" x2="250" y2="350" stroke="#002855" stroke-width="2"/>
-                <line x1="250" y1="150" x2="400" y2="250" stroke="#002855" stroke-width="2"/>
-                <line x1="250" y1="350" x2="400" y2="250" stroke="#002855" stroke-width="2"/>
-                <line x1="250" y1="150" x2="250" y2="350" stroke="#002855" stroke-width="2"/>
+            <!-- Red Orgánica de Nodos (SVG) -->
+            <svg class="network-svg" viewBox="0 0 600 500" xmlns="http://www.w3.org/2000/svg">
+                <!-- Lines (Organized manually to match reference) -->
+                <line x1="50" y1="200" x2="150" y2="100" stroke="#002855" stroke-width="1.5"/>
+                <line x1="150" y1="100" x2="300" y2="150" stroke="#002855" stroke-width="1.5"/>
+                <line x1="300" y1="150" x2="450" y2="100" stroke="#002855" stroke-width="1.5"/>
+                <line x1="450" y1="100" x2="550" y2="250" stroke="#002855" stroke-width="1.5"/>
+                <line x1="150" y1="100" x2="120" y2="250" stroke="#002855" stroke-width="1.5"/>
+                <line x1="120" y1="250" x2="250" y2="300" stroke="#002855" stroke-width="1.5"/>
+                <line x1="250" y1="300" x2="400" y2="220" stroke="#002855" stroke-width="1.5"/>
+                <line x1="400" y1="220" x2="300" y2="150" stroke="#002855" stroke-width="1.5"/>
+                <line x1="120" y1="250" x2="80" y2="400" stroke="#002855" stroke-width="1.5"/>
+                <line x1="250" y1="300" x2="350" y2="450" stroke="#002855" stroke-width="1.5"/>
+                <line x1="400" y1="220" x2="520" y2="380" stroke="#002855" stroke-width="1.5"/>
 
-                <!-- Center Node (Helmet) -->
-                <circle cx="250" cy="250" r="45" fill="white" stroke="#002855" stroke-width="2"/>
+                <!-- Secondary Lines -->
+                <line x1="50" y1="200" x2="120" y2="250" stroke="#002855" stroke-width="1" stroke-dasharray="3"/>
+                <line x1="450" y1="100" x2="400" y2="220" stroke="#002855" stroke-width="1" stroke-dasharray="3"/>
+
+                <!-- Nodes (Main with Icons) -->
+                <!-- Leaf Node -->
+                <circle cx="80" cy="220" r="35" fill="white" stroke="#002855" stroke-width="1"/>
+                <g transform="translate(65, 205) scale(1.3)" fill="#76b82a">
+                    <path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,11 14,9 10,9C7,9 5,14 5,14C5,14 8,7 17,8Z"/>
+                </g>
+
+                <!-- Helmet Node -->
+                <circle cx="250" cy="250" r="40" fill="white" stroke="#002855" stroke-width="1.5"/>
                 <g transform="translate(230, 230) scale(1.6)" fill="#002855">
                     <path d="M12,2C10.89,2 9.05,2.16 7,3.14V11H17V3.14C14.95,2.16 13.11,2 12,2M7,12C5,12 3,13.43 3,16V22H21V16C21,13.43 19,12 17,12H13V15H11V12H7Z"/>
                 </g>
 
-                <!-- Top Node (Leaf) -->
-                <circle cx="250" cy="100" r="35" fill="white" stroke="#76b82a" stroke-width="2"/>
-                <g transform="translate(235, 85) scale(1.2)" fill="#76b82a">
-                    <path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,11 14,9 10,9C7,9 5,14 5,14C5,14 8,7 17,8Z"/>
+                <!-- Shield Node -->
+                <circle cx="420" cy="300" r="35" fill="white" stroke="#002855" stroke-width="1"/>
+                <g transform="translate(405, 285) scale(1.3)" fill="#334155">
+                    <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.41,7 14.67,7.7 15.18,8.87L11.5,14.69L9.5,12.27L10.74,10.63L11.38,12.13L13.71,8.44C13.29,7.57 12.5,7 11.5,7C11,7 10.5,7.15 10.11,7.4L8,6C9.13,5.38 10.43,5 11.5,5C13.84,5 16,6.34 16,8.5C16,9.5 15.54,10.4 14.8,11L18,17H6L9.2,11C8.46,10.4 8,9.5 8,8.5C8,6.34 10.16,5 12.5,5C13.57,5 14.87,5.38 16,6L13.89,7.4C13.5,7.15 13,7 12.5,7Z"/>
                 </g>
 
-                <!-- Bottom Node (Leaf) -->
-                <circle cx="250" cy="400" r="35" fill="white" stroke="#76b82a" stroke-width="2"/>
-                <g transform="translate(235, 385) scale(1.2)" fill="#76b82a">
-                    <path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,11 14,9 10,9C7,9 5,14 5,14C5,14 8,7 17,8Z"/>
-                </g>
-
-                <!-- Left Node (Leaf) -->
-                <circle cx="80" cy="250" r="35" fill="white" stroke="#76b82a" stroke-width="2"/>
-                <g transform="translate(65, 235) scale(1.2)" fill="#76b82a">
-                    <path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,11 14,9 10,9C7,9 5,14 5,14C5,14 8,7 17,8Z"/>
-                </g>
-
-                <!-- Right Node (Shield) -->
-                <circle cx="420" cy="250" r="35" fill="white" stroke="#334155" stroke-width="2"/>
-                <g transform="translate(405, 235) scale(1.2)" fill="#334155">
-                    <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z"/>
-                </g>
+                <!-- Small Nodes (Solid) -->
+                <circle cx="150" cy="100" r="8" fill="#002855"/>
+                <circle cx="300" cy="150" r="10" fill="#002855"/>
+                <circle cx="450" cy="100" r="8" fill="#002855"/>
+                <circle cx="550" cy="250" r="10" fill="#002855"/>
+                <circle cx="350" cy="450" r="6" fill="#002855"/>
+                <circle cx="520" cy="380" r="6" fill="#002855"/>
+                <circle cx="50" cy="200" r="6" fill="#002855"/>
+                <circle cx="80" cy="400" r="6" fill="#002855"/>
             </svg>
         </div>
 
         <div class="hero-content">
-            <div class="logo-container" style="margin-bottom: 2rem; align-items: flex-start; background: white; padding: 15px; border-radius: 8px; width: fit-content;">
-                <img src="logo.png" alt="EH+S Solutions" style="height: 100px; width: auto;">
+            <div class="hero-logo-box">
+                <img src="logo.png" alt="EH+S Solutions" style="height: 110px; width: auto;">
             </div>
             <h1>ELEVA EL POTENCIAL DE TU EQUIPO</h1>
             <div class="hero-slogan-box">
                 <div class="hero-slogan-line">CAPACITAMOS HOY, PROTEGEMOS EL MAÑANA.</div>
             </div>
-            <p style="margin-top: 1.5rem; color: #cbd5e1;">Ofrecemos programas de capacitación a medida que transforman el talento y potencian el rendimiento empresarial.</p>
+            <p style="margin-top: 1.5rem; color: #cbd5e1; max-width: 500px;">Ofrecemos programas de capacitación a medida que transforman el talento y potencian el rendimiento empresarial.</p>
             <a href="#cursos" class="btn-green">VER PROGRAMAS &rarr;</a>
         </div>
     </section>
