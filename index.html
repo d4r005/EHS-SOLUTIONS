@@ -50,51 +50,48 @@
             flex-direction: column;
             align-items: center;
             text-decoration: none;
+            padding: 10px 0;
         }
 
-        .logo-main {
-            font-size: 2.2rem;
-            font-weight: 900;
+        .logo-box {
+            display: flex;
+            align-items: center;
             color: var(--navy);
-            display: flex;
-            align-items: center;
-            line-height: 1;
-            letter-spacing: -1px;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            line-height: 0.8;
+            letter-spacing: -2px;
         }
 
-        .logo-main .plus {
+        .logo-box span.plus {
             color: var(--green);
-            margin: 0 2px;
-            font-size: 2.4rem;
+            font-size: 3.2rem;
+            margin: 0 -2px;
+            position: relative;
+            top: 2px;
         }
 
-        .logo-icons {
-            display: flex;
-            gap: 15px;
-            margin-top: 5px;
-        }
-
-        .logo-icon-small {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
+        .logo-bottom {
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: white;
+            width: 100%;
+            margin-top: 5px;
+            gap: 10px;
         }
 
-        .icon-leaf { background-color: var(--green); }
-        .icon-helmet { background-color: var(--navy); }
-        .icon-shield { background-color: #334155; }
+        .logo-bottom .line {
+            flex: 1;
+            height: 3px;
+            background-color: var(--green);
+        }
 
-        .logo-slogan {
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-top: 5px;
+        .logo-bottom .text {
+            color: var(--navy);
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 6px;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         .nav-links {
@@ -388,13 +385,12 @@
 
     <header>
         <a href="#inicio" class="logo-container">
-            <div class="logo-main">EH<span class="plus">+</span>S SOLUTIONS</div>
-            <div class="logo-icons">
-                <div class="logo-icon-small icon-leaf"><svg viewBox="0 0 24 24" fill="currentColor" width="16"><path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,11 14,9 10,9C7,9 5,14 5,14C5,14 8,7 17,8Z"/></svg></div>
-                <div class="logo-icon-small icon-helmet"><svg viewBox="0 0 24 24" fill="currentColor" width="16"><path d="M12,2C10.89,2 9.05,2.16 7,3.14V11H17V3.14C14.95,2.16 13.11,2 12,2M7,12C5,12 3,13.43 3,16V22H21V16C21,13.43 19,12 17,12H13V15H11V12H7Z"/></svg></div>
-                <div class="logo-icon-small icon-shield"><svg viewBox="0 0 24 24" fill="currentColor" width="16"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.41,7 14.67,7.7 15.18,8.87L11.5,14.69L9.5,12.27L10.74,10.63L11.38,12.13L13.71,8.44C13.29,7.57 12.5,7 11.5,7C11,7 10.5,7.15 10.11,7.4L8,6C9.13,5.38 10.43,5 11.5,5C13.84,5 16,6.34 16,8.5C16,9.5 15.54,10.4 14.8,11L18,17H6L9.2,11C8.46,10.4 8,9.5 8,8.5C8,6.34 10.16,5 12.5,5C13.57,5 14.87,5.38 16,6L13.89,7.4C13.5,7.15 13,7 12.5,7Z"/></svg></div>
+            <div class="logo-box">E H<span class="plus">+</span>S</div>
+            <div class="logo-bottom">
+                <div class="line"></div>
+                <div class="text">SOLUTIONS</div>
+                <div class="line"></div>
             </div>
-            <div class="logo-slogan">Seguridad • Salud • Medio Ambiente</div>
         </a>
         <nav class="nav-links">
             <a href="#inicio" class="active">Inicio</a>
@@ -450,9 +446,13 @@
         </div>
 
         <div class="hero-content">
-            <div class="hero-logo-box">
-                <div class="logo-white">EH<span class="plus">+</span>S</div>
-                <div style="font-size: 1.5rem; font-weight: 800; margin-top: -10px;">SOLUTIONS</div>
+            <div class="logo-container" style="margin-bottom: 2rem; align-items: flex-start;">
+                <div class="logo-box" style="color: white; font-size: 4rem;">EH<span class="plus">+</span>S</div>
+                <div class="logo-bottom">
+                    <div class="line"></div>
+                    <div class="text" style="color: white; font-size: 1.5rem;">SOLUTIONS</div>
+                    <div class="line"></div>
+                </div>
             </div>
             <h1>ELEVA EL POTENCIAL DE TU EQUIPO</h1>
             <div class="hero-slogan-box">
@@ -581,7 +581,14 @@
     <footer>
         <div class="footer-grid">
             <div>
-                <div class="footer-logo-white">E H<span class="plus">+</span>S SOLUTIONS</div>
+                <div class="logo-container" style="align-items: flex-start; margin-bottom: 1rem;">
+                    <div class="logo-box" style="color: white; font-size: 1.8rem;">EH<span class="plus">+</span>S</div>
+                    <div class="logo-bottom" style="gap: 5px;">
+                        <div class="line" style="height: 2px;"></div>
+                        <div class="text" style="color: white; font-size: 0.8rem; letter-spacing: 3px;">SOLUTIONS</div>
+                        <div class="line" style="height: 2px;"></div>
+                    </div>
+                </div>
                 <p>Capacitación y asesoría líder en Seguridad, Salud y Medio Ambiente.</p>
             </div>
             <div>
