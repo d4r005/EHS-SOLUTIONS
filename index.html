@@ -385,12 +385,7 @@
 
     <header>
         <a href="#inicio" class="logo-container">
-            <div class="logo-box">EH<span class="plus">+</span>S</div>
-            <div class="logo-bottom">
-                <div class="line"></div>
-                <div class="text">SOLUTIONS</div>
-                <div class="line"></div>
-            </div>
+            <img src="logo.png" alt="EH+S Solutions" style="height: 90px; width: auto;">
         </a>
         <nav class="nav-links">
             <a href="#inicio" class="active">Inicio</a>
@@ -446,13 +441,8 @@
         </div>
 
         <div class="hero-content">
-            <div class="logo-container" style="margin-bottom: 2rem; align-items: flex-start;">
-                <div class="logo-box" style="color: white; font-size: 5rem;">EH<span class="plus">+</span>S</div>
-                <div class="logo-bottom">
-                    <div class="line"></div>
-                    <div class="text" style="color: white; font-size: 1.8rem;">SOLUTIONS</div>
-                    <div class="line"></div>
-                </div>
+            <div class="logo-container" style="margin-bottom: 2rem; align-items: flex-start; background: white; padding: 15px; border-radius: 8px; width: fit-content;">
+                <img src="logo.png" alt="EH+S Solutions" style="height: 100px; width: auto;">
             </div>
             <h1>ELEVA EL POTENCIAL DE TU EQUIPO</h1>
             <div class="hero-slogan-box">
@@ -581,13 +571,8 @@
     <footer>
         <div class="footer-grid">
             <div>
-                <div class="logo-container" style="align-items: flex-start; margin-bottom: 1rem;">
-                    <div class="logo-box" style="color: white; font-size: 2rem;">EH<span class="plus">+</span>S</div>
-                    <div class="logo-bottom" style="gap: 5px;">
-                        <div class="line" style="height: 1.5px;"></div>
-                        <div class="text" style="color: white; font-size: 0.75rem; letter-spacing: 3px;">SOLUTIONS</div>
-                        <div class="line" style="height: 1.5px;"></div>
-                    </div>
+                <div class="logo-container" style="align-items: flex-start; margin-bottom: 1.5rem; background: white; padding: 10px; border-radius: 5px; width: fit-content;">
+                    <img src="logo.png" alt="EH+S Solutions" style="height: 50px; width: auto;">
                 </div>
                 <p>Capacitación y asesoría líder en Seguridad, Salud y Medio Ambiente.</p>
             </div>
@@ -602,15 +587,60 @@
             <div>
                 <h4 style="color: var(--green); margin-bottom: 1rem;">Legal</h4>
                 <ul style="list-style: none;">
-                    <li><a href="#" style="color: #94a3b8; text-decoration: none;">Privacidad</a></li>
-                    <li><a href="#" style="color: #94a3b8; text-decoration: none;">Términos</a></li>
+                    <li><a href="javascript:void(0)" onclick="openModal('privacidad')" style="color: #94a3b8; text-decoration: none;">Privacidad</a></li>
+                    <li><a href="javascript:void(0)" onclick="openModal('terminos')" style="color: #94a3b8; text-decoration: none;">Términos</a></li>
                 </ul>
             </div>
         </div>
+
+        <!-- Modales Legales -->
+        <div id="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; align-items:center; justify-content:center;">
+            <div style="background:white; padding:2rem; border-radius:12px; max-width:600px; max-height:80vh; overflow-y:auto; position:relative; color: var(--navy);">
+                <span onclick="closeModal()" style="position:absolute; top:10px; right:20px; font-size:2rem; cursor:pointer;">&times;</span>
+                <div id="modal-content"></div>
+            </div>
+        </div>
+
         <div class="footer-bottom">
             &copy; 2026 EHS-SOLUTIONS. Monterrey, N.L. México.
         </div>
     </footer>
+
+    <script>
+        function openModal(tipo) {
+            const overlay = document.getElementById('modal-overlay');
+            const content = document.getElementById('modal-content');
+            overlay.style.display = 'flex';
+
+            if(tipo === 'privacidad') {
+                content.innerHTML = `
+                    <h2>Aviso de Privacidad</h2><br>
+                    <p><strong>EHS SOLUTIONS</strong>, con domicilio en El Carmen, Nuevo León, es responsable de recabar sus datos personales, del uso que se le dé a los mismos y de su protección.</p><br>
+                    <p>Su información personal será utilizada para proveer los servicios de capacitación y consultoría que ha solicitado, informarle sobre cambios en los mismos y evaluar la calidad del servicio que le brindamos.</p><br>
+                    <p>Para las finalidades antes mencionadas, requerimos obtener los siguientes datos personales: Nombre, Empresa, Teléfono y Correo electrónico.</p><br>
+                    <p>Usted tiene derecho de acceder, rectificar y cancelar sus datos personales, así como de oponerse al tratamiento de los mismos (Derechos ARCO) a través del correo: <strong>ehssolutions39@gmail.com</strong></p>
+                `;
+            } else {
+                content.innerHTML = `
+                    <h2>Términos y Condiciones</h2><br>
+                    <p>Al acceder a este sitio web, usted acepta cumplir con estos términos de servicio, todas las leyes y regulaciones aplicables.</p><br>
+                    <p><strong>Propiedad Intelectual:</strong> El contenido, logo y materiales de capacitación mostrados en este sitio son propiedad exclusiva de EHS SOLUTIONS. Queda prohibida su reproducción total o parcial sin autorización por escrito.</p><br>
+                    <p><strong>Uso de Información:</strong> La información contenida en este sitio es de carácter informativo. EHS SOLUTIONS no se hace responsable por decisiones tomadas basadas únicamente en el contenido de esta web sin una asesoría técnica previa.</p><br>
+                    <p><strong>Modificaciones:</strong> Nos reservamos el derecho de revisar estos términos en cualquier momento sin previo aviso.</p>
+                `;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').style.display = 'none';
+        }
+
+        // Cerrar modal al hacer click fuera
+        window.onclick = function(event) {
+            const overlay = document.getElementById('modal-overlay');
+            if (event.target == overlay) closeModal();
+        }
+    </script>
 
 </body>
 </html>
