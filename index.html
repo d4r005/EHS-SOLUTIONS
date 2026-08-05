@@ -6,13 +6,14 @@
     <title>ehs-solutions | Capacitación Empresarial</title>
     <style>
         :root {
-            --bg-dark: #0e1726;
-            --primary-accent: #c09a5b;
-            --primary-accent-hover: #a88346;
-            --text-dark: #1e293b;
+            --bg-dark: #0b1320;
+            --bg-hero-blue: #1a2638;
+            --gold: #c09a5b;
+            --gold-hover: #a88346;
+            --text-dark: #0b1320;
             --text-muted: #64748b;
-            --bg-light: #f8fafc;
             --white: #ffffff;
+            --bg-pattern: #f8fafc;
         }
 
         * {
@@ -24,192 +25,208 @@
 
         body {
             background-color: var(--white);
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l25.98 15v30L30 60 4.02 45V15z' fill-rule='evenodd' stroke='%23e2e8f0' fill='none'/%3E%3C/svg%3E");
             color: var(--text-dark);
             line-height: 1.5;
         }
 
-        /* Header Navigation */
+        /* Header */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.25rem 6%;
+            padding: 1rem 6%;
             background: var(--white);
-            box-shadow: 0 1px 10px rgba(0,0,0,0.05);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
         }
 
         .logo {
             font-size: 1.8rem;
             font-weight: 800;
-            color: #0b1320;
-            letter-spacing: -0.5px;
+            color: var(--text-dark);
         }
 
-        .logo span {
-            color: var(--primary-accent);
-        }
+        .logo span { color: var(--gold); }
 
         nav a {
-            margin-left: 2rem;
+            margin-left: 1.5rem;
             text-decoration: none;
             color: var(--text-dark);
             font-weight: 600;
-            font-size: 0.95rem;
-            transition: color 0.2s;
+            font-size: 0.9rem;
         }
 
-        nav a:hover, nav a.active {
-            color: var(--primary-accent);
-        }
+        nav a.active { color: var(--gold); }
 
         /* Hero Section */
         .hero {
-            background: linear-gradient(90deg, var(--bg-dark) 0%, #1a2638 100%);
-            color: var(--white);
-            padding: 4rem 6%;
+            position: relative;
+            background: linear-gradient(rgba(11, 19, 32, 0.8), rgba(11, 19, 32, 0.8)), url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=80');
+            background-size: cover;
+            background-position: center;
+            min-height: 500px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 2rem;
-            min-height: 480px;
+            overflow: hidden;
+            color: var(--white);
         }
 
         .hero-content {
-            max-width: 550px;
+            flex: 1;
+            padding-left: 6%;
+            z-index: 2;
+            max-width: 600px;
         }
 
         .hero h1 {
-            font-size: 2.8rem;
+            font-size: 3rem;
             font-weight: 800;
-            line-height: 1.15;
-            letter-spacing: 0.5px;
-            margin-bottom: 1.2rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
         }
 
         .hero p {
-            color: #cbd5e1;
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             margin-bottom: 2rem;
+            color: #cbd5e1;
         }
 
         .btn-gold {
             display: inline-block;
-            background-color: var(--primary-accent);
+            background: var(--gold);
             color: var(--white);
-            padding: 0.85rem 1.8rem;
-            border-radius: 4px;
+            padding: 1rem 2rem;
             text-decoration: none;
             font-weight: 700;
-            font-size: 0.9rem;
-            letter-spacing: 0.5px;
             text-transform: uppercase;
-            transition: background 0.2s;
+            border-radius: 4px;
+            transition: 0.3s;
         }
 
-        .btn-gold:hover {
-            background-color: var(--primary-accent-hover);
-        }
+        .btn-gold:hover { background: var(--gold-hover); }
 
-        .hero-image {
+        /* Diagonal Shapes & Diagram */
+        .hero-graphics {
             flex: 1;
-            max-width: 500px;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            height: 100%;
+            position: relative;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
         }
 
-        .hero-image img {
-            width: 100%;
-            height: auto;
-            display: block;
+        .diagonal-gold {
+            position: absolute;
+            top: 0; right: 20%;
+            width: 30%; height: 100%;
+            background: var(--gold);
+            transform: skewX(-20deg);
+            z-index: 1;
+        }
+
+        .diagram-container {
+            position: relative;
+            z-index: 2;
+            width: 400px;
+            height: 400px;
+            margin-right: 5%;
+        }
+
+        .diagram-svg {
+            width: 100%; height: 100%;
         }
 
         /* Services Section */
         .services {
-            padding: 4rem 6%;
-            background-color: var(--bg-light);
+            padding: 5rem 6%;
             text-align: center;
         }
 
         .services h2 {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 800;
-            letter-spacing: 0.5px;
-            margin-bottom: 3rem;
-            color: #0b1320;
+            margin-bottom: 4rem;
+            text-transform: uppercase;
         }
 
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            max-width: 1300px;
             margin: 0 auto;
         }
 
         .card {
             background: var(--white);
-            padding: 2.5rem 1.8rem;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+            padding: 3rem 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             text-align: left;
-            transition: transform 0.2s, box-shadow 0.2s;
+            border-bottom: 4px solid transparent;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/white-marble.png');
+            opacity: 0.05;
+            pointer-events: none;
         }
 
         .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+            transform: translateY(-10px);
+            border-bottom-color: var(--gold);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
         }
 
         .card-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
+            width: 60px; height: 60px;
+            background: #f1f5f9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
         }
 
         .card h3 {
-            font-size: 1.25rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            margin-bottom: 0.75rem;
-            color: #0b1320;
+            color: var(--text-dark);
+            flex: 1;
         }
 
         .card p {
             color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            font-size: 1rem;
         }
 
         .card a {
-            color: var(--primary-accent);
+            color: var(--gold);
             text-decoration: none;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
         }
 
-        .card a:hover {
-            text-decoration: underline;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero {
-                flex-direction: column;
-                text-align: center;
-                padding: 3rem 1.5rem;
-            }
-            .hero-content {
-                max-width: 100%;
-            }
-            .hero h1 {
-                font-size: 2.1rem;
-            }
-            nav {
-                display: none; /* Se puede agregar un menú hamburguesa aquí */
-            }
+        @media (max-width: 992px) {
+            .hero-graphics { display: none; }
+            .hero-content { max-width: 100%; padding: 4rem 6%; text-align: center; }
+            .hero h1 { font-size: 2.5rem; }
         }
     </style>
 </head>
@@ -230,31 +247,78 @@
         <div class="hero-content">
             <h1>ELEVA EL POTENCIAL DE TU EQUIPO</h1>
             <p>ehs-solutions ofrece programas de capacitación a medida que transforman el talento y potencian el rendimiento empresarial. Experiencia y resultados probados.</p>
-            <a href="#" class="btn-gold">Descubre nuestros programas &rarr;</a>
+            <a href="#" class="btn-gold">DESCUBRE NUESTROS PROGRAMAS &rarr;</a>
         </div>
-        <div class="hero-image">
-            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80" alt="Capacitación corporativa ehs-solutions">
+
+        <div class="hero-graphics">
+            <div class="diagonal-gold"></div>
+            <div class="diagram-container">
+                <svg class="diagram-svg" viewBox="0 0 400 400">
+                    <!-- Main Arrow -->
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#cbd5e1" />
+                        </marker>
+                    </defs>
+                    <path d="M50 350 L350 50" stroke="#cbd5e1" stroke-width="4" fill="none" marker-end="url(#arrowhead)" />
+
+                    <!-- Nodes -->
+                    <circle cx="80" cy="220" r="40" fill="#ffffff22" stroke="#fff" stroke-width="1" />
+                    <text x="80" y="275" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Resultados</text>
+
+                    <circle cx="200" cy="300" r="40" fill="#ffffff22" stroke="#fff" stroke-width="1" />
+                    <text x="200" y="355" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Estrategia</text>
+
+                    <circle cx="280" cy="180" r="40" fill="#ffffff22" stroke="#fff" stroke-width="1" />
+                    <text x="280" y="235" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Resultados</text>
+
+                    <circle cx="220" cy="80" r="40" fill="#ffffff22" stroke="#fff" stroke-width="1" />
+                    <text x="220" y="135" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Crecimiento</text>
+
+                    <!-- Lines connecting nodes (simplified) -->
+                    <line x1="80" y1="220" x2="200" y2="300" stroke="#fff" stroke-width="1" stroke-dasharray="5,5" />
+                    <line x1="200" y1="300" x2="280" y2="180" stroke="#fff" stroke-width="1" stroke-dasharray="5,5" />
+                    <line x1="280" y1="180" x2="220" y2="80" stroke="#fff" stroke-width="1" stroke-dasharray="5,5" />
+                </svg>
+            </div>
         </div>
     </section>
 
     <section class="services">
         <h2>NUESTRAS ÁREAS DE ESPECIALIZACIÓN</h2>
         <div class="cards-grid">
+            <!-- Card 1 -->
             <div class="card">
-                <div class="card-icon">🧭</div>
-                <h3>Liderazgo y Habilidades Gerenciales</h3>
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+                    </div>
+                    <h3>Liderazgo y Habilidades Gerenciales</h3>
+                </div>
                 <p>Desarrollo de líderes efectivos y gestión estratégica de equipos de alto rendimiento.</p>
                 <a href="#">Ver detalles &rarr;</a>
             </div>
+
+            <!-- Card 2 -->
             <div class="card">
-                <div class="card-icon">👷‍♂️</div>
-                <h3>Cumplimiento y EHS Normativo</h3>
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                    </div>
+                    <h3>Cumplimiento y EHS Normativo</h3>
+                </div>
                 <p>Capacitación integral en seguridad, salud ocupacional y normas vigentes.</p>
                 <a href="#">Ver detalles &rarr;</a>
             </div>
+
+            <!-- Card 3 -->
             <div class="card">
-                <div class="card-icon">🚀</div>
-                <h3>Innovación y Tecnología</h3>
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+                    </div>
+                    <h3>Innovación y Tecnología</h3>
+                </div>
                 <p>Formación en herramientas digitales avanzadas y metodologías de innovación.</p>
                 <a href="#">Ver detalles &rarr;</a>
             </div>
