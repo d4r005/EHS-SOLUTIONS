@@ -3,50 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EHS Solutions | Innovación y Seguridad</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>ehs-solutions | Capacitación Empresarial</title>
+    <style>
+        :root {
+            --bg-dark: #0e1726;
+            --primary-accent: #c09a5b;
+            --primary-accent-hover: #a88346;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--white);
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
+        /* Header Navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 6%;
+            background: var(--white);
+            box-shadow: 0 1px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #0b1320;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            color: var(--primary-accent);
+        }
+
+        nav a {
+            margin-left: 2rem;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--primary-accent);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(90deg, var(--bg-dark) 0%, #1a2638 100%);
+            color: var(--white);
+            padding: 4rem 6%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+            min-height: 480px;
+        }
+
+        .hero-content {
+            max-width: 550px;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: 0.5px;
+            margin-bottom: 1.2rem;
+        }
+
+        .hero p {
+            color: #cbd5e1;
+            font-size: 1.05rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn-gold {
+            display: inline-block;
+            background-color: var(--primary-accent);
+            color: var(--white);
+            padding: 0.85rem 1.8rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: background 0.2s;
+        }
+
+        .btn-gold:hover {
+            background-color: var(--primary-accent-hover);
+        }
+
+        .hero-image {
+            flex: 1;
+            max-width: 500px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Services Section */
+        .services {
+            padding: 4rem 6%;
+            background-color: var(--bg-light);
+            text-align: center;
+        }
+
+        .services h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            margin-bottom: 3rem;
+            color: #0b1320;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 2.5rem 1.8rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+            text-align: left;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #0b1320;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card a {
+            color: var(--primary-accent);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .card a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding: 3rem 1.5rem;
+            }
+            .hero-content {
+                max-width: 100%;
+            }
+            .hero h1 {
+                font-size: 2.1rem;
+            }
+            nav {
+                display: none; /* Se puede agregar un menú hamburguesa aquí */
+            }
+        }
+    </style>
 </head>
 <body>
+
     <header>
+        <div class="logo">ehs<span>-solutions</span></div>
         <nav>
-            <div class="logo">EHS SOLUTIONS</div>
-            <ul>
-                <li><a href="#inicio">Inicio</a></li>
-                <li><a href="#servicios">Servicios</a></li>
-                <li><a href="#contacto">Contacto</a></li>
-            </ul>
+            <a href="#" class="active">Inicio</a>
+            <a href="#">Programas</a>
+            <a href="#">Nuestra Metodología</a>
+            <a href="#">Clientes</a>
+            <a href="#">Contacto</a>
         </nav>
     </header>
 
-    <main>
-        <section id="inicio" class="hero">
-            <h1>Soluciones Tecnológicas de Alto Impacto</h1>
-            <p>Transformamos la complejidad en simplicidad. Especialistas en desarrollo y seguridad.</p>
-            <a href="#servicios" class="btn">Conoce más</a>
-        </section>
+    <section class="hero">
+        <div class="hero-content">
+            <h1>ELEVA EL POTENCIAL DE TU EQUIPO</h1>
+            <p>ehs-solutions ofrece programas de capacitación a medida que transforman el talento y potencian el rendimiento empresarial. Experiencia y resultados probados.</p>
+            <a href="#" class="btn-gold">Descubre nuestros programas &rarr;</a>
+        </div>
+        <div class="hero-image">
+            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80" alt="Capacitación corporativa ehs-solutions">
+        </div>
+    </section>
 
-        <section id="servicios">
-            <h2>Nuestros Servicios</h2>
-            <div class="grid">
-                <div class="card">
-                    <h3>Desarrollo App</h3>
-                    <p>Aplicaciones nativas e híbridas diseñadas para escalar.</p>
-                </div>
-                <div class="card">
-                    <h3>Ciberseguridad</h3>
-                    <p>Protección integral para tus activos digitales.</p>
-                </div>
-                <div class="card">
-                    <h3>Consultoría IT</h3>
-                    <p>Optimización de procesos y transformación digital.</p>
-                </div>
+    <section class="services">
+        <h2>NUESTRAS ÁREAS DE ESPECIALIZACIÓN</h2>
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-icon">🧭</div>
+                <h3>Liderazgo y Habilidades Gerenciales</h3>
+                <p>Desarrollo de líderes efectivos y gestión estratégica de equipos de alto rendimiento.</p>
+                <a href="#">Ver detalles &rarr;</a>
             </div>
-        </section>
-    </main>
+            <div class="card">
+                <div class="card-icon">👷‍♂️</div>
+                <h3>Cumplimiento y EHS Normativo</h3>
+                <p>Capacitación integral en seguridad, salud ocupacional y normas vigentes.</p>
+                <a href="#">Ver detalles &rarr;</a>
+            </div>
+            <div class="card">
+                <div class="card-icon">🚀</div>
+                <h3>Innovación y Tecnología</h3>
+                <p>Formación en herramientas digitales avanzadas y metodologías de innovación.</p>
+                <a href="#">Ver detalles &rarr;</a>
+            </div>
+        </div>
+    </section>
 
-    <footer>
-        <p>&copy; 2026 EHS Solutions. Todos los derechos reservados.</p>
-    </footer>
 </body>
 </html>
