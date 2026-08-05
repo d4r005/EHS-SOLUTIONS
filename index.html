@@ -360,6 +360,80 @@
             font-weight: 600;
         }
 
+        /* ===== Course Table ===== */
+        .course-table-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+            overflow-x: auto;
+        }
+
+        .course-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 640px;
+        }
+
+        .course-table thead th {
+            text-align: left;
+            padding: 1.1rem 1.5rem;
+            background: var(--bg-dark);
+            color: var(--white);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            font-weight: 700;
+        }
+
+        .course-table thead th:first-child { border-radius: 12px 0 0 0; }
+        .course-table thead th:last-child { border-radius: 0 12px 0 0; text-align: center; }
+
+        .course-table tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: 0.2s;
+        }
+
+        .course-table tbody tr:last-child { border-bottom: none; }
+
+        .course-table tbody tr:nth-child(even) { background: #f8fafc; }
+
+        .course-table tbody tr:hover { background: #f1f5f9; }
+
+        .course-table td {
+            padding: 1.1rem 1.5rem;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+
+        .course-table td:first-child {
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .course-table td:last-child {
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .course-name { font-weight: 600; }
+
+        .area-tag {
+            background: #f1f5f9;
+            color: var(--gold-hover);
+            padding: 0.35rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .course-table { min-width: 560px; }
+            .course-table th, .course-table td { padding: 0.85rem 1rem; font-size: 0.85rem; }
+        }
+
         /* ===== Metodología ===== */
         .metodologia {
             padding: 5rem 6%;
@@ -803,7 +877,7 @@
         </div>
         <nav class="nav-links">
             <a href="#inicio" class="active">Inicio</a>
-            <a href="#programas">Programas</a>
+            <a href="#cursos">Cursos</a>
             <a href="#metodologia">Nuestra Metodología</a>
             <a href="#clientes">Clientes</a>
             <a href="#contacto">Contacto</a>
@@ -815,7 +889,7 @@
         <div class="hero-content">
             <h1>ELEVA EL POTENCIAL DE TU EQUIPO</h1>
             <p>ehs-solutions ofrece programas de capacitación a medida que transforman el talento y potencian el rendimiento empresarial. Experiencia y resultados probados.</p>
-            <a href="#programas" class="btn-gold">DESCUBRE NUESTROS PROGRAMAS &rarr;</a>
+            <a href="#cursos" class="btn-gold">DESCUBRE NUESTROS CURSOS &rarr;</a>
             <a href="#contacto" class="btn-outline">CONTÁCTANOS</a>
         </div>
 
@@ -868,7 +942,7 @@
                     <h3>Liderazgo y Habilidades Gerenciales</h3>
                 </div>
                 <p>Desarrollo de líderes efectivos y gestión estratégica de equipos de alto rendimiento.</p>
-                <a href="#programas">Ver detalles &rarr;</a>
+                <a href="#cursos">Ver detalles &rarr;</a>
             </div>
 
             <div class="card">
@@ -879,7 +953,7 @@
                     <h3>Cumplimiento y EHS Normativo</h3>
                 </div>
                 <p>Capacitación integral en seguridad, salud ocupacional y normas vigentes.</p>
-                <a href="#programas">Ver detalles &rarr;</a>
+                <a href="#cursos">Ver detalles &rarr;</a>
             </div>
 
             <div class="card">
@@ -890,80 +964,78 @@
                     <h3>Innovación y Tecnología</h3>
                 </div>
                 <p>Formación en herramientas digitales avanzadas y metodologías de innovación.</p>
-                <a href="#programas">Ver detalles &rarr;</a>
+                <a href="#cursos">Ver detalles &rarr;</a>
             </div>
         </div>
     </section>
 
-    <!-- ===== Programas ===== -->
-    <section class="programas" id="programas">
-        <h2 class="section-title">NUESTROS <span class="accent">PROGRAMAS</span></h2>
-        <p class="section-subtitle">Programas diseñados a medida para cada nivel organizacional, desde equipos operativos hasta alta dirección.</p>
-        <div class="program-list">
-            <div class="program-item">
-                <div class="program-number">01</div>
-                <div class="program-content">
-                    <h3>Desarrollo de Liderazgo Ejecutivo</h3>
-                    <p>Programa intensivo para directivos y gerentes. Enfoque en toma de decisiones estratégicas, comunicación efectiva y gestión del cambio organizacional.</p>
-                    <div class="program-tags">
-                        <span class="program-tag">Liderazgo</span>
-                        <span class="program-tag">Estrategia</span>
-                        <span class="program-tag">Gestión del Cambio</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="program-item">
-                <div class="program-number">02</div>
-                <div class="program-content">
-                    <h3>Seguridad y Salud Ocupacional (EHS)</h3>
-                    <p>Capacitación certificada en normas de seguridad, prevención de riesgos laborales y cumplimiento normativo. Incluye simulacros y evaluaciones prácticas.</p>
-                    <div class="program-tags">
-                        <span class="program-tag">Seguridad</span>
-                        <span class="program-tag">Cumplimiento</span>
-                        <span class="program-tag">Prevención</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="program-item">
-                <div class="program-number">03</div>
-                <div class="program-content">
-                    <h3>Transformación Digital Empresarial</h3>
-                    <p>Adopción de herramientas digitales, automatización de procesos y cultura data-driven. Diseñado para equipos que necesitan adaptarse rápidamente.</p>
-                    <div class="program-tags">
-                        <span class="program-tag">Digital</span>
-                        <span class="program-tag">Automatización</span>
-                        <span class="program-tag">Data</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="program-item">
-                <div class="program-number">04</div>
-                <div class="program-content">
-                    <h3>Habilidades Blandas y Trabajo en Equipo</h3>
-                    <p>Desarrollo de inteligencia emocional, comunicación asertiva, resolución de conflictos y colaboración. Para equipos de cualquier nivel jerárquico.</p>
-                    <div class="program-tags">
-                        <span class="program-tag">Soft Skills</span>
-                        <span class="program-tag">Comunicación</span>
-                        <span class="program-tag">Colaboración</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="program-item">
-                <div class="program-number">05</div>
-                <div class="program-content">
-                    <h3>Gestión de Proyectos y Metodologías Ágiles</h3>
-                    <p>Implementación de metodologías Scrum, Kanban y gestión de proyectos con enfoque PMI. Certificación y práctica aplicada al contexto real de la empresa.</p>
-                    <div class="program-tags">
-                        <span class="program-tag">Scrum</span>
-                        <span class="program-tag">Kanban</span>
-                        <span class="program-tag">PMI</span>
-                    </div>
-                </div>
-            </div>
+    <!-- ===== Cursos ===== -->
+    <section class="programas" id="cursos">
+        <h2 class="section-title">NUESTROS <span class="accent">CURSOS</span></h2>
+        <p class="section-subtitle">Catálogo de cursos y programas de capacitación en seguridad y salud ocupacional.</p>
+        <div class="course-table-wrapper">
+            <table class="course-table">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Fecha de registro</th>
+                        <th>Programas o cursos</th>
+                        <th>Área temática</th>
+                        <th>Duración en horas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>23/07/2026</td>
+                        <td class="course-name">Seguridad en Trabajos en Alturas</td>
+                        <td><span class="area-tag">Seguridad</span></td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>23/07/2026</td>
+                        <td class="course-name">Seguridad en Trabajos de Soldadura y Oxicorte</td>
+                        <td><span class="area-tag">Seguridad</span></td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>23/07/2026</td>
+                        <td class="course-name">Formación de Brigadas de Emergencia (Evacuación, Búsqueda y Rescate, Contra Incendios, Primeros Auxilios)</td>
+                        <td><span class="area-tag">Seguridad</span></td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>23/07/2026</td>
+                        <td class="course-name">Seguridad en Espacios Confinados</td>
+                        <td><span class="area-tag">Seguridad</span></td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>23/07/2026</td>
+                        <td class="course-name">Aseguramiento de Energía (LOTO)</td>
+                        <td><span class="area-tag">Seguridad</span></td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>23/07/2026</td>
+                        <td class="course-name">Formación de Instructores</td>
+                        <td><span class="area-tag">Seguridad</span></td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>23/07/2026</td>
+                        <td class="course-name">Formación de Supervisores de Seguridad y Salud Ocupacional</td>
+                        <td><span class="area-tag">Seguridad</span></td>
+                        <td>8</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </section>
 
@@ -1159,7 +1231,7 @@
                 <ul>
                     <li><a href="#inicio">Inicio</a></li>
                     <li><a href="#servicios">Servicios</a></li>
-                    <li><a href="#programas">Programas</a></li>
+                    <li><a href="#cursos">Cursos</a></li>
                     <li><a href="#metodologia">Metodología</a></li>
                     <li><a href="#clientes">Clientes</a></li>
                     <li><a href="#contacto">Contacto</a></li>
