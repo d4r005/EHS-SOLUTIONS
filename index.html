@@ -1967,24 +1967,32 @@
             if (e.key === 'Escape') closeModal();
         });
 
-        // ===== Reviews System =====
-        const REVIEWS_API = 'https://solene-b9563323.base44.app/functions/resenas';
+        // ===== Reviews System (Supabase) =====
+        const SUPABASE_URL = 'https://tsqlpjliqslgzookdqvg.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzcWxwamxpcXNsZ3pvb2tkcXZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwMjQ3NDEsImV4cCI6MjEwMTYwMDc0MX0.9Alxd3YXVFaPm8MO4LEECmIz6Ofe6IQCbJ56iSoBgbc';
+        const SUPABASE_HEADERS = {
+            'apikey': SUPABASE_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_KEY,
+            'Content-Type': 'application/json'
+        };
 
-        // Load approved reviews from backend
+        // Load approved reviews from Supabase
         async function loadReviews() {
             try {
-                const res = await fetch(REVIEWS_API);
-                const data = await res.json();
-                if (data.ok && data.reviews && data.reviews.length > 0) {
+                const res = await fetch(
+                    SUPABASE_URL + '/rest/v1/resenas?select=*&approved=eq.true&order=created_at.desc&limit=50',
+                    { headers: SUPABASE_HEADERS }
+                );
+                const reviews = await res.json();
+                if (reviews && reviews.length > 0) {
                     const grid = document.getElementById('reviewsGrid');
-                    // Keep the 3 hardcoded reviews and append dynamic ones
-                    data.reviews.forEach(review => {
+                    reviews.forEach(review => {
                         const initials = review.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                         let stars = '';
                         for (let i = 1; i <= 5; i++) {
                             stars += `<span class="review-star${i > review.rating ? ' empty' : ''}">${i <= review.rating ? '&#9733;' : '&#9734;'}</span>`;
                         }
-                        const date = new Date(review.created_date).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+                        const date = new Date(review.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
                         const card = document.createElement('div');
                         card.className = 'review-card';
                         card.innerHTML = `
@@ -2032,19 +2040,19 @@
                 submitBtn.disabled = true;
 
                 try {
-                    const res = await fetch(REVIEWS_API, {
+                    const res = await fetch(SUPABASE_URL + '/rest/v1/resenas', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: SUPABASE_HEADERS,
                         body: JSON.stringify({
                             name: name,
                             company: company,
                             rating: parseInt(ratingInput.value),
-                            text: message
+                            text: message,
+                            approved: false
                         })
                     });
-                    const data = await res.json();
 
-                    if (data.ok) {
+                    if (res.ok) {
                         reviewForm.reset();
                         document.querySelectorAll('input[name="rating"]').forEach(r => r.checked = false);
                         submitBtn.textContent = '¡Gracias! Reseña enviada ✓';
@@ -2055,7 +2063,7 @@
                             submitBtn.disabled = false;
                         }, 4000);
                     } else {
-                        throw new Error(data.error || 'Error al enviar');
+                        throw new Error('Error al enviar');
                     }
                 } catch (err) {
                     alert('Error al enviar la reseña: ' + err.message);
