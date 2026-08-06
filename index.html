@@ -1729,7 +1729,7 @@
                 <h2 class="section-title">Lo que dicen nuestros clientes</h2>
                 <p class="section-subtitle">La confianza de las empresas que han transformado su cultura de seguridad con nosotros.</p>
             </div>
-            <div class="reviews-grid">
+            <div class="reviews-grid" id="reviewsGrid">
                 <div class="review-card">
                     <div class="review-stars">
                         <span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span>
@@ -1774,18 +1774,18 @@
             <div class="review-form-wrap">
                 <h3>Deja tu reseña</h3>
                 <p class="form-subtitle">Tu opinión nos ayuda a mejorar y a ayudar a más empresas.</p>
-                <div class="star-rating">
-                    <input type="radio" name="rating" id="star5" value="5"><label for="star5">&#9733;</label>
+                <div class="star-rating" id="starRating">
+                    <input type="radio" name="rating" id="star5" value="5" required><label for="star5">&#9733;</label>
                     <input type="radio" name="rating" id="star4" value="4"><label for="star4">&#9733;</label>
                     <input type="radio" name="rating" id="star3" value="3"><label for="star3">&#9733;</label>
                     <input type="radio" name="rating" id="star2" value="2"><label for="star2">&#9733;</label>
                     <input type="radio" name="rating" id="star1" value="1"><label for="star1">&#9733;</label>
                 </div>
-                <form class="review-form" onsubmit="return false;">
-                    <input type="text" name="review-name" placeholder="Tu nombre" required>
-                    <input type="text" name="review-company" placeholder="Empresa (opcional)">
-                    <textarea name="review-message" placeholder="Cuéntanos tu experiencia..." required></textarea>
-                    <button type="submit" class="btn btn-green">Publicar reseña &rarr;</button>
+                <form class="review-form" id="reviewForm">
+                    <input type="text" id="reviewName" name="review-name" placeholder="Tu nombre" required>
+                    <input type="text" id="reviewCompany" name="review-company" placeholder="Empresa (opcional)">
+                    <textarea id="reviewMessage" name="review-message" placeholder="Cuéntanos tu experiencia..." required></textarea>
+                    <button type="submit" class="btn btn-green" id="reviewSubmit">Publicar reseña &rarr;</button>
                     <p class="form-note">Tu reseña se publicará una vez aprobada por nuestro equipo.</p>
                 </form>
             </div>
@@ -1966,6 +1966,108 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModal();
         });
+
+        // ===== Reviews System =====
+        const REVIEWS_API = 'https://solene-b9563323.base44.app/functions/resenas';
+
+        // Load approved reviews from backend
+        async function loadReviews() {
+            try {
+                const res = await fetch(REVIEWS_API);
+                const data = await res.json();
+                if (data.ok && data.reviews && data.reviews.length > 0) {
+                    const grid = document.getElementById('reviewsGrid');
+                    // Keep the 3 hardcoded reviews and append dynamic ones
+                    data.reviews.forEach(review => {
+                        const initials = review.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+                        let stars = '';
+                        for (let i = 1; i <= 5; i++) {
+                            stars += `<span class="review-star${i > review.rating ? ' empty' : ''}">${i <= review.rating ? '&#9733;' : '&#9734;'}</span>`;
+                        }
+                        const date = new Date(review.created_date).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+                        const card = document.createElement('div');
+                        card.className = 'review-card';
+                        card.innerHTML = `
+                            <div class="review-stars">${stars}</div>
+                            <p class="review-text">${escapeHtml(review.text)}</p>
+                            <div class="review-author">
+                                <div class="review-avatar">${initials}</div>
+                                <div class="review-author-info">
+                                    <strong>${escapeHtml(review.name)}</strong>
+                                    <span>${review.company ? escapeHtml(review.company) : date}</span>
+                                </div>
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                    });
+                }
+            } catch (err) {
+                console.log('No se pudieron cargar reseñas dinámicas:', err);
+            }
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // Handle review form submission
+        const reviewForm = document.getElementById('reviewForm');
+        if (reviewForm) {
+            reviewForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('reviewName').value.trim();
+                const company = document.getElementById('reviewCompany').value.trim();
+                const message = document.getElementById('reviewMessage').value.trim();
+                const ratingInput = document.querySelector('input[name="rating"]:checked');
+                const submitBtn = document.getElementById('reviewSubmit');
+
+                if (!name || !message || !ratingInput) {
+                    alert('Por favor completa todos los campos y selecciona una calificación.');
+                    return;
+                }
+
+                submitBtn.textContent = 'Enviando...';
+                submitBtn.disabled = true;
+
+                try {
+                    const res = await fetch(REVIEWS_API, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: name,
+                            company: company,
+                            rating: parseInt(ratingInput.value),
+                            text: message
+                        })
+                    });
+                    const data = await res.json();
+
+                    if (data.ok) {
+                        reviewForm.reset();
+                        document.querySelectorAll('input[name="rating"]').forEach(r => r.checked = false);
+                        submitBtn.textContent = '¡Gracias! Reseña enviada ✓';
+                        submitBtn.style.background = '#16a34a';
+                        setTimeout(() => {
+                            submitBtn.textContent = 'Publicar reseña →';
+                            submitBtn.style.background = '';
+                            submitBtn.disabled = false;
+                        }, 4000);
+                    } else {
+                        throw new Error(data.error || 'Error al enviar');
+                    }
+                } catch (err) {
+                    alert('Error al enviar la reseña: ' + err.message);
+                    submitBtn.textContent = 'Publicar reseña →';
+                    submitBtn.disabled = false;
+                }
+            });
+        }
+
+        // Load reviews on page load
+        loadReviews();
+
     </script>
 </body>
 </html>
