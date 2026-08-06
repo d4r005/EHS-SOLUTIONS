@@ -1199,6 +1199,146 @@
             .stat-item::after { display: none !important; }
             .process-grid { grid-template-columns: 1fr; }
         }
+
+        /* ===== Reviews / Testimonios ===== */
+        .reviews { background: var(--gray-50); }
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        .review-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-100);
+            transition: transform var(--transition), box-shadow var(--transition);
+            position: relative;
+        }
+        .review-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        .review-card::before {
+            content: '"';
+            position: absolute;
+            top: 0.5rem;
+            right: 1.5rem;
+            font-size: 4rem;
+            color: var(--green-light);
+            font-family: Georgia, serif;
+            line-height: 1;
+        }
+        .review-stars { display: flex; gap: 4px; margin-bottom: 1rem; }
+        .review-star { color: #f5a623; font-size: 1.2rem; }
+        .review-star.empty { color: var(--gray-200); }
+        .review-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+        .review-author {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .review-avatar {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--navy), var(--green));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .review-author-info strong {
+            display: block;
+            color: var(--navy);
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+        .review-author-info span {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Review Form */
+        .review-form-wrap {
+            max-width: 640px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-100);
+        }
+        .review-form-wrap h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        .review-form-wrap .form-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        .star-rating {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        .star-rating input { display: none; }
+        .star-rating label {
+            font-size: 2rem;
+            color: var(--gray-200);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .star-rating input:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label { color: #f5a623; }
+        .star-rating { direction: rtl; }
+        .star-rating input:checked ~ label { color: #f5a623; }
+
+        .review-form { display: flex; flex-direction: column; gap: 1rem; }
+        .review-form input,
+        .review-form textarea {
+            font-family: inherit;
+            font-size: 0.95rem;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            background: var(--gray-50);
+            color: var(--text-dark);
+            transition: border-color var(--transition), box-shadow var(--transition);
+            outline: none;
+        }
+        .review-form input:focus,
+        .review-form textarea:focus {
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px var(--green-light);
+        }
+        .review-form textarea { min-height: 100px; resize: vertical; }
+        .review-form .btn { margin-top: 0.5rem; }
+        .review-form .form-note {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+        @media (max-width: 640px) {
+            .reviews-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -1575,6 +1715,78 @@
                     </div>
                     <button type="submit" class="btn btn-green">Enviar solicitud &rarr;</button>
                     <p class="form-note">Sus datos están protegidos. Consulte nuestro aviso de privacidad.</p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ===== Reseñas ===== -->
+    <section class="reviews" id="resenas">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Testimonios</span>
+                <h2 class="section-title">Lo que dicen nuestros clientes</h2>
+                <p class="section-subtitle">La confianza de las empresas que han transformado su cultura de seguridad con nosotros.</p>
+            </div>
+            <div class="reviews-grid">
+                <div class="review-card">
+                    <div class="review-stars">
+                        <span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span>
+                    </div>
+                    <p class="review-text">Excelente capacitación. El instructor dominaba el tema y logró que todo el personal entendiera la importancia de la seguridad industrial. Recomendado al 100%.</p>
+                    <div class="review-author">
+                        <div class="review-avatar">CG</div>
+                        <div class="review-author-info">
+                            <strong>Carlos González</strong>
+                            <span>Gerente de Operaciones, Grupo Industrial del Norte</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-card">
+                    <div class="review-stars">
+                        <span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span>
+                    </div>
+                    <p class="review-text">Implementamos el programa de seguridad y vimos una reducción del 60% en incidentes en menos de un año. Muy profesionales y siempre disponibles para resolver dudas.</p>
+                    <div class="review-author">
+                        <div class="review-avatar">MR</div>
+                        <div class="review-author-info">
+                            <strong>María Robles</strong>
+                            <span>Coordinadora de SST, Constructora Premier</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-card">
+                    <div class="review-stars">
+                        <span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star empty">&#9734;</span>
+                    </div>
+                    <p class="review-text">La asesoría en cumplimiento normativo fue muy clara y completa. Nos ayudaron a pasar una auditoría sin ninguna no conformidad. Sin duda seguiremos trabajando con ellos.</p>
+                    <div class="review-author">
+                        <div class="review-avatar">JM</div>
+                        <div class="review-author-info">
+                            <strong>Jorge Muñoz</strong>
+                            <span>Director General, Logística del Bajío</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="review-form-wrap">
+                <h3>Deja tu reseña</h3>
+                <p class="form-subtitle">Tu opinión nos ayuda a mejorar y a ayudar a más empresas.</p>
+                <div class="star-rating">
+                    <input type="radio" name="rating" id="star5" value="5"><label for="star5">&#9733;</label>
+                    <input type="radio" name="rating" id="star4" value="4"><label for="star4">&#9733;</label>
+                    <input type="radio" name="rating" id="star3" value="3"><label for="star3">&#9733;</label>
+                    <input type="radio" name="rating" id="star2" value="2"><label for="star2">&#9733;</label>
+                    <input type="radio" name="rating" id="star1" value="1"><label for="star1">&#9733;</label>
+                </div>
+                <form class="review-form" onsubmit="return false;">
+                    <input type="text" name="review-name" placeholder="Tu nombre" required>
+                    <input type="text" name="review-company" placeholder="Empresa (opcional)">
+                    <textarea name="review-message" placeholder="Cuéntanos tu experiencia..." required></textarea>
+                    <button type="submit" class="btn btn-green">Publicar reseña &rarr;</button>
+                    <p class="form-note">Tu reseña se publicará una vez aprobada por nuestro equipo.</p>
                 </form>
             </div>
         </div>
