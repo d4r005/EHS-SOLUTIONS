@@ -3,313 +3,854 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EHS-SOLUTIONS | Seguridad, Salud y Medio Ambiente</title>
+    <title>EHS+ Solutions | Seguridad, Salud y Medio Ambiente</title>
+    <meta name="description" content="Capacitación y consultoría líder en Seguridad Industrial, Salud Ocupacional y Medio Ambiente. Programas con validez oficial.">
     <style>
+        /* ===== Design System ===== */
         :root {
             --navy: #002855;
+            --navy-deep: #001a35;
+            --navy-light: #1a3a6b;
             --green: #76b82a;
             --green-hover: #5a8c20;
+            --green-light: #e8f5d8;
             --white: #ffffff;
-            --gray-light: #f8fafc;
-            --gray-border: #e2e8f0;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-500: #64748b;
+            --gray-700: #334155;
             --text-dark: #001a35;
             --text-muted: #64748b;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 20px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.08);
+            --shadow-xl: 0 20px 60px rgba(0,0,0,0.12);
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        *::selection { background: var(--green); color: white; }
 
         html { scroll-behavior: smooth; }
 
         body {
-            background-color: var(--white);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--white);
             color: var(--text-dark);
-            line-height: 1.5;
+            line-height: 1.6;
+            overflow-x: hidden;
         }
 
-        /* ===== Header & Logo ===== */
+        /* ===== Utility ===== */
+        .container { max-width: 1280px; margin: 0 auto; padding: 0 6%; }
+        .accent { color: var(--green); }
+
+        /* ===== Scrollbar ===== */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--gray-100); }
+        ::-webkit-scrollbar-thumb { background: var(--navy); border-radius: 4px; }
+
+        /* ===== Header ===== */
         header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--gray-200);
+            transition: var(--transition);
+        }
+
+        header.scrolled {
+            box-shadow: 0 4px 30px rgba(0,0,0,0.06);
+        }
+
+        .header-inner {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.5rem 6%;
-            background: var(--white);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            min-height: 100px;
+            height: 80px;
         }
 
-        .logo-container {
+        .logo-link {
             display: flex;
-            flex-direction: column;
             align-items: center;
             text-decoration: none;
-            padding: 10px 0;
+            gap: 12px;
         }
 
-        .logo-box {
+        .logo-mark {
             display: flex;
             align-items: center;
-            color: var(--navy);
-            font-family: 'Segoe UI', Arial, sans-serif;
-            font-size: 3.2rem;
+            gap: 2px;
+            font-size: 1.8rem;
             font-weight: 900;
-            line-height: 1;
-            letter-spacing: -3px; /* Juntar más las letras */
-        }
-
-        .logo-box span.plus {
-            color: var(--green);
-            font-size: 3.5rem;
-            margin: 0 -5px; /* Superponer sutilmente el plus */
-            position: relative;
-            top: -2px;
-        }
-
-        .logo-bottom {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            margin-top: -5px; /* Acercar a las letras superiores */
-            gap: 8px;
-        }
-
-        .logo-bottom .line {
-            flex: 1;
-            height: 2px;
-            background-color: var(--green);
-        }
-
-        .logo-bottom .text {
             color: var(--navy);
-            font-size: 1.1rem;
-            font-weight: 900;
-            letter-spacing: 5px;
+            letter-spacing: -1.5px;
+        }
+
+        .logo-mark .plus { color: var(--green); font-size: 2rem; }
+
+        .logo-sub {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 3px;
             text-transform: uppercase;
+            color: var(--navy);
+            border-top: 2px solid var(--green);
+            padding-top: 3px;
+            width: 100%;
         }
+
+        .logo-text-block { display: flex; flex-direction: column; }
 
         .nav-links {
             display: flex;
             align-items: center;
+            gap: 2rem;
         }
 
         .nav-links a {
-            margin-left: 1.5rem;
             text-decoration: none;
             color: var(--navy);
-            font-weight: 700;
-            font-size: 0.9rem;
-            transition: color 0.2s;
+            font-weight: 600;
+            font-size: 0.875rem;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            transition: color var(--transition);
         }
 
-        .nav-links a:hover,
-        .nav-links a.active { color: var(--green); }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -6px; left: 0;
+            width: 0; height: 2px;
+            background: var(--green);
+            transition: width var(--transition);
+        }
+
+        .nav-links a:hover, .nav-links a.active { color: var(--green); }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+        .nav-cta {
+            background: var(--green);
+            color: white !important;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            transition: var(--transition);
+        }
+
+        .nav-cta::after { display: none; }
+        .nav-cta:hover { background: var(--green-hover); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(118,184,42,0.3); }
 
         .menu-toggle {
             display: none;
             flex-direction: column;
             cursor: pointer;
             gap: 5px;
+            z-index: 1001;
         }
-
         .menu-toggle span {
             width: 25px; height: 3px;
             background: var(--navy);
             border-radius: 3px;
+            transition: var(--transition);
         }
+        .menu-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+        .menu-toggle.active span:nth-child(2) { opacity: 0; }
+        .menu-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
 
-        /* ===== Hero Section ===== */
+        /* ===== Hero ===== */
         .hero {
-            display: flex;
-            background: var(--white);
-            min-height: 550px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .hero-graphics {
-            flex: 1.2;
-            background: var(--white);
+            min-height: 100vh;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 2rem;
+            background: linear-gradient(135deg, #002855 0%, #001a35 50%, #00112a 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            padding-top: 80px;
         }
 
-        .hero-content {
-            flex: 1;
-            background: var(--navy);
-            color: var(--white);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 4rem 6%;
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(circle at 80% 20%, rgba(118,184,42,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 20% 80%, rgba(118,184,42,0.05) 0%, transparent 50%);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 4rem;
+            align-items: center;
             position: relative;
-            clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%, 8% 70%, 2% 50%, 10% 30%);
+            z-index: 2;
+            width: 100%;
+        }
+
+        .hero-content { max-width: 600px; }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(118,184,42,0.15);
+            border: 1px solid rgba(118,184,42,0.3);
+            color: var(--green);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 8px; height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
         }
 
         .hero h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
+            font-size: 3rem;
+            font-weight: 900;
             line-height: 1.1;
             margin-bottom: 1.5rem;
             text-transform: uppercase;
         }
 
-        .hero-logo-box {
-            margin-bottom: 2rem;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            width: fit-content;
-        }
+        .hero h1 .highlight { color: var(--green); }
 
-        .hero-slogan-line {
+        .hero-slogan {
             display: inline-block;
             border-top: 2px solid var(--green);
             border-bottom: 2px solid var(--green);
-            padding: 8px 0;
-            font-size: 1rem;
+            padding: 10px 0;
+            font-size: 0.95rem;
             font-weight: 700;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
             text-transform: uppercase;
-            width: fit-content;
+            margin-bottom: 1.5rem;
+            color: var(--green);
         }
 
-        .hero .btn-green {
-            margin-top: 2rem;
-            display: inline-block;
-            background: var(--green);
-            color: var(--white);
+        .hero p {
+            color: var(--gray-300);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            max-width: 500px;
+        }
+
+        .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             padding: 1rem 2rem;
-            text-decoration: none;
-            font-weight: 800;
+            font-weight: 700;
             text-transform: uppercase;
-            border-radius: 4px;
-            transition: 0.3s;
+            letter-spacing: 0.5px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+            border: none;
+            font-size: 0.875rem;
+        }
+
+        .btn-green { background: var(--green); color: white; }
+        .btn-green:hover { background: var(--green-hover); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(118,184,42,0.35); }
+
+        .btn-outline { background: transparent; color: white; border: 2px solid rgba(255,255,255,0.2); }
+        .btn-outline:hover { border-color: var(--green); color: var(--green); transform: translateY(-3px); }
+
+        .btn-navy { background: var(--navy); color: white; }
+        .btn-navy:hover { background: var(--navy-light); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,40,85,0.3); }
+
+        /* Hero Visual */
+        .hero-visual {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .hero-card-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--green);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-stat { margin-bottom: 1.5rem; }
+        .hero-stat:last-child { margin-bottom: 0; }
+
+        .hero-stat-value {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: white;
+            line-height: 1;
+        }
+
+        .hero-stat-value .unit { font-size: 1rem; color: var(--gray-500); font-weight: 600; }
+
+        .hero-stat-label {
+            font-size: 0.8rem;
+            color: var(--gray-300);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero-stat-bar {
+            width: 100%; height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .hero-stat-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green), #9dd84a);
+            border-radius: 2px;
+            transition: width 1.5s ease;
+        }
+
+        /* ===== Stats Bar ===== */
+        .stats-bar {
+            background: var(--navy);
+            padding: 2.5rem 0;
+            border-bottom: 3px solid var(--green);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
             text-align: center;
         }
 
-        .hero .btn-green:hover { background: var(--green-hover); transform: translateY(-3px); }
+        .stat-item { position: relative; }
+        .stat-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: -1rem; top: 50%; transform: translateY(-50%);
+            width: 1px; height: 40px;
+            background: rgba(255,255,255,0.1);
+        }
 
-        /* SVG Network Styling */
-        .network-svg {
-            width: 90%;
-            height: auto;
-            max-width: 600px;
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: white;
+            line-height: 1;
+        }
+
+        .stat-number .accent { color: var(--green); }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--gray-300);
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         /* ===== Sections Base ===== */
-        section { padding: 5rem 6%; scroll-margin-top: 100px; }
+        section { padding: 6rem 0; scroll-margin-top: 80px; }
+
+        .section-header { text-align: center; max-width: 700px; margin: 0 auto 4rem; }
+
+        .section-tag {
+            display: inline-block;
+            background: var(--green-light);
+            color: var(--green-hover);
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 1rem;
+        }
 
         .section-title {
             font-size: 2.2rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
+            font-weight: 900;
             text-transform: uppercase;
-            text-align: center;
             color: var(--navy);
+            line-height: 1.2;
+            margin-bottom: 1rem;
         }
-
-        .section-title .accent { color: var(--green); }
 
         .section-subtitle {
-            text-align: center;
             color: var(--text-muted);
-            margin-bottom: 4rem;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
+            font-size: 1.05rem;
         }
 
-        /* ===== Cards & Services ===== */
+        /* ===== Services ===== */
+        .services { background: var(--white); }
+
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2.5rem;
-            max-width: 1300px;
-            margin: 0 auto;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
         }
 
         .card {
             background: var(--white);
-            padding: 3rem 2rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            text-align: left;
-            border-top: 5px solid var(--green);
-            transition: 0.3s;
+            padding: 2.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
         }
 
-        .card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: var(--green);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: transparent;
+        }
+
+        .card:hover::before { transform: scaleX(1); }
 
         .card-icon {
-            width: 65px; height: 65px;
-            background: var(--gray-light);
-            border-radius: 12px;
+            width: 64px; height: 64px;
+            background: var(--gray-50);
+            border-radius: var(--radius);
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 1.5rem;
             color: var(--navy);
+            transition: var(--transition);
         }
 
-        .card-icon svg { width: 35px; height: 35px; }
+        .card:hover .card-icon { background: var(--navy); color: var(--green); }
 
-        .card h3 { font-size: 1.4rem; font-weight: 800; margin-bottom: 1rem; color: var(--navy); }
-        .card p { color: var(--text-muted); margin-bottom: 1.5rem; }
-        .card a { color: var(--green); text-decoration: none; font-weight: 700; }
+        .card-icon svg { width: 32px; height: 32px; }
 
-        /* ===== Courses Table ===== */
-        .programas { background: var(--gray-light); }
+        .card h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            color: var(--navy);
+        }
+
+        .card p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .card-link {
+            color: var(--green-hover);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: gap var(--transition);
+        }
+
+        .card:hover .card-link { gap: 12px; }
+
+        .card-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-features li {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            padding: 4px 0 4px 24px;
+            position: relative;
+        }
+
+        .card-features li::before {
+            content: '\2713';
+            position: absolute;
+            left: 0; top: 4px;
+            color: var(--green);
+            font-weight: 800;
+        }
+
+        /* ===== About / Why Us ===== */
+        .about { background: var(--gray-50); }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-visual {
+            position: relative;
+        }
+
+        .about-img-card {
+            background: var(--navy);
+            border-radius: var(--radius-xl);
+            padding: 3rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-img-card::before {
+            content: '';
+            position: absolute;
+            top: -50%; right: -30%;
+            width: 300px; height: 300px;
+            background: rgba(118,184,42,0.1);
+            border-radius: 50%;
+        }
+
+        .about-quote {
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .about-quote::before {
+            content: '\201C';
+            font-size: 4rem;
+            color: var(--green);
+            position: absolute;
+            top: -1.5rem; left: -1.5rem;
+            opacity: 0.3;
+        }
+
+        .about-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .about-author-avatar {
+            width: 50px; height: 50px;
+            background: var(--green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.2rem;
+        }
+
+        .about-author-info { font-size: 0.85rem; }
+        .about-author-info strong { display: block; font-size: 1rem; }
+        .about-author-info span { color: var(--gray-300); }
+
+        .about-content h2 {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--navy);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .about-content > p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 1.05rem;
+        }
+
+        .why-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .why-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .why-icon {
+            width: 44px; height: 44px;
+            background: var(--green-light);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--green-hover);
+        }
+
+        .why-icon svg { width: 22px; height: 22px; }
+
+        .why-item h4 {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+
+        .why-item p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== Process ===== */
+        .process { background: var(--white); }
+
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            position: relative;
+        }
+
+        .process-grid::before {
+            content: '';
+            position: absolute;
+            top: 40px; left: 12.5%; right: 12.5%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--green), var(--gray-200), var(--gray-200), var(--green));
+            z-index: 0;
+        }
+
+        .process-step {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .process-number {
+            width: 80px; height: 80px;
+            background: white;
+            border: 3px solid var(--green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--navy);
+            transition: var(--transition);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+
+        .process-step:hover .process-number {
+            background: var(--green);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .process-step h4 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+        }
+
+        .process-step p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            max-width: 220px;
+            margin: 0 auto;
+        }
+
+        /* ===== Courses ===== */
+        .courses { background: var(--gray-50); }
 
         .course-table-wrapper {
             background: var(--white);
-            border-radius: 12px;
+            border-radius: var(--radius-lg);
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-shadow: var(--shadow-md);
             max-width: 1100px;
             margin: 0 auto;
+        }
+
+        .course-table-header {
+            background: var(--navy);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .course-table-header h3 {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .course-table-header .badge {
+            background: var(--green);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
         }
 
         .course-table { width: 100%; border-collapse: collapse; }
+
         .course-table thead th {
-            background: var(--navy);
-            color: var(--white);
-            padding: 1.2rem;
+            background: var(--gray-50);
+            color: var(--text-muted);
+            padding: 1rem 2rem;
             text-align: left;
             text-transform: uppercase;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            font-weight: 700;
+            border-bottom: 2px solid var(--gray-200);
         }
 
-        .course-table tbody tr { border-bottom: 1px solid var(--gray-border); transition: 0.2s; }
-        .course-table tbody tr:hover { background: #f0f7f0; }
-        .course-table td { padding: 1.1rem; color: var(--text-dark); }
-        .course-table td:first-child { font-weight: 800; color: var(--green); text-align: center; width: 60px; }
-        .course-name { font-weight: 600; }
+        .course-table tbody tr {
+            border-bottom: 1px solid var(--gray-100);
+            transition: background var(--transition);
+        }
+
+        .course-table tbody tr:last-child { border-bottom: none; }
+        .course-table tbody tr:hover { background: var(--green-light); }
+
+        .course-table td {
+            padding: 1.2rem 2rem;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+        }
+
+        .course-table td:first-child {
+            font-weight: 900;
+            color: var(--green);
+            text-align: center;
+            width: 70px;
+        }
+
+        .course-name { font-weight: 700; color: var(--navy); }
+
+        .course-tag {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tag-safety { background: #fee2e2; color: #b91c1c; }
+        .tag-health { background: #dbeafe; color: #1d4ed8; }
+        .tag-environment { background: #d1fae5; color: #047857; }
+        .tag-ops { background: #fef3c7; color: #b45309; }
+
+        .course-action {
+            color: var(--navy);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: gap var(--transition);
+        }
+
+        .course-action:hover { gap: 8px; color: var(--green-hover); }
 
         /* ===== Contact ===== */
-        .contacto { background: var(--white); }
+        .contact { background: var(--white); }
+
         .contact-wrapper {
             display: grid;
             grid-template-columns: 1fr 1.2fr;
-            gap: 4rem;
+            gap: 3rem;
             max-width: 1100px;
             margin: 0 auto;
         }
 
-        .contact-info h3 { font-size: 2rem; color: var(--navy); margin-bottom: 1.5rem; }
-        .contact-detail { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem; }
+        .contact-info h3 {
+            font-size: 1.75rem;
+            font-weight: 900;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-info > p {
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+        }
+
+        .contact-detail {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1.25rem;
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+        }
+
+        .contact-detail:hover {
+            border-color: var(--green);
+            transform: translateX(4px);
+        }
+
         .contact-detail-icon {
-            width: 50px; height: 50px;
-            background: var(--gray-light);
+            width: 48px; height: 48px;
+            background: var(--navy);
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -318,331 +859,868 @@
             flex-shrink: 0;
         }
 
+        .contact-detail-icon svg { width: 22px; height: 22px; }
+
+        .contact-detail-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .contact-detail-value {
+            font-weight: 700;
+            color: var(--navy);
+            font-size: 0.95rem;
+        }
+
         .contact-form {
-            background: var(--navy);
-            padding: 3rem;
-            border-radius: 15px;
-            color: var(--white);
-        }
-
-        .form-group label { color: var(--white); font-weight: 600; margin-bottom: 0.5rem; display: block; }
-        .form-group input, .form-group select, .form-group textarea {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+            padding: 2.5rem;
+            border-radius: var(--radius-xl);
             color: white;
-            border-radius: 8px;
-            padding: 0.8rem;
-            width: 100%;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            overflow: hidden;
         }
 
-        .form-group input::placeholder { color: rgba(255,255,255,0.5); }
-        .form-group input:focus { outline: none; border-color: var(--green); background: rgba(255,255,255,0.15); }
+        .contact-form::before {
+            content: '';
+            position: absolute;
+            top: -50%; right: -30%;
+            width: 250px; height: 250px;
+            background: rgba(118,184,42,0.08);
+            border-radius: 50%;
+        }
+
+        .contact-form h3 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .contact-form > p {
+            color: var(--gray-300);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+        .form-group { margin-bottom: 1.25rem; position: relative; }
+
+        .form-group label {
+            color: var(--gray-300);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: white;
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            width: 100%;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder { color: rgba(255,255,255,0.35); }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--green);
+            background: rgba(255,255,255,0.12);
+            box-shadow: 0 0 0 3px rgba(118,184,42,0.15);
+        }
+
+        .form-group select option { background: var(--navy-deep); color: white; }
+
         .contact-form .btn-green {
             width: 100%;
-            background: var(--green);
-            color: white;
-            border: none;
-            padding: 1.2rem;
-            font-weight: 800;
-            border-radius: 8px;
-            cursor: pointer;
-            text-transform: uppercase;
+            justify-content: center;
+            margin-top: 0.5rem;
+        }
+
+        .form-note {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            text-align: center;
+            margin-top: 1rem;
+            position: relative;
         }
 
         /* ===== Footer ===== */
-        footer { background: #001a35; color: white; padding: 4rem 6% 2rem; }
-        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 4rem; max-width: 1300px; margin: 0 auto; }
-        .footer-logo-white { font-size: 1.8rem; font-weight: 900; margin-bottom: 1rem; display: flex; align-items: center; }
-        .footer-logo-white .plus { color: var(--green); }
-        .footer-bottom { text-align: center; padding-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 3rem; font-size: 0.85rem; color: #94a3b8; }
+        footer {
+            background: var(--navy-deep);
+            color: white;
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand .logo-mark { color: white; }
+        .footer-brand .logo-sub { color: var(--gray-300); }
+
+        .footer-brand p {
+            color: var(--gray-300);
+            font-size: 0.9rem;
+            margin: 1.5rem 0;
+            max-width: 320px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .footer-social a {
+            width: 40px; height: 40px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-300);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-social a:hover {
+            background: var(--green);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .footer-social a svg { width: 20px; height: 20px; }
+
+        .footer-col h4 {
+            color: var(--green);
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 0.75rem; }
+
+        .footer-col ul a {
+            color: var(--gray-300);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color var(--transition);
+        }
+
+        .footer-col ul a:hover { color: var(--green); }
+
+        .footer-contact-item {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            color: var(--gray-300);
+            font-size: 0.85rem;
+        }
+
+        .footer-contact-item svg {
+            width: 18px; height: 18px;
+            color: var(--green);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+
+        .footer-bottom a {
+            color: var(--gray-300);
+            text-decoration: none;
+            margin-left: 1.5rem;
+            transition: color var(--transition);
+        }
+        .footer-bottom a:hover { color: var(--green); }
+
+        /* ===== Modal ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,10,25,0.8);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal {
+            background: white;
+            padding: 2.5rem;
+            border-radius: var(--radius-xl);
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            color: var(--navy);
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem; right: 1.5rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color var(--transition);
+            background: none;
+            border: none;
+            line-height: 1;
+        }
+        .modal-close:hover { color: var(--navy); }
+
+        .modal h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 1.5rem; }
+        .modal p { margin-bottom: 1rem; color: var(--gray-500); font-size: 0.95rem; line-height: 1.7; }
+        .modal strong { color: var(--navy); }
+
+        /* ===== Scroll Animations ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal:nth-child(2) { transition-delay: 0.1s; }
+        .reveal:nth-child(3) { transition-delay: 0.2s; }
+        .reveal:nth-child(4) { transition-delay: 0.3s; }
 
         /* ===== Responsive ===== */
-        @media (max-width: 992px) {
-            .hero { flex-direction: column-reverse; }
-            .hero-content { clip-path: none; padding: 4rem 6%; text-align: center; }
-            .hero-graphics { padding: 3rem 1rem; }
-            .hero .btn-green { margin-left: auto; margin-right: auto; }
-            .contact-wrapper { grid-template-columns: 1fr; }
+        @media (max-width: 1024px) {
+            .hero-grid { grid-template-columns: 1fr; gap: 3rem; }
+            .hero-visual { order: -1; }
+            .about-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+            .stat-item:nth-child(2)::after { display: none; }
         }
 
         @media (max-width: 768px) {
-            header { min-height: 80px; }
             .nav-links { display: none; }
-            .hero h1 { font-size: 2.2rem; }
-            .hero-logo-box .logo-white { font-size: 2.5rem; justify-content: center; }
-            .logo-main { font-size: 1.8rem; }
+            .menu-toggle { display: flex; }
+
+            .nav-links.mobile-open {
+                display: flex;
+                position: fixed;
+                top: 80px; left: 0; right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1.5rem;
+                box-shadow: var(--shadow-lg);
+                border-bottom: 1px solid var(--gray-200);
+            }
+
+            .hero { padding-top: 100px; min-height: auto; padding-bottom: 4rem; }
+            .hero h1 { font-size: 2rem; }
+            .section-title { font-size: 1.6rem; }
+            section { padding: 4rem 0; }
+
+            .cards-grid { grid-template-columns: 1fr; }
+            .process-grid { grid-template-columns: 1fr 1fr; }
+            .process-grid::before { display: none; }
+            .contact-wrapper { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+            .footer-bottom a { margin: 0 0.75rem; }
+            .why-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .stat-item::after { display: none !important; }
+            .process-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <a href="#inicio" class="logo-container">
-            <img src="logo.png" alt="EH+S Solutions" style="height: 90px; width: auto;">
-        </a>
-        <nav class="nav-links">
-            <a href="#inicio" class="active">Inicio</a>
-            <a href="#servicios">Servicios</a>
-            <a href="#cursos">Programas</a>
-            <a href="#contacto">Contacto</a>
-        </nav>
-        <div class="menu-toggle"><span></span><span></span><span></span></div>
+    <!-- ===== Header ===== -->
+    <header id="header">
+        <div class="container header-inner">
+            <a href="#inicio" class="logo-link">
+                <div class="logo-text-block">
+                    <div class="logo-mark">EH<span class="plus">+</span>S</div>
+                    <div class="logo-sub">Solutions</div>
+                </div>
+            </a>
+            <nav class="nav-links" id="nav">
+                <a href="#inicio" class="active">Inicio</a>
+                <a href="#servicios">Servicios</a>
+                <a href="#nosotros">Nosotros</a>
+                <a href="#cursos">Programas</a>
+                <a href="#proceso">Proceso</a>
+                <a href="#contacto" class="nav-cta">Contacto</a>
+            </nav>
+            <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+        </div>
     </header>
 
-    <!-- ===== Hero Section ===== -->
+    <!-- ===== Hero ===== -->
     <section class="hero" id="inicio">
-        <div class="hero-graphics">
-            <!-- Red Orgánica de Nodos (SVG) -->
-            <svg class="network-svg" viewBox="0 0 600 500" xmlns="http://www.w3.org/2000/svg">
-                <!-- Lines (Organized manually to match reference) -->
-                <line x1="50" y1="200" x2="150" y2="100" stroke="#002855" stroke-width="1.5"/>
-                <line x1="150" y1="100" x2="300" y2="150" stroke="#002855" stroke-width="1.5"/>
-                <line x1="300" y1="150" x2="450" y2="100" stroke="#002855" stroke-width="1.5"/>
-                <line x1="450" y1="100" x2="550" y2="250" stroke="#002855" stroke-width="1.5"/>
-                <line x1="150" y1="100" x2="120" y2="250" stroke="#002855" stroke-width="1.5"/>
-                <line x1="120" y1="250" x2="250" y2="300" stroke="#002855" stroke-width="1.5"/>
-                <line x1="250" y1="300" x2="400" y2="220" stroke="#002855" stroke-width="1.5"/>
-                <line x1="400" y1="220" x2="300" y2="150" stroke="#002855" stroke-width="1.5"/>
-                <line x1="120" y1="250" x2="80" y2="400" stroke="#002855" stroke-width="1.5"/>
-                <line x1="250" y1="300" x2="350" y2="450" stroke="#002855" stroke-width="1.5"/>
-                <line x1="400" y1="220" x2="520" y2="380" stroke="#002855" stroke-width="1.5"/>
-
-                <!-- Secondary Lines -->
-                <line x1="50" y1="200" x2="120" y2="250" stroke="#002855" stroke-width="1" stroke-dasharray="3"/>
-                <line x1="450" y1="100" x2="400" y2="220" stroke="#002855" stroke-width="1" stroke-dasharray="3"/>
-
-                <!-- Nodes (Main with Icons) -->
-                <!-- Leaf Node -->
-                <circle cx="80" cy="220" r="35" fill="white" stroke="#002855" stroke-width="1"/>
-                <g transform="translate(65, 205) scale(1.3)" fill="#76b82a">
-                    <path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,11 14,9 10,9C7,9 5,14 5,14C5,14 8,7 17,8Z"/>
-                </g>
-
-                <!-- Helmet Node -->
-                <circle cx="250" cy="250" r="40" fill="white" stroke="#002855" stroke-width="1.5"/>
-                <g transform="translate(230, 230) scale(1.6)" fill="#002855">
-                    <path d="M12,2C10.89,2 9.05,2.16 7,3.14V11H17V3.14C14.95,2.16 13.11,2 12,2M7,12C5,12 3,13.43 3,16V22H21V16C21,13.43 19,12 17,12H13V15H11V12H7Z"/>
-                </g>
-
-                <!-- Shield Node -->
-                <circle cx="420" cy="300" r="35" fill="white" stroke="#002855" stroke-width="1"/>
-                <g transform="translate(405, 285) scale(1.3)" fill="#334155">
-                    <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.41,7 14.67,7.7 15.18,8.87L11.5,14.69L9.5,12.27L10.74,10.63L11.38,12.13L13.71,8.44C13.29,7.57 12.5,7 11.5,7C11,7 10.5,7.15 10.11,7.4L8,6C9.13,5.38 10.43,5 11.5,5C13.84,5 16,6.34 16,8.5C16,9.5 15.54,10.4 14.8,11L18,17H6L9.2,11C8.46,10.4 8,9.5 8,8.5C8,6.34 10.16,5 12.5,5C13.57,5 14.87,5.38 16,6L13.89,7.4C13.5,7.15 13,7 12.5,7Z"/>
-                </g>
-
-                <!-- Small Nodes (Solid) -->
-                <circle cx="150" cy="100" r="8" fill="#002855"/>
-                <circle cx="300" cy="150" r="10" fill="#002855"/>
-                <circle cx="450" cy="100" r="8" fill="#002855"/>
-                <circle cx="550" cy="250" r="10" fill="#002855"/>
-                <circle cx="350" cy="450" r="6" fill="#002855"/>
-                <circle cx="520" cy="380" r="6" fill="#002855"/>
-                <circle cx="50" cy="200" r="6" fill="#002855"/>
-                <circle cx="80" cy="400" r="6" fill="#002855"/>
-            </svg>
-        </div>
-
-        <div class="hero-content">
-            <div class="hero-logo-box">
-                <img src="logo.png" alt="EH+S Solutions" style="height: 110px; width: auto;">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-content">
+                    <div class="hero-badge">Capacitación con validez oficial</div>
+                    <h1>Eleva el potencial de tu <span class="highlight">equipo</span></h1>
+                    <div class="hero-slogan">Capacitamos hoy, protegemos el mañana</div>
+                    <p>Ofrecemos programas de capacitación a medida que transforman el talento y potencian el rendimiento empresarial en seguridad, salud y medio ambiente.</p>
+                    <div class="hero-actions">
+                        <a href="#cursos" class="btn btn-green">Ver programas &rarr;</a>
+                        <a href="#contacto" class="btn btn-outline">Hablar con un asesor</a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="hero-card">
+                        <div class="hero-card-title">Impacto en cifras</div>
+                        <div class="hero-stat">
+                            <div class="hero-stat-value">500<span class="unit">+</span></div>
+                            <div class="hero-stat-label">Profesionales capacitados</div>
+                            <div class="hero-stat-bar"><div class="hero-stat-bar-fill" style="width: 0%" data-width="85%"></div></div>
+                        </div>
+                        <div class="hero-stat">
+                            <div class="hero-stat-value">7</div>
+                            <div class="hero-stat-label">Programas especializados</div>
+                            <div class="hero-stat-bar"><div class="hero-stat-bar-fill" style="width: 0%" data-width="65%"></div></div>
+                        </div>
+                        <div class="hero-stat">
+                            <div class="hero-stat-value">100<span class="unit">%</span></div>
+                            <div class="hero-stat-label">Cumplimiento normativo</div>
+                            <div class="hero-stat-bar"><div class="hero-stat-bar-fill" style="width: 0%" data-width="100%"></div></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <h1>ELEVA EL POTENCIAL DE TU EQUIPO</h1>
-            <div class="hero-slogan-box">
-                <div class="hero-slogan-line">CAPACITAMOS HOY, PROTEGEMOS EL MAÑANA.</div>
-            </div>
-            <p style="margin-top: 1.5rem; color: #cbd5e1; max-width: 500px;">Ofrecemos programas de capacitación a medida que transforman el talento y potencian el rendimiento empresarial.</p>
-            <a href="#cursos" class="btn-green">VER PROGRAMAS &rarr;</a>
         </div>
     </section>
 
-    <!-- ===== Servicios ===== -->
+    <!-- ===== Stats Bar ===== -->
+    <div class="stats-bar">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number"><span class="accent">500</span>+</div>
+                    <div class="stat-label">Personas Capacitadas</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number"><span class="accent">7</span></div>
+                    <div class="stat-label">Programas Especializados</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number"><span class="accent">3</span></div>
+                    <div class="stat-label">&Aacute;reas de Especialización</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number"><span class="accent">100</span>%</div>
+                    <div class="stat-label">Cumplimiento Normativo</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Services ===== -->
     <section class="services" id="servicios">
-        <h2 class="section-title">NUESTRAS ÁREAS DE <span class="accent">ESPECIALIZACIÓN</span></h2>
-        <p class="section-subtitle">Soluciones integrales para la industria, enfocadas en la prevención y la eficiencia operativa.</p>
-        <div class="cards-grid">
-            <div class="card">
-                <div class="card-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12,2L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.41,7 14.67,7.7 15.18,8.87L11.5,14.69L9.5,12.27L10.74,10.63L11.38,12.13L13.71,8.44C13.29,7.57 12.5,7 11.5,7C11,7 10.5,7.15 10.11,7.4L8,6C9.13,5.38 10.43,5 11.5,5C13.84,5 16,6.34 16,8.5C16,9.5 15.54,10.4 14.8,11L18,17H6L9.2,11C8.46,10.4 8,9.5 8,8.5C8,6.34 10.16,5 12.5,5C13.57,5 14.87,5.38 16,6L13.89,7.4C13.5,7.15 13,7 12.5,7Z"/></svg></div>
-                <h3>Seguridad Industrial</h3>
-                <p>Implementación de normas y protocolos para un entorno de trabajo seguro y libre de riesgos.</p>
-                <a href="#cursos">Ver cursos &rarr;</a>
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Servicios</span>
+                <h2 class="section-title">Nuestras Áreas de <span class="accent">Especialización</span></h2>
+                <p class="section-subtitle">Soluciones integrales para la industria, enfocadas en la prevención y la eficiencia operativa.</p>
             </div>
-
-            <div class="card">
-                <div class="card-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12,2C10.89,2 9.05,2.16 7,3.14V11H17V3.14C14.95,2.16 13.11,2 12,2M7,12C5,12 3,13.43 3,16V22H21V16C21,13.43 19,12 17,12H13V15H11V12H7Z"/></svg></div>
-                <h3>Salud Ocupacional</h3>
-                <p>Programas de prevención y bienestar para proteger el activo más valioso: su gente.</p>
-                <a href="#cursos">Ver cursos &rarr;</a>
-            </div>
-
-            <div class="card">
-                <div class="card-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,11 14,9 10,9C7,9 5,14 5,14C5,14 8,7 17,8Z"/></svg></div>
-                <h3>Medio Ambiente</h3>
-                <p>Gestión sustentable y cumplimiento de normatividad ambiental para una operación responsable.</p>
-                <a href="#cursos">Ver cursos &rarr;</a>
+            <div class="cards-grid">
+                <div class="card reveal">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.41,7 14.67,7.7 15.18,8.87L11.5,14.69L9.5,12.27L10.74,10.63L11.38,12.13L13.71,8.44C13.29,7.57 12.5,7 11.5,7C11,7 10.5,7.15 10.11,7.4L8,6C9.13,5.38 10.43,5 11.5,5C13.84,5 16,6.34 16,8.5C16,9.5 15.54,10.4 14.8,11L18,17H6L9.2,11C8.46,10.4 8,9.5 8,8.5C8,6.34 10.16,5 12.5,5C13.57,5 14.87,5.38 16,6L13.89,7.4C13.5,7.15 13,7 12.5,7Z"/></svg>
+                    </div>
+                    <h3>Seguridad Industrial</h3>
+                    <p>Implementación de normas y protocolos para un entorno de trabajo seguro y libre de riesgos.</p>
+                    <ul class="card-features">
+                        <li>Evaluación de riesgos laborales</li>
+                        <li>Protocolos de seguridad personalizada</li>
+                        <li>Auditorías de cumplimiento</li>
+                    </ul>
+                    <a href="#cursos" class="card-link">Ver programas &rarr;</a>
+                </div>
+                <div class="card reveal">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12,2C10.89,2 9.05,2.16 7,3.14V11H17V3.14C14.95,2.16 13.11,2 12,2M7,12C5,12 3,13.43 3,16V22H21V16C21,13.43 19,12 17,12H13V15H11V12H7Z"/></svg>
+                    </div>
+                    <h3>Salud Ocupacional</h3>
+                    <p>Programas de prevención y bienestar para proteger el activo más valioso: su gente.</p>
+                    <ul class="card-features">
+                        <li>Programas de prevención</li>
+                        <li>Ergonomía y bienestar laboral</li>
+                        <li>Vigilancia de la salud</li>
+                    </ul>
+                    <a href="#cursos" class="card-link">Ver programas &rarr;</a>
+                </div>
+                <div class="card reveal">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,11 14,9 10,9C7,9 5,14 5,14C5,14 8,7 17,8Z"/></svg>
+                    </div>
+                    <h3>Medio Ambiente</h3>
+                    <p>Gestión sustentable y cumplimiento de normatividad ambiental para una operación responsable.</p>
+                    <ul class="card-features">
+                        <li>Gestión de residuos</li>
+                        <li>Cumplimiento ambiental</li>
+                        <li>Sustentabilidad operativa</li>
+                    </ul>
+                    <a href="#cursos" class="card-link">Ver programas &rarr;</a>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- ===== Cursos ===== -->
-    <section class="programas" id="cursos">
-        <h2 class="section-title">PROGRAMAS Y <span class="accent">CURSOS</span></h2>
-        <p class="section-subtitle">Capacitación especializada con validez oficial para el cumplimiento normativo.</p>
-        <div class="course-table-wrapper">
-            <table class="course-table">
-                <thead>
-                    <tr>
-                        <th>No.</th>
-                        <th>Nombre del Programa o Curso</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>1</td><td class="course-name">Seguridad en Trabajos en Alturas</td></tr>
-                    <tr><td>2</td><td class="course-name">Seguridad en Trabajos de Soldadura y Oxicorte</td></tr>
-                    <tr><td>3</td><td class="course-name">Formación de Brigadas de Emergencia (Evacuación, Búsqueda y Rescate)</td></tr>
-                    <tr><td>4</td><td class="course-name">Seguridad en Espacios Confinados</td></tr>
-                    <tr><td>5</td><td class="course-name">Aseguramiento de Energía (LOTO)</td></tr>
-                    <tr><td>6</td><td class="course-name">Formación de Instructores</td></tr>
-                    <tr><td>7</td><td class="course-name">Formación de Supervisores de Seguridad y Salud Ocupacional</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <!-- ===== Contacto ===== -->
-    <section class="contacto" id="contacto">
-        <h2 class="section-title">Hablemos de su <span class="accent">Seguridad</span></h2>
-        <div class="contact-wrapper">
-            <div class="contact-info">
-                <h3>Contacto Directo</h3>
-                <div class="contact-detail">
-                    <div class="contact-detail-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="24"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"/></svg></div>
-                    <div>
-                        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">EMAIL</div>
-                        <div style="font-weight: 700;">ehssolutions39@gmail.com</div>
+    <!-- ===== About / Why Us ===== -->
+    <section class="about" id="nosotros">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-visual reveal">
+                    <div class="about-img-card">
+                        <div class="about-quote">La seguridad no es un costo, es la mejor inversión que una empresa puede hacer por su gente y su futuro.</div>
+                        <div class="about-author">
+                            <div class="about-author-avatar">EH</div>
+                            <div class="about-author-info">
+                                <strong>EHS+ Solutions</strong>
+                                <span>Equipo de Especialistas</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="contact-detail">
-                    <div class="contact-detail-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="24"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.19C15.69,14.91 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.81,8.59L6.62,10.79Z"/></svg></div>
-                    <div>
-                        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">TELÉFONO</div>
-                        <div style="font-weight: 700;">+52 1 81 3082 8355</div>
-                    </div>
-                </div>
-                <div class="contact-detail">
-                    <div class="contact-detail-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="24"><path d="M12,2C8.13,2 5,5.13 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9C19,5.13 15.87,2 12,2M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5Z"/></svg></div>
-                    <div>
-                        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">UBICACIÓN</div>
-                        <div style="font-weight: 700;">El Carmen, Nuevo León</div>
+                <div class="about-content reveal">
+                    <span class="section-tag">Nosotros</span>
+                    <h2>¿Por qué elegirnos?</h2>
+                    <p>Somos un equipo de especialistas dedicados a transformar la cultura de seguridad en las organizaciones. Combinamos experiencia técnica con un enfoque pedagógico moderno para entregar capacitación que realmente marca la diferencia.</p>
+                    <div class="why-grid">
+                        <div class="why-item">
+                            <div class="why-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9,20.42L2.79,14.21L5.21,11.79L9,15.59L18.79,5.79L21.21,8.21L9,20.42Z"/></svg></div>
+                            <div>
+                                <h4>Validez Oficial</h4>
+                                <p>Programas reconocidos por las autoridades competentes.</p>
+                            </div>
+                        </div>
+                        <div class="why-item">
+                            <div class="why-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9,20.42L2.79,14.21L5.21,11.79L9,15.59L18.79,5.79L21.21,8.21L9,20.42Z"/></svg></div>
+                            <div>
+                                <h4>Instructores Expertos</h4>
+                                <p>Profesionales con experiencia comprobable en el campo.</p>
+                            </div>
+                        </div>
+                        <div class="why-item">
+                            <div class="why-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9,20.42L2.79,14.21L5.21,11.79L9,15.59L18.79,5.79L21.21,8.21L9,20.42Z"/></svg></div>
+                            <div>
+                                <h4>A Medida</h4>
+                                <p>Programas adaptados a las necesidades de su empresa.</p>
+                            </div>
+                        </div>
+                        <div class="why-item">
+                            <div class="why-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9,20.42L2.79,14.21L5.21,11.79L9,15.59L18.79,5.79L21.21,8.21L9,20.42Z"/></svg></div>
+                            <div>
+                                <h4>Enfoque Práctico</h4>
+                                <p>Metodología orientada a la aplicación real en el trabajo.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <form class="contact-form" action="https://formspree.io/f/mgawenna" method="POST">
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label>Nombre Completo</label>
-                    <input type="text" name="nombre" placeholder="Nombre" required>
-                </div>
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label>Empresa</label>
-                    <input type="text" name="empresa" placeholder="Empresa" required>
-                </div>
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label>Email Corporativo</label>
-                    <input type="email" name="_replyto" placeholder="email@empresa.com" required>
-                </div>
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label>Programa de interés</label>
-                    <select name="programa" required>
-                        <option value="">Seleccione un curso</option>
-                        <option>Seguridad en Trabajos en Alturas</option>
-                        <option>Trabajos de Soldadura</option>
-                        <option>Brigadas de Emergencia</option>
-                        <option>Espacios Confinados</option>
-                        <option>Otro / Consultoría</option>
-                    </select>
-                </div>
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label>Mensaje</label>
-                    <textarea name="mensaje" rows="4" placeholder="¿Cómo podemos ayudarle?"></textarea>
-                </div>
-                <button type="submit" class="btn-green" style="width: 100%;">Enviar Solicitud &rarr;</button>
-            </form>
         </div>
     </section>
 
+    <!-- ===== Courses ===== -->
+    <section class="courses" id="cursos">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Programas</span>
+                <h2 class="section-title">Programas y <span class="accent">Cursos</span></h2>
+                <p class="section-subtitle">Capacitación especializada con validez oficial para el cumplimiento normativo.</p>
+            </div>
+            <div class="course-table-wrapper reveal">
+                <div class="course-table-header">
+                    <h3>Catálogo de Programas</h3>
+                    <span class="badge">7 cursos disponibles</span>
+                </div>
+                <table class="course-table">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Nombre del Programa</th>
+                            <th>Área</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>01</td>
+                            <td class="course-name">Seguridad en Trabajos en Alturas</td>
+                            <td><span class="course-tag tag-safety">Seguridad</span></td>
+                            <td><a href="#contacto" class="course-action">Solicitar &rarr;</a></td>
+                        </tr>
+                        <tr>
+                            <td>02</td>
+                            <td class="course-name">Seguridad en Trabajos de Soldadura y Oxicorte</td>
+                            <td><span class="course-tag tag-safety">Seguridad</span></td>
+                            <td><a href="#contacto" class="course-action">Solicitar &rarr;</a></td>
+                        </tr>
+                        <tr>
+                            <td>03</td>
+                            <td class="course-name">Formación de Brigadas de Emergencia</td>
+                            <td><span class="course-tag tag-ops">Operaciones</span></td>
+                            <td><a href="#contacto" class="course-action">Solicitar &rarr;</a></td>
+                        </tr>
+                        <tr>
+                            <td>04</td>
+                            <td class="course-name">Seguridad en Espacios Confinados</td>
+                            <td><span class="course-tag tag-safety">Seguridad</span></td>
+                            <td><a href="#contacto" class="course-action">Solicitar &rarr;</a></td>
+                        </tr>
+                        <tr>
+                            <td>05</td>
+                            <td class="course-name">Aseguramiento de Energía (LOTO)</td>
+                            <td><span class="course-tag tag-ops">Operaciones</span></td>
+                            <td><a href="#contacto" class="course-action">Solicitar &rarr;</a></td>
+                        </tr>
+                        <tr>
+                            <td>06</td>
+                            <td class="course-name">Formación de Instructores</td>
+                            <td><span class="course-tag tag-health">Salud</span></td>
+                            <td><a href="#contacto" class="course-action">Solicitar &rarr;</a></td>
+                        </tr>
+                        <tr>
+                            <td>07</td>
+                            <td class="course-name">Formación de Supervisores de Seguridad y Salud Ocupacional</td>
+                            <td><span class="course-tag tag-health">Salud</span></td>
+                            <td><a href="#contacto" class="course-action">Solicitar &rarr;</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Process ===== -->
+    <section class="process" id="proceso">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Metodología</span>
+                <h2 class="section-title">Nuestro <span class="accent">Proceso</span></h2>
+                <p class="section-subtitle">Un enfoque estructurado para garantizar resultados medibles en cada capacitación.</p>
+            </div>
+            <div class="process-grid">
+                <div class="process-step reveal">
+                    <div class="process-number">1</div>
+                    <h4>Diagnóstico</h4>
+                    <p>Evaluamos las necesidades específicas de su organización y los riesgos del entorno laboral.</p>
+                </div>
+                <div class="process-step reveal">
+                    <div class="process-number">2</div>
+                    <h4>Diseño</h4>
+                    <p>Desarrollamos un programa a medida con contenido técnico y casos prácticos relevantes.</p>
+                </div>
+                <div class="process-step reveal">
+                    <div class="process-number">3</div>
+                    <h4>Capacitación</h4>
+                    <p>Impartimos la formación con instructores expertos y metodología presencial o híbrida.</p>
+                </div>
+                <div class="process-step reveal">
+                    <div class="process-number">4</div>
+                    <h4>Seguimiento</h4>
+                    <p>Evaluamos resultados y damos seguimiento para asegurar la mejora continua.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Contact ===== -->
+    <section class="contact" id="contacto">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Contacto</span>
+                <h2 class="section-title">Hablemos de su <span class="accent">Seguridad</span></h2>
+                <p class="section-subtitle">Solicite una consulta personalizada o información sobre nuestros programas.</p>
+            </div>
+            <div class="contact-wrapper">
+                <div class="contact-info reveal">
+                    <h3>Contáctenos directamente</h3>
+                    <p>Nuestro equipo está listo para atenderle y diseñar la solución que su empresa necesita.</p>
+                    <div class="contact-detail">
+                        <div class="contact-detail-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"/></svg>
+                        </div>
+                        <div>
+                            <div class="contact-detail-label">Email</div>
+                            <div class="contact-detail-value">ehssolutions39@gmail.com</div>
+                        </div>
+                    </div>
+                    <div class="contact-detail">
+                        <div class="contact-detail-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.19C15.69,14.91 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.81,8.59L6.62,10.79Z"/></svg>
+                        </div>
+                        <div>
+                            <div class="contact-detail-label">Teléfono</div>
+                            <div class="contact-detail-value">+52 1 81 3082 8355</div>
+                        </div>
+                    </div>
+                    <div class="contact-detail">
+                        <div class="contact-detail-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12,2C8.13,2 5,5.13 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9C19,5.13 15.87,2 12,2M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5Z"/></svg>
+                        </div>
+                        <div>
+                            <div class="contact-detail-label">Ubicación</div>
+                            <div class="contact-detail-value">El Carmen, Nuevo León</div>
+                        </div>
+                    </div>
+                </div>
+                <form class="contact-form reveal" action="https://formspree.io/f/mgawenna" method="POST">
+                    <h3>Solicite una consulta</h3>
+                    <p>Respuesta en menos de 24 horas hábiles.</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nombre</label>
+                            <input type="text" name="nombre" placeholder="Su nombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Empresa</label>
+                            <input type="text" name="empresa" placeholder="Nombre de la empresa">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email corporativo</label>
+                        <input type="email" name="_replyto" placeholder="email@empresa.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Programa de interés</label>
+                        <select name="programa" required>
+                            <option value="">Seleccione un programa</option>
+                            <option>Seguridad en Trabajos en Alturas</option>
+                            <option>Seguridad en Soldadura y Oxicorte</option>
+                            <option>Brigadas de Emergencia</option>
+                            <option>Espacios Confinados</option>
+                            <option>Aseguramiento de Energía (LOTO)</option>
+                            <option>Formación de Instructores</option>
+                            <option>Supervisores de Seguridad y Salud</option>
+                            <option>Otro / Consultoría</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Mensaje</label>
+                        <textarea name="mensaje" rows="3" placeholder="¿Cómo podemos ayudarle?"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-green">Enviar solicitud &rarr;</button>
+                    <p class="form-note">Sus datos están protegidos. Consulte nuestro aviso de privacidad.</p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Footer ===== -->
     <footer>
-        <div class="footer-grid">
-            <div>
-                <div class="logo-container" style="align-items: flex-start; margin-bottom: 1.5rem; background: white; padding: 10px; border-radius: 5px; width: fit-content;">
-                    <img src="logo.png" alt="EH+S Solutions" style="height: 50px; width: auto;">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo-text-block">
+                        <div class="logo-mark">EH<span class="plus">+</span>S</div>
+                        <div class="logo-sub">Solutions</div>
+                    </div>
+                    <p>Capacitación y asesoría líder en Seguridad, Salud y Medio Ambiente. Transformamos la cultura de seguridad en las organizaciones.</p>
+                    <div class="footer-social">
+                        <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19,3A2,2 0 0,1 21,5V19A2,2 0 0,1 19,21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,3H19M18.5,18.5V13.2A3.26,3.26 0 0,0 15.24,9.94C14.39,9.94 13.4,10.46 12.92,11.24V10.13H10.13V18.5H12.92V13.57C12.92,12.8 13.54,12.17 14.31,12.17A1.57,1.57 0 0,1 15.88,13.74V18.5H18.5M6.88,8.56A1.68,1.68 0 0,0 8.56,6.88C8.56,5.95 7.81,5.19 6.88,5.19A1.69,1.69 0 0,0 5.19,6.88C5.19,7.81 5.95,8.56 6.88,8.56M8.27,18.5V10.13H5.5V18.5H8.27Z"/></svg></a>
+                        <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24,12.07C24,5.4 18.63,0 12,0S0,5.4 0,12.07C0,18.1 4.39,23.1 10.13,24V15.56H7.08V12.07H10.13V9.41C10.13,6.39 11.92,4.72 14.64,4.72C15.95,4.72 17.32,4.95 17.32,4.95V7.95H15.81C14.33,7.95 13.87,8.87 13.87,9.82V12.07H17.18L16.65,15.56H13.87V24C19.61,23.1 24,18.1 24,12.07Z"/></svg></a>
+                        <a href="mailto:ehssolutions39@gmail.com" aria-label="Email"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"/></svg></a>
+                    </div>
                 </div>
-                <p>Capacitación y asesoría líder en Seguridad, Salud y Medio Ambiente.</p>
+                <div class="footer-col">
+                    <h4>Navegación</h4>
+                    <ul>
+                        <li><a href="#inicio">Inicio</a></li>
+                        <li><a href="#servicios">Servicios</a></li>
+                        <li><a href="#nosotros">Nosotros</a></li>
+                        <li><a href="#cursos">Programas</a></li>
+                        <li><a href="#proceso">Proceso</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="javascript:void(0)" onclick="openModal('privacidad')">Aviso de Privacidad</a></li>
+                        <li><a href="javascript:void(0)" onclick="openModal('terminos')">Términos y Condiciones</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contacto</h4>
+                    <div class="footer-contact-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"/></svg>
+                        <span>ehssolutions39@gmail.com</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.19C15.69,14.91 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.81,8.59L6.62,10.79Z"/></svg>
+                        <span>+52 1 81 3082 8355</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12,2C8.13,2 5,5.13 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9C19,5.13 15.87,2 12,2M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5Z"/></svg>
+                        <span>El Carmen, Nuevo León, México</span>
+                    </div>
+                </div>
             </div>
-            <div>
-                <h4 style="color: var(--green); margin-bottom: 1rem;">Navegación</h4>
-                <ul style="list-style: none;">
-                    <li><a href="#inicio" style="color: #94a3b8; text-decoration: none;">Inicio</a></li>
-                    <li><a href="#servicios" style="color: #94a3b8; text-decoration: none;">Servicios</a></li>
-                    <li><a href="#cursos" style="color: #94a3b8; text-decoration: none;">Cursos</a></li>
-                </ul>
+            <div class="footer-bottom">
+                <div>&copy; 2026 EHS+ Solutions. Monterrey, N.L. México. Todos los derechos reservados.</div>
+                <div>
+                    <a href="javascript:void(0)" onclick="openModal('privacidad')">Privacidad</a>
+                    <a href="javascript:void(0)" onclick="openModal('terminos')">Términos</a>
+                </div>
             </div>
-            <div>
-                <h4 style="color: var(--green); margin-bottom: 1rem;">Legal</h4>
-                <ul style="list-style: none;">
-                    <li><a href="javascript:void(0)" onclick="openModal('privacidad')" style="color: #94a3b8; text-decoration: none;">Privacidad</a></li>
-                    <li><a href="javascript:void(0)" onclick="openModal('terminos')" style="color: #94a3b8; text-decoration: none;">Términos</a></li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Modales Legales -->
-        <div id="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; align-items:center; justify-content:center;">
-            <div style="background:white; padding:2rem; border-radius:12px; max-width:600px; max-height:80vh; overflow-y:auto; position:relative; color: var(--navy);">
-                <span onclick="closeModal()" style="position:absolute; top:10px; right:20px; font-size:2rem; cursor:pointer;">&times;</span>
-                <div id="modal-content"></div>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            &copy; 2026 EHS-SOLUTIONS. Monterrey, N.L. México.
         </div>
     </footer>
 
-    <script>
-        function openModal(tipo) {
-            const overlay = document.getElementById('modal-overlay');
-            const content = document.getElementById('modal-content');
-            overlay.style.display = 'flex';
+    <!-- ===== Modal ===== -->
+    <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
 
-            if(tipo === 'privacidad') {
+    <script>
+        // Header scroll effect
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            header.classList.toggle('scrolled', window.scrollY > 10);
+        });
+
+        // Mobile menu
+        const menuToggle = document.getElementById('menuToggle');
+        const nav = document.getElementById('nav');
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
+            nav.classList.toggle('mobile-open');
+        });
+
+        // Close mobile menu on link click
+        nav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                menuToggle.classList.remove('active');
+                nav.classList.remove('mobile-open');
+            });
+        });
+
+        // Active nav on scroll
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-links a:not(.nav-cta)');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const top = section.offsetTop - 120;
+                if (window.scrollY >= top) current = section.getAttribute('id');
+            });
+            navLinks.forEach(link => {
+                link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+            });
+        });
+
+        // Scroll reveal
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // Animate hero stat bars
+        const barObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.querySelectorAll('.hero-stat-bar-fill').forEach(bar => {
+                        bar.style.width = bar.dataset.width;
+                    });
+                    barObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+        const heroCard = document.querySelector('.hero-card');
+        if (heroCard) barObserver.observe(heroCard);
+
+        // Modal
+        function openModal(tipo) {
+            const overlay = document.getElementById('modalOverlay');
+            const content = document.getElementById('modalContent');
+            if (tipo === 'privacidad') {
                 content.innerHTML = `
-                    <h2>Aviso de Privacidad</h2><br>
-                    <p><strong>EHS SOLUTIONS</strong>, con domicilio en El Carmen, Nuevo León, es responsable de recabar sus datos personales, del uso que se le dé a los mismos y de su protección.</p><br>
-                    <p>Su información personal será utilizada para proveer los servicios de capacitación y consultoría que ha solicitado, informarle sobre cambios en los mismos y evaluar la calidad del servicio que le brindamos.</p><br>
-                    <p>Para las finalidades antes mencionadas, requerimos obtener los siguientes datos personales: Nombre, Empresa, Teléfono y Correo electrónico.</p><br>
+                    <h2>Aviso de Privacidad</h2>
+                    <p><strong>EHS SOLUTIONS</strong>, con domicilio en El Carmen, Nuevo León, es responsable de recabar sus datos personales, del uso que se le dé a los mismos y de su protección.</p>
+                    <p>Su información personal será utilizada para proveer los servicios de capacitación y consultoría que ha solicitado, informarle sobre cambios en los mismos y evaluar la calidad del servicio que le brindamos.</p>
+                    <p>Para las finalidades antes mencionados, requerimos obtener los siguientes datos personales: Nombre, Empresa, Teléfono y Correo electrónico.</p>
                     <p>Usted tiene derecho de acceder, rectificar y cancelar sus datos personales, así como de oponerse al tratamiento de los mismos (Derechos ARCO) a través del correo: <strong>ehssolutions39@gmail.com</strong></p>
                 `;
             } else {
                 content.innerHTML = `
-                    <h2>Términos y Condiciones</h2><br>
-                    <p>Al acceder a este sitio web, usted acepta cumplir con estos términos de servicio, todas las leyes y regulaciones aplicables.</p><br>
-                    <p><strong>Propiedad Intelectual:</strong> El contenido, logo y materiales de capacitación mostrados en este sitio son propiedad exclusiva de EHS SOLUTIONS. Queda prohibida su reproducción total o parcial sin autorización por escrito.</p><br>
-                    <p><strong>Uso de Información:</strong> La información contenida en este sitio es de carácter informativo. EHS SOLUTIONS no se hace responsable por decisiones tomadas basadas únicamente en el contenido de esta web sin una asesoría técnica previa.</p><br>
+                    <h2>Términos y Condiciones</h2>
+                    <p>Al acceder a este sitio web, usted acepta cumplir con estos términos de servicio, todas las leyes y regulaciones aplicables.</p>
+                    <p><strong>Propiedad Intelectual:</strong> El contenido, logo y materiales de capacitación mostrados en este sitio son propiedad exclusiva de EHS SOLUTIONS. Queda prohibida su reproducción total o parcial sin autorización por escrito.</p>
+                    <p><strong>Uso de Información:</strong> La información contenida en este sitio es de carácter informativo. EHS SOLUTIONS no se hace responsable por decisiones tomadas basadas únicamente en el contenido de esta web sin una asesoría técnica previa.</p>
                     <p><strong>Modificaciones:</strong> Nos reservamos el derecho de revisar estos términos en cualquier momento sin previo aviso.</p>
                 `;
             }
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
 
         function closeModal() {
-            document.getElementById('modal-overlay').style.display = 'none';
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.body.style.overflow = '';
         }
 
-        // Cerrar modal al hacer click fuera
-        window.onclick = function(event) {
-            const overlay = document.getElementById('modal-overlay');
-            if (event.target == overlay) closeModal();
-        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
     </script>
-
 </body>
 </html>
