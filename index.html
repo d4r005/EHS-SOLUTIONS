@@ -648,6 +648,12 @@
             text-align: center;
             position: relative;
             z-index: 1;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: inherit;
+            padding: 0;
+            width: 100%;
         }
 
         .process-number {
@@ -667,23 +673,65 @@
         }
 
         .process-step:hover .process-number {
+            transform: scale(1.06);
+            box-shadow: 0 8px 24px rgba(118,184,42,0.2);
+        }
+
+        .process-step.active .process-number {
             background: var(--green);
             color: white;
             transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(118,184,42,0.35);
         }
 
         .process-step h4 {
             font-size: 1.1rem;
             font-weight: 800;
             color: var(--navy);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0;
+            transition: color var(--transition);
         }
 
-        .process-step p {
+        .process-step.active h4 { color: var(--green-hover); }
+
+        .process-desc {
+            display: grid;
+            grid-template-rows: 0fr;
+            opacity: 0;
+            overflow: hidden;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease;
+            max-width: 240px;
+            margin: 0 auto;
+        }
+
+        .process-step.active .process-desc {
+            grid-template-rows: 1fr;
+            opacity: 1;
+            margin-top: 0.6rem;
+        }
+
+        .process-desc p {
             font-size: 0.85rem;
             color: var(--text-muted);
-            max-width: 220px;
-            margin: 0 auto;
+            margin: 0;
+            min-height: 0;
+        }
+
+        .process-hint {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--gray-300);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-top: 0.5rem;
+            transition: opacity var(--transition);
+        }
+
+        .process-step.active .process-hint { opacity: 0; height: 0; margin: 0; }
+
+        .process-step:focus-visible .process-number {
+            box-shadow: 0 0 0 4px rgba(118,184,42,0.3);
         }
 
         /* ===== Courses ===== */
@@ -1413,27 +1461,39 @@
                 <h2 class="section-title">Nuestro <span class="accent">Proceso</span></h2>
                 <p class="section-subtitle">Un enfoque estructurado para garantizar resultados medibles en cada capacitación.</p>
             </div>
-            <div class="process-grid">
-                <div class="process-step reveal">
+            <div class="process-grid" id="processGrid">
+                <button type="button" class="process-step reveal" data-step="1" aria-expanded="false">
                     <div class="process-number">1</div>
                     <h4>Diagnóstico</h4>
-                    <p>Evaluamos las necesidades específicas de su organización y los riesgos del entorno laboral.</p>
-                </div>
-                <div class="process-step reveal">
+                    <span class="process-hint">Ver detalle</span>
+                    <div class="process-desc">
+                        <p>Evaluamos las necesidades específicas de su organización y los riesgos del entorno laboral.</p>
+                    </div>
+                </button>
+                <button type="button" class="process-step reveal" data-step="2" aria-expanded="false">
                     <div class="process-number">2</div>
                     <h4>Diseño</h4>
-                    <p>Desarrollamos un programa a medida con contenido técnico y casos prácticos relevantes.</p>
-                </div>
-                <div class="process-step reveal">
+                    <span class="process-hint">Ver detalle</span>
+                    <div class="process-desc">
+                        <p>Desarrollamos un programa a medida con contenido técnico y casos prácticos relevantes.</p>
+                    </div>
+                </button>
+                <button type="button" class="process-step reveal" data-step="3" aria-expanded="false">
                     <div class="process-number">3</div>
                     <h4>Capacitación</h4>
-                    <p>Impartimos la formación con instructores expertos y metodología presencial o híbrida.</p>
-                </div>
-                <div class="process-step reveal">
+                    <span class="process-hint">Ver detalle</span>
+                    <div class="process-desc">
+                        <p>Impartimos la formación con instructores expertos y metodología presencial o híbrida.</p>
+                    </div>
+                </button>
+                <button type="button" class="process-step reveal" data-step="4" aria-expanded="false">
                     <div class="process-number">4</div>
                     <h4>Seguimiento</h4>
-                    <p>Evaluamos resultados y damos seguimiento para asegurar la mejora continua.</p>
-                </div>
+                    <span class="process-hint">Ver detalle</span>
+                    <div class="process-desc">
+                        <p>Evaluamos resultados y damos seguimiento para asegurar la mejora continua.</p>
+                    </div>
+                </button>
             </div>
         </div>
     </section>
@@ -1618,6 +1678,22 @@
             });
             navLinks.forEach(link => {
                 link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+            });
+        });
+
+        // Process stepper (click to reveal detail, accordion-style)
+        const processSteps = document.querySelectorAll('.process-step');
+        processSteps.forEach(step => {
+            step.addEventListener('click', () => {
+                const isActive = step.classList.contains('active');
+                processSteps.forEach(s => {
+                    s.classList.remove('active');
+                    s.setAttribute('aria-expanded', 'false');
+                });
+                if (!isActive) {
+                    step.classList.add('active');
+                    step.setAttribute('aria-expanded', 'true');
+                }
             });
         });
 
