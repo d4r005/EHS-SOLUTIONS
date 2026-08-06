@@ -1730,45 +1730,7 @@
                 <p class="section-subtitle">La confianza de las empresas que han transformado su cultura de seguridad con nosotros.</p>
             </div>
             <div class="reviews-grid" id="reviewsGrid">
-                <div class="review-card">
-                    <div class="review-stars">
-                        <span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span>
-                    </div>
-                    <p class="review-text">Excelente capacitación. El instructor dominaba el tema y logró que todo el personal entendiera la importancia de la seguridad industrial. Recomendado al 100%.</p>
-                    <div class="review-author">
-                        <div class="review-avatar">CG</div>
-                        <div class="review-author-info">
-                            <strong>Carlos González</strong>
-                            <span>Gerente de Operaciones, Grupo Industrial del Norte</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="review-card">
-                    <div class="review-stars">
-                        <span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span>
-                    </div>
-                    <p class="review-text">Implementamos el programa de seguridad y vimos una reducción del 60% en incidentes en menos de un año. Muy profesionales y siempre disponibles para resolver dudas.</p>
-                    <div class="review-author">
-                        <div class="review-avatar">MR</div>
-                        <div class="review-author-info">
-                            <strong>María Robles</strong>
-                            <span>Coordinadora de SST, Constructora Premier</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="review-card">
-                    <div class="review-stars">
-                        <span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star">&#9733;</span><span class="review-star empty">&#9734;</span>
-                    </div>
-                    <p class="review-text">La asesoría en cumplimiento normativo fue muy clara y completa. Nos ayudaron a pasar una auditoría sin ninguna no conformidad. Sin duda seguiremos trabajando con ellos.</p>
-                    <div class="review-author">
-                        <div class="review-avatar">JM</div>
-                        <div class="review-author-info">
-                            <strong>Jorge Muñoz</strong>
-                            <span>Director General, Logística del Bajío</span>
-                        </div>
-                    </div>
-                </div>
+                <p id="noReviewsMsg" style="text-align:center; grid-column: 1 / -1; color: #64748b;">Aún no hay reseñas. ¡Sé el primero en compartir tu experiencia!</p>
             </div>
 
             <div class="review-form-wrap">
@@ -1986,6 +1948,8 @@
                 const reviews = await res.json();
                 if (reviews && reviews.length > 0) {
                     const grid = document.getElementById('reviewsGrid');
+                    const noReviewsMsg = document.getElementById('noReviewsMsg');
+                    if (noReviewsMsg) noReviewsMsg.remove();
                     reviews.forEach(review => {
                         const initials = review.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                         let stars = '';
