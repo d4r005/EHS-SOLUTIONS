@@ -1,8 +1,8 @@
 // ============================================
 // Cloudflare Pages Function
 // POST /api/create-checkout-session
-// Crea una sesión de Stripe Checkout para comprar un curso.
-// La Secret Key de Stripe vive solo en el servidor (variable de entorno).
+// Crea una preferencia de pago en MercadoPago.
+// El ACCESS_TOKEN vive solo en el servidor (variable de entorno).
 // ============================================
 
 export async function onRequestPost({ request, env }) {
@@ -13,14 +13,14 @@ export async function onRequestPost({ request, env }) {
       return json({ message: 'course_id, student_id y student_email son requeridos' }, 400);
     }
 
-    if (!env.STRIPE_SECRET_KEY) {
-      return json({ message: 'Pagos no configurados: falta STRIPE_SECRET_KEY en el servidor' }, 500);
+    if (!env.MERCADOPAGO_ACCESS_TOKEN) {
+      return json({ message: 'Pagos no configurados: falta MERCADOPAGO_ACCESS_TOKEN en el servidor' }, 500);
     }
 
     const supabaseUrl = env.VITE_SUPABASE_URL || env.SUPABASE_URL;
     const supabaseKey = env.SUPABASE_SERVICE_ROLE_KEY || env.VITE_SUPABASE_KEY;
 
-    // Obtener el curso real desde Supabase (nunca confiar en un precio enviado por el cliente)
+    // Obtener el curso desde Supabase (nunca confiar en un precio enviado por el cliente)
     const courseRes = await fetch(
       `${supabaseUrl}/rest/v1/courses?id=eq.${course_id}&is_published=eq.true&select=id,title,price`,
       { headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` } }
@@ -31,36 +31,55 @@ export async function onRequestPost({ request, env }) {
     if (!course.price || course.price <= 0) return json({ message: 'Este curso es gratuito, inscríbete directamente' }, 400);
 
     const origin = new URL(request.url).origin;
-    const amountCents = Math.round(parseFloat(course.price) * 100);
 
-    const params = new URLSearchParams();
-    params.append('mode', 'payment');
-    params.append('success_url', `${origin}/app/courses/${course_id}?payment=success`);
-    params.append('cancel_url', `${origin}/app/courses/${course_id}?payment=cancelled`);
-    params.append('customer_email', student_email);
-    params.append('line_items[0][price_data][currency]', 'mxn');
-    params.append('line_items[0][price_data][product_data][name]', course.title);
-    params.append('line_items[0][price_data][unit_amount]', String(amountCents));
-    params.append('line_items[0][quantity]', '1');
-    params.append('metadata[course_id]', String(course_id));
-    params.append('metadata[student_id]', String(student_id));
-    params.append('metadata[student_email]', student_email);
+    // Crear preferencia en MercadoPago
+    const preference = {
+      items: [
+        {
+          id: String(course.id),
+          title: course.title,
+          description: `Curso: ${course.title}`,
+          quantity: 1,
+          currency_id: 'MXN',
+          unit_price: parseFloat(course.price),
+        },
+      ],
+      payer: {
+        email: student_email,
+      },
+      back_urls: {
+        success: `${origin}/app/courses/${course_id}?payment=success`,
+        pending: `${origin}/app/courses/${course_id}?payment=pending`,
+        failure: `${origin}/app/courses/${course_id}?payment=failure`,
+      },
+      auto_return: 'approved',
+      notification_url: `${origin}/api/mercadopago-webhook`,
+      metadata: {
+        course_id: String(course_id),
+        student_id: String(student_id),
+        student_email,
+      },
+      statement_descriptor: 'EHS SOLUTIONS',
+    };
 
-    const stripeRes = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+    const mpRes = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${env.STRIPE_SECRET_KEY}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: `Bearer ${env.MERCADOPAGO_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json',
       },
-      body: params.toString(),
+      body: JSON.stringify(preference),
     });
 
-    const session = await stripeRes.json();
-    if (!stripeRes.ok) {
-      return json({ message: session.error?.message || 'Error al crear la sesión de pago' }, 500);
+    const mpData = await mpRes.json();
+    if (!mpRes.ok) {
+      return json({ message: mpData.message || 'Error al crear la preferencia de pago' }, 500);
     }
 
-    return json({ url: session.url, session_id: session.id });
+    // init_point = URL de pago en producción, sandbox_init_point = pruebas
+    const checkoutUrl = mpData.init_point || mpData.sandbox_init_point;
+
+    return json({ url: checkoutUrl, preference_id: mpData.id });
   } catch (err) {
     return json({ message: err.message || 'Error inesperado' }, 500);
   }
