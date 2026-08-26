@@ -187,7 +187,7 @@ La NOM-009-STPS-2011 establece las condiciones de seguridad para realizar trabaj
 Los riesgos principales incluyen: caídas desde altura, golpes por objetos desprendidos, factores ambientales (viento, lluvia), fatiga y estrés térmico. La caída desde altura es una de las causas principales de accidentes mortales en el sector construcción e industrial.
 
 Es fundamental que todo trabajador que realice actividades en alturas reciba capacitación específica antes de iniciar sus labores, y que cuente con el equipo de protección personal adecuado y certificado.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 1, true),
+   'https://www.youtube.com/embed/dVEx7Eaacdw', 20, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Fundamentos y Marco Legal' AND course_id = (SELECT id FROM courses WHERE title = 'Seguridad en Trabajos en Alturas')),
    'Identificación de Riesgos en Altura', 'Evaluación de riesgos, factores de peligro y medidas preventivas.', 'mixed',
@@ -198,7 +198,7 @@ Los factores de riesgo a evaluar incluyen: altura de trabajo, tipo de superficie
 El análisis de riesgo debe documentarse en un permiso de trabajo en alturas que incluya: descripción de la tarea, ubicación, duración, equipos requeridos, personal autorizado y medidas de control.
 
 Las medidas preventivas básicas son: delimitar el área, usar señalización, instalar barandillas o redes de seguridad, verificar condiciones del equipo antes de cada uso y mantener comunicación constante entre el trabajador y el supervisor.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 2, true),
+   'https://www.youtube.com/embed/w15mozst_g8', 20, 2, true),
 
   ((SELECT id FROM modules WHERE title = 'Equipos y Sistemas de Protección' AND course_id = (SELECT id FROM courses WHERE title = 'Seguridad en Trabajos en Alturas')),
    'Equipos de Protección Personal (EPP) para Altura', 'Arnés, casco, calzado y accesorios certificados.', 'mixed',
@@ -209,7 +209,7 @@ El arnés de cuerpo completo es el elemento más importante. Debe ajustarse corr
 El casco con barbiquecho es obligatorio para prevenir que se caiga durante el trabajo. El calzado debe ser antideslizante y con punta de acero.
 
 ACCESORIOS IMPORTANTES: Los mosquetones deben ser de seguridad (con bloqueo automático), las cuerdas deben ser de material resistente y certificadas para carga humana, y los absorbedores de energía son obligatorios para reducir el impacto de una caída.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 25, 1, true),
+   'https://www.youtube.com/embed/M8WYW5NutI8', 25, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Equipos y Sistemas de Protección' AND course_id = (SELECT id FROM courses WHERE title = 'Seguridad en Trabajos en Alturas')),
    'Sistemas de Detención de Caídas', 'Líneas de vida, puntos de anclaje y conectores.', 'mixed',
@@ -220,7 +220,7 @@ Los puntos de anclaje deben ser estructuralmente sólidos. Nunca deben usarse tu
 Las líneas de vida pueden ser horizontales o verticales. Las líneas de vida horizontal permiten el desplazamiento del trabajador a lo largo de una superficie, mientras que las verticales se usan en escaleras o estructuras altas.
 
 LOS RETRACTILES son dispositivos que se bloquean automáticamente en caso de caída. Deben instalarse por encima del trabajador (punto de anclaje superior) para minimizar la distancia libre de caída.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 25, 2, true),
+   'https://www.youtube.com/embed/6KiICwTtj2Y', 25, 2, true),
 
   ((SELECT id FROM modules WHERE title = 'Procedimientos y Rescate' AND course_id = (SELECT id FROM courses WHERE title = 'Seguridad en Trabajos en Alturas')),
    'Procedimientos de Trabajo Seguro en Alturas', 'Permisos, inspecciones y protocolos operativos.', 'mixed',
@@ -231,7 +231,7 @@ Antes de iniciar el trabajo, se debe realizar una inspección del equipo: verifi
 Durante el trabajo, se debe mantener comunicación constante con el compañero de trabajo o supervisor. Nunca se debe trabajar solo en alturas.
 
 AL FINALIZAR el trabajo, se debe realizar una inspección post-uso del equipo, limpiar y almacenar correctamente, y reportar cualquier incidente o casi-incidente para mejorar los protocolos.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 1, true),
+   'https://www.youtube.com/embed/7MmJzA_wk2c', 20, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Procedimientos y Rescate' AND course_id = (SELECT id FROM courses WHERE title = 'Seguridad en Trabajos en Alturas')),
    'Plan de Rescate en Alturas', 'Procedimientos de emergencia y rescate de víctimas en altura.', 'mixed',
@@ -242,7 +242,7 @@ El síndrome de suspensión ocurre cuando una persona queda colgada inmovilizada
 El equipo de rescate debe incluir: cuerdas de rescate, poleas, descensores de rescate, camilla de canasta y botiquín de primeros auxilios. Todo el personal debe conocer la ubicación del equipo.
 
 EL PROCEDIMIENTO DE RESCATE incluye: 1) Asegurar el área, 2) Evaluar el estado de la víctima, 3) Realizar el rescate con técnica adecuada, 4) Brindar primeros auxilios, 5) Trasladar a centro médico. Practicar este procedimiento regularmente con simulacros.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 25, 2, true)
+   'https://www.youtube.com/embed/4R4rW1Lr5cs', 25, 2, true)
 ON CONFLICT DO NOTHING;
 
 -- ============================================
@@ -276,7 +276,7 @@ Los riesgos eléctricos principales son: contacto con electrodos energizados, ca
 La NOM-027-STPS-2008 establece las medidas de seguridad para trabajos de soldadura. Todo equipo de soldar debe tener cable de tierra, pinzas porta-electrodo en buen estado y cables sin empalmes.
 
 PREVENCIÓN: Nunca soldar en ambientes húmedos sin protección adicional. Usar guantes secos. Inspeccionar cables antes de cada turno. No cambiar electrodos con la pinza energizada. Desconectar el equipo al terminar.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 1, true),
+   'https://www.youtube.com/embed/s9zmCuPhLWI', 20, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Riesgos de la Soldadura' AND course_id = (SELECT id FROM courses WHERE title = 'Seguridad en Trabajos de Soldadura y Oxicorte')),
    'Radiación y Humos de Soldadura', 'Radiación UV/IR, humos metálicos y gases tóxicos.', 'mixed',
@@ -287,7 +287,7 @@ Los humos de soldadura contienen partículas metálicas que dependen del materia
 La ventilación es crítica. Se debe soldar en áreas bien ventiladas o con sistemas de extracción local. En espacios confinados, la ventilación forzada es obligatoria.
 
 PROTECCIÓN RESPIRATORIA: Usar mascarillas o respiradores con filtros apropiados para el tipo de soldadura. La protección ocular requiere lentes con filtro adecuado al proceso (DIN 9 a 13 según intensidad).',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 2, true),
+   'https://www.youtube.com/embed/l-rOX83jrzQ', 20, 2, true),
 
   ((SELECT id FROM modules WHERE title = 'Equipos de Protección' AND course_id = (SELECT id FROM courses WHERE title = 'Seguridad en Trabajos de Soldadura y Oxicorte')),
    'EPP Completo para Soldador', 'Careta, guantes, mandil, polainas y respirador.', 'mixed',
@@ -298,7 +298,7 @@ CARETA DE SOLDAR: Debe tener filtro óptico adecuado (mínimo DIN 10 para soldad
 GUANTES Y ROPA: Guantes de cuero crudo largos que cubran hasta el codo. Mandil de cuero, polainas, mangas protectoras. Ropa de algodón sin bolsillos (las chispas pueden acumularse). Calzado de seguridad sin cordones expuestos.
 
 RESPIRADORES: Para soldadura normal, respirador con filtro para partículas P100. Para materiales especiales (inoxidable, galvanizado), se requiere respirador con filtros específicos para gases y vapores.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 1, true),
+   'https://www.youtube.com/embed/YWLFrlibDJI', 20, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Prevención de Incendios y Manejo de Cilindros' AND course_id = (SELECT id FROM courses WHERE title = 'Seguridad en Trabajos de Soldadura y Oxicorte')),
    'Prevención de Incendios en Soldadura', 'Riesgos de incendio, áreas de trabajo y extintores.', 'mixed',
@@ -309,7 +309,7 @@ ANTES DE SOLDAR: Retirar todo material combustible en un radio de 11 metros. Si 
 Un vigía contra incendios debe estar presente durante y al menos 30 minutos después de terminar el trabajo de soldadura en áreas con riesgo.
 
 EXTINTORES: Deben estar al alcance inmediato, tipo ABC de mínimo 4 kg. El soldador debe conocer su uso. Nunca soldar sobre recipientes que hayan contenido materiales inflamables sin limpiar y purgar previamente.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 15, 1, true),
+   'https://www.youtube.com/embed/xnMxgSJWoQs', 15, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Prevención de Incendios y Manejo de Cilindros' AND course_id = (SELECT id FROM courses WHERE title = 'Seguridad en Trabajos de Soldadura y Oxicorte')),
    'Manejo Seguro de Cilindros de Gases', 'Almacenamiento, transporte y uso de cilindros de oxígeno y acetileno.', 'mixed',
@@ -320,7 +320,7 @@ ALMACENAMIENTO: Los cilindros de oxígeno y combustibles deben almacenarse separ
 TRANSPORTE: Los cilindros deben transportarse con capucha protectora colocada, en carritos diseñados para tal fin. Nunca arrastrar, rodar o dejar caer cilindros. Nunca levantar cilindros por la válvula.
 
 USO: Abrir las válvulas lentamente. El oxígeno primero, luego el combustible. Para apagar: cerrar primero el combustible, luego el oxígeno. Inspeccionar mangueras por fugas con solución de jabón, NUNCA con llama.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 15, 2, true)
+   'https://www.youtube.com/embed/dcIT4ySKY0Y', 15, 2, true)
 ON CONFLICT DO NOTHING;
 
 -- ============================================
@@ -354,7 +354,7 @@ LOS ROLES PRINCIPALES son: Coordinador general (dirige la respuesta), Jefe de br
 La selección del personal debe considerar: buena condición física, disposición, liderazgo, capacidad de actuar bajo presión y permanencia en la organización.
 
 La brigada debe estar constituida formalmente por escrito, con acta de constitución, registro de miembros y asignación de responsabilidades específicas a cada integrante.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 1, true),
+   'https://www.youtube.com/embed/s0cnn1uHzHw', 20, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Organización de Brigadas' AND course_id = (SELECT id FROM courses WHERE title = 'Formación de Brigadas de Emergencia')),
    'Plan de Emergencia Interno', 'Elaboración del plan de respuesta a emergencias.', 'mixed',
@@ -365,7 +365,7 @@ EL PLAN DEBE INCLUIR: identificación de riesgos, rutas de evacuación, puntos d
 Los procedimientos específicos deben cubrir: incendios, sismos, inundaciones, derrames químicos, amenazas de bomba, accidentes laborales y emergencias médicas.
 
 El plan debe probarse mediante simulacros al menos 2 veces al año. Cada simulacro debe evaluarse para identificar áreas de mejora.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 25, 2, true),
+   'https://www.youtube.com/embed/Pg7VmiX8UJ8', 25, 2, true),
 
   ((SELECT id FROM modules WHERE title = 'Respuesta a Incendios' AND course_id = (SELECT id FROM courses WHERE title = 'Formación de Brigadas de Emergencia')),
    'Uso de Extintores Portátiles', 'Tipos de extintores, método PASS y combate de incendios iniciales.', 'mixed',
@@ -376,7 +376,7 @@ TIPOS DE EXTINTORES: Clase A (sólidos: madera, papel), Clase B (líquidos infla
 MÉTODO PASS: P = Pull (jalar el seguro), A = Aim (apuntar a la base del fuego), S = Squeeze (presionar la palanca), S = Sweep (barrer de lado a lado).
 
 REGLAS DE SEGURIDAD: Solo atacar incendios en su fase inicial. Mantener siempre una ruta de escape. Si el fuego crece, evacuar inmediatamente. Nunca dar la espalda al fuego. El viento debe estar a tu espalda.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 1, true),
+   'https://www.youtube.com/embed/YdQndqfwX0c', 20, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Respuesta a Incendios' AND course_id = (SELECT id FROM courses WHERE title = 'Formación de Brigadas de Emergencia')),
    'Detección y Reporte de Incendios', 'Sistemas de alarma, detección y protocolo de reporte.', 'mixed',
@@ -387,7 +387,7 @@ SISTEMAS DE DETECCIÓN: Detectores de humo (fotoeléctricos e iónicos), detecto
 AL DETECTAR UN INCENDIO: 1) Activar la alarma, 2) Llamar a emergencias (bomberos), 3) Notificar al coordinador de brigada, 4) Iniciar evacuación si es necesario, 5) Intentar combatir el incendio solo si es pequeño y hay extintores disponibles.
 
 PROTOCOLO DE REPORTACIÓN: El reporte debe incluir ubicación exacta, tipo de material en combustión, tamaño del incendio, personas en riesgo y medidas tomadas.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 15, 2, true),
+   'https://www.youtube.com/embed/h85x8v8zi0A', 15, 2, true),
 
   ((SELECT id FROM modules WHERE title = 'Primeros Auxilios y Evacuación' AND course_id = (SELECT id FROM courses WHERE title = 'Formación de Brigadas de Emergencia')),
    'Evacuación y Puntos de Reunión', 'Rutas de evacuación, puntos de reunión y conteo de personal.', 'mixed',
@@ -398,7 +398,7 @@ RUTAS DE EVACUACIÓN: Deben estar señalizadas, iluminadas (con iluminación de 
 PUNTOS DE REUNIÓN: Deben estar ubicados en zonas seguras, lejos del edificio (mínimo 50 metros), accesibles para vehículos de emergencia y con capacidad suficiente para todo el personal.
 
 CONTEO DE PERSONAL: En el punto de reunión, cada jefe de área debe reportar si todo su personal está presente. Es crítico saber si alguien quedó dentro del edificio. Los brigadistas de evacuación son los responsables de este conteo.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 1, true),
+   'https://www.youtube.com/embed/o_ZQd6VgZdM', 20, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Primeros Auxilios y Evacuación' AND course_id = (SELECT id FROM courses WHERE title = 'Formación de Brigadas de Emergencia')),
    'Primeros Auxilios Básicos para Brigadistas', 'RCP básico, control de hemorragias y manejo de heridos.', 'mixed',
@@ -411,7 +411,7 @@ HEMORRAGIAS: Presión directa sobre la herida con tela limpia. Si no se controla
 QUEMADURAS: Enfriar con agua corriente por 20 minutos. No aplicar cremas, hielo ni romper ampollas. Cubrir con tela limpia. Las quemaduras graves requieren atención médica inmediata.
 
 REGLA DE ORO: No mover a personas con posibles lesiones de columna salvo que haya peligro inminente. Inmovilizar y esperar ayuda especializada.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 25, 2, true)
+   'https://www.youtube.com/embed/8E_tHsTNK6g', 25, 2, true)
 ON CONFLICT DO NOTHING;
 
 -- ============================================
@@ -445,7 +445,7 @@ CARACTERÍSTICAS: 1) Tamaño suficiente para que entre una persona, 2) Medios li
 TIPOS DE ESPACIOS CONFINADOS según la NOM-034-STPS-2017: Clase A (peligro inmediato para la vida), Clase B (peligro potencial), Clase C (sin peligro pero requiere medidas especiales).
 
 Los riesgos principales incluyen: atmósferas deficientes de oxígeno, gases tóxicos, atmósferas explosivas, riesgos físicos (caídas, atrapamiento), riesgos térmicos, y riesgos de inmersión o ahogamiento.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 1, true),
+   'https://www.youtube.com/embed/nBybLn7-d7I', 20, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Identificación y Clasificación' AND course_id = (SELECT id FROM courses WHERE title = 'Seguridad en Espacios Confinados')),
    'Evaluación de Riesgos en Espacios Confinados', 'Identificación de peligros y evaluación de riesgos específicos.', 'mixed',
@@ -458,7 +458,7 @@ RIESGOS FÍSICOS: Temperaturas extremas, ruido, vibraciones, configuración inte
 RIESGOS DE PROCESO: Residuos químicos, reacciones químicas, materiales en suspensión, líquidos que pueden inundar el espacio.
 
 La evaluación debe documentarse en el permiso de entrada, que debe firmar un supervisor autorizado antes de cualquier trabajo.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 2, true),
+   'https://www.youtube.com/embed/dwchyUQUnN8', 20, 2, true),
 
   ((SELECT id FROM modules WHERE title = 'Monitoreo y Ventilación' AND course_id = (SELECT id FROM courses WHERE title = 'Seguridad en Espacios Confinados')),
    'Monitoreo de Atmósferas Peligrosas', 'Uso de detectores de gases, interpretación de lecturas y límites.', 'mixed',
@@ -469,7 +469,7 @@ PARÁMETROS A MEDIR: Oxígeno (rango seguro 19.5% - 23.5%), Gases inflamables (L
 PROCEDIMIENTO DE MEDICIÓN: 1) Calibrar el equipo, 2) Medir desde el exterior (introducir la sonda por la apertura), 3) Medir a diferentes alturas (los gases se estratifican), 4) Medir en diferentes puntos del espacio, 5) Registrar resultados en el permiso.
 
 El monitoreo debe ser CONTINUO durante toda la operación. Los detectores deben tener alarmas visuales y sonoras que se activen antes de los niveles peligrosos.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 25, 1, true),
+   'https://www.youtube.com/embed/8rREL0hv2_M', 25, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Monitoreo y Ventilación' AND course_id = (SELECT id FROM courses WHERE title = 'Seguridad en Espacios Confinados')),
    'Ventilación de Espacios Confinados', 'Tipos de ventilación, cálculo de caudal y procedimientos.', 'mixed',
@@ -480,7 +480,7 @@ TIPOS DE VENTILACIÓN: Natural (apertura de entradas), Mecánica por dilución (
 CÁLCULO DE CAUDAL: El caudal mínimo recomendado es de 4 a 8 cambios de aire por hora, dependiendo del tipo de espacio y los contaminantes presentes. La fórmula básica es: Q = (K × V) / T donde Q=caudal, V=volumen del espacio, T=tiempo de cambio, K=factor de seguridad.
 
 PRECAUCIONES: Nunca usar oxígeno puro para ventilar (riesgo de explosión). El aire de ventilación debe ser limpio (no cerca de escapes de motores). Verificar que la ventilación no recircule el aire contaminado.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 2, true),
+   'https://www.youtube.com/embed/ULlphV0C2x8', 20, 2, true),
 
   ((SELECT id FROM modules WHERE title = 'Entrada y Rescate' AND course_id = (SELECT id FROM courses WHERE title = 'Seguridad en Espacios Confinados')),
    'Permiso de Entrada a Espacio Confinado', 'Requisitos del permiso, responsabilidades y autorizaciones.', 'mixed',
@@ -491,7 +491,7 @@ EL PERMISO DEBE INCLUIR: Identificación del espacio, propósito de la entrada, 
 RESPONSABILIDADES: El Supervisor autoriza y verifica condiciones. El Asistente (standby person) permanece fuera del espacio, mantiene comunicación constante, nunca entra, y activa el rescate si es necesario. Los Entrantes ejecutan el trabajo con el EPP adecuado.
 
 El permiso es válido solo para la tarea especificada y por el tiempo indicado. Cualquier cambio de condiciones invalida el permiso y requiere uno nuevo.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 1, true),
+   'https://www.youtube.com/embed/G-eiUGtgH3s', 20, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Entrada y Rescate' AND course_id = (SELECT id FROM courses WHERE title = 'Seguridad en Espacios Confinados')),
    'Procedimientos de Rescate en Espacios Confinados', 'Planes de rescate, equipos y técnicas de extracción.', 'mixed',
@@ -504,7 +504,7 @@ EQUIPOS DE RESCATE: Trípode con winche (para espacios verticales), arnés de re
 PROCEDIMIENTO: 1) No entrar sin verificar la atmósfera, 2) Activar el plan de emergencia, 3) Usar SCBA si hay atmósfera peligrosa, 4) Estabilizar a la víctima, 5) Extraer usando el trípode/wintch, 6) Brindar primeros auxilios, 7) Trasladar a centro médico.
 
 REGLA CRÍTICA: Nunca intentar un rescate sin el equipo adecuado. Un rescatista sin protección se convierte en otra víctima.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 25, 2, true)
+   'https://www.youtube.com/embed/_uhtpq_oqQo', 25, 2, true)
 ON CONFLICT DO NOTHING;
 
 -- ============================================
@@ -539,7 +539,7 @@ La NOM-020-STPS-2011 establece los requisitos para el control de energías pelig
 BLOQUEO (Lockout): Colocar un candado físico que impide la activación del equipo. ETIQUETADO (Tagout): Colocar una etiqueta de advertencia que indica que el equipo no debe operarse. El bloqueo es siempre preferido sobre el etiquetado.
 
 El objetivo del LOTO es prevenir lesiones graves o mortales causadas por la activación accidental de equipos durante el mantenimiento. Una sola omisión puede ser fatal.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 1, true),
+   'https://www.youtube.com/embed/y_XCB9-KoxM', 20, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Fundamentos del LOTO' AND course_id = (SELECT id FROM courses WHERE title = 'Aseguramiento de Energía (LOTO)')),
    'Tipos de Energía y Aislamiento', 'Identificación de fuentes de energía y métodos de aislamiento.', 'mixed',
@@ -554,7 +554,7 @@ ENERGÍA MECÁNICA: Bloquear partes móviles (resortes, contrapesos, volantes). 
 ENERGÍA TÉRMICA/QUÍMICA: Esperar a que el equipo se enfríe. Drenar y purgar líneas de químicos. Bloquear válvulas de suministro de vapor o fluidos calientes.
 
 NUNCA confiar en un solo método. Verificar el aislamiento de TODAS las fuentes de energía.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 2, true),
+   'https://www.youtube.com/embed/8VNR4Sw5Xmc', 20, 2, true),
 
   ((SELECT id FROM modules WHERE title = 'Procedimientos de Bloqueo y Etiquetado' AND course_id = (SELECT id FROM courses WHERE title = 'Aseguramiento de Energía (LOTO)')),
    'Procedimiento LOTO Paso a Paso', 'Secuencia correcta de bloqueo, etiquetado y verificación.', 'mixed',
@@ -567,7 +567,7 @@ EL CANDADO debe ser personal y único. Cada trabajador tiene su propio candado c
 LA ETIQUETA debe incluir: nombre del trabajador, fecha, motivo del bloqueo, y contacto. La etiqueta no proporciona aislamiento físico, solo advertencia.
 
 AL TERMINAR el trabajo: 1) Verificar que el área esté despejada, 2) Retirar herramientas y materiales, 3) Notificar al personal, 4) Retirar candados y etiquetas, 5) Restablecer energía por procedimiento normal.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 25, 1, true),
+   'https://www.youtube.com/embed/DpGqaHLUjgk', 25, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Procedimientos de Bloqueo y Etiquetado' AND course_id = (SELECT id FROM courses WHERE title = 'Aseguramiento de Energía (LOTO)')),
    'Dispositivos de Bloqueo y Restablecimiento', 'Candados, bloqueadores de válvulas, dispositivos múltiples.', 'mixed',
@@ -578,7 +578,7 @@ TIPOS DE DISPOSITIVOS: Candados de seguridad (con cuerpo no conductor para eléc
 CAJAS DE BLOQUEO MÚLTIPLE (LOCK BOX): Cuando varios trabajadores intervienen en un equipo, cada uno coloca su candado en la caja. Nadie puede restablecer la energía hasta que TODOS retiren sus candados. Esto evita que alguien encienda el equipo mientras otro trabajador está dentro.
 
 PROCEDIMIENTO DE RESTABLECIMIENTO: 1) Verificar que todo el personal esté fuera del área, 2) Confirmar que no haya herramientas ni materiales en el equipo, 3) Retirar todos los candados y etiquetas, 4) Notificar al personal que se restablecerá la energía, 5) Activar el equipo por procedimiento normal, 6) Verificar funcionamiento correcto.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 2, true)
+   'https://www.youtube.com/embed/4MMnwTTpESs', 20, 2, true)
 ON CONFLICT DO NOTHING;
 
 -- ============================================
@@ -614,7 +614,7 @@ ESTILOS DE APRENDIZAJE: Visual (aprende viendo: diagramas, videos, demostracione
 MOTIVACIÓN: Los adultos se motivan cuando perciben que la capacitación resuelve un problema real, mejora su desempeño o aumenta su seguridad. Conectar el contenido con su experiencia laboral es clave.
 
 PRINCIPIOS: Partir de lo conocido a lo desconocido, de lo simple a lo complejo, de lo teórico a lo práctico. Fomentar la participación, respetar las experiencias y crear un ambiente de confianza.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 25, 1, true),
+   'https://www.youtube.com/embed/yPEKJw8WeR4', 25, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Pedagogía y Didáctica' AND course_id = (SELECT id FROM courses WHERE title = 'Formación de Instructores')),
    'Técnicas Didácticas para Capacitación', 'Exposición, demostración, casos de estudio y dinámicas.', 'mixed',
@@ -629,7 +629,7 @@ CASOS DE ESTUDIO: Presentar situaciones reales o simuladas. Los participantes an
 DINÁMICAS DE GRUPO: Juegos de roles, simulacros, debates, lluvia de ideas. Mantener grupos pequeños (4-6 personas). Asignar roles específicos. Debriefing al final para extraer aprendizajes.
 
 REGLA DE ORO: La variedad mantiene la atención. Nunca usar la misma técnica más de 20 minutos seguidos.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 25, 2, true),
+   'https://www.youtube.com/embed/8kiaLPp8KMo', 25, 2, true),
 
   ((SELECT id FROM modules WHERE title = 'Diseño y Evaluación' AND course_id = (SELECT id FROM courses WHERE title = 'Formación de Instructores')),
    'Diseño de Cursos de Capacitación', 'Estructura, objetivos, contenidos y materiales.', 'mixed',
@@ -642,7 +642,7 @@ OBJETIVOS DE APRENDIZAJE: Deben ser específicos, medibles y observables. Usar v
 MATERIALES DIDÁCTICOS: Presentaciones visuales (mínimo texto, máximo imágenes), guías del participante, manuales de procedimiento, videos demostrativos, formularios de práctica, equipos para simulación.
 
 EVALUACIÓN: Debe medir si se lograron los objetivos. Puede ser: escrita (examen), práctica (demostración de habilidad), o de actitud (cuestionario de percepción). La evaluación práctica es la más efectiva para capacitación de seguridad.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 25, 1, true),
+   'https://www.youtube.com/embed/bt6oAKP5ouU', 25, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Diseño y Evaluación' AND course_id = (SELECT id FROM courses WHERE title = 'Formación de Instructores')),
    'Evaluación del Aprendizaje', 'Métodos de evaluación, reacción, aprendizaje y transferencia.', 'mixed',
@@ -657,7 +657,7 @@ NIVEL 3 - COMPORTAMIENTO: ¿Aplican lo aprendido en su trabajo? Se mide observan
 NIVEL 4 - RESULTADOS: ¿Impactó en la organización? Se mide con indicadores: reducción de accidentes, disminución de incidentes, mejora en auditorías de seguridad, aumento en reportes de condiciones inseguras.
 
 El instructor debe usar estos resultados para mejorar continuamente el curso.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 2, true),
+   'https://www.youtube.com/embed/pFXVmdKhG_Y', 20, 2, true),
 
   ((SELECT id FROM modules WHERE title = 'Gestión de la Capacitación' AND course_id = (SELECT id FROM courses WHERE title = 'Formación de Instructores')),
    'Registros y Documentación de Capacitación', 'Listas de asistencia, constancias y evidencias documentales.', 'mixed',
@@ -670,7 +670,7 @@ LA CONSTANCIA DC-3 debe incluir: datos del trabajador, datos del centro de traba
 REGISTROS INTERNOS: Bitácora de capacitación, programa anual de capacitación, evaluaciones de cada participante, reportes de evaluación del curso, plan de mejora continua.
 
 CONSERVACIÓN: Los registros deben conservarse por al menos 2 años. Se recomienda llevarlos también en formato digital para facilitar la consulta y el seguimiento.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 1, true),
+   'https://www.youtube.com/embed/GwcbMaq0Spk', 20, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Gestión de la Capacitación' AND course_id = (SELECT id FROM courses WHERE title = 'Formación de Instructores')),
    'Mejora Continua del Programa', 'Retroalimentación, actualización y evaluación del instructor.', 'mixed',
@@ -683,7 +683,7 @@ ACTUALIZACIÓN DE CONTENIDO: Las normativas cambian, los equipos evolucionan, nu
 INDICADORES DE CALIDAD DEL INSTRUCTOR: Satisfacción de participantes (>85%), Tasa de aprobación de exámenes (>90%), Aplicación en el trabajo (encuesta a supervisores), Reducción de incidentes en áreas capacitadas.
 
 CICLO PDCA: Planificar (diseñar el curso), Hacer (impartirlo), Verificar (evaluar resultados), Actuar (implementar mejoras). Repetir en cada ciclo de capacitación.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 2, true)
+   'https://www.youtube.com/embed/QVDF40plTRs', 20, 2, true)
 ON CONFLICT DO NOTHING;
 
 -- ============================================
@@ -719,7 +719,7 @@ PERFIL DEL SUPERVISOR: Conocimiento técnico en seguridad, liderazgo, capacidad 
 La NOM-030-STPS-2009 establece los requisitos para los servicios de seguridad y salud en el trabajo. El supervisor debe conocer esta norma y aplicarla en su gestión.
 
 CLAVE DEL ÉXITO: Un buen supervisor no solo vigila, también educa, motiva y lidera con el ejemplo. Si el supervisor no usa el EPP, nadie lo usará.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 25, 1, true),
+   'https://www.youtube.com/embed/prXHuJ-iaYU', 25, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Liderazgo en Seguridad' AND course_id = (SELECT id FROM courses WHERE title = 'Formación de Supervisores de Seguridad y Salud Ocupacional')),
    'Cultura de Seguridad en la Organización', 'Construcción de cultura, liderazgo visible y compromiso.', 'mixed',
@@ -732,7 +732,7 @@ LIDERAZGO VISIBLE: Los líderes demuestran compromiso con la seguridad. Caminan 
 COMUNICACIÓN EFECTIVA: La seguridad se comunica de forma clara, positiva y constante. No solo órdenes, sino también "por qué". Reconocer el buen comportamiento es más efectivo que sancionar el malo.
 
 INDICADORES DE CULTURA FUERTE: Los trabajadores reportan condiciones inseguras sin temor, detienen trabajo inseguro por propia iniciativa, sugieren mejoras, participan en comités de seguridad.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 25, 2, true),
+   'https://www.youtube.com/embed/SuPDGLtaGSQ', 25, 2, true),
 
   ((SELECT id FROM modules WHERE title = 'Liderazgo en Seguridad' AND course_id = (SELECT id FROM courses WHERE title = 'Formación de Supervisores de Seguridad y Salud Ocupacional')),
    'Comunicación de Riesgos', 'Técnicas de comunicación, reuniones de seguridad y toolbox talks.', 'mixed',
@@ -745,7 +745,7 @@ COMUNICACIÓN DE RIESGOS: Cuando se identifica un riesgo, debe comunicarse de in
 TÉCNICAS DE COMUNICACIÓN: Escuchar activamente (no interrumpir), hacer preguntas abiertas, parafrasear para confirmar comprensión, usar ejemplos concretos, evitar tecnicismos innecesarios.
 
 BARRERAS COMUNES: "Siempre se ha hecho así", "Nunca ha pasado nada", "Es trabajo extra". El supervisor debe abordar estas barreras con datos, no con órdenes. Mostrar el costo humano y económico de los accidentes.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 20, 3, true),
+   'https://www.youtube.com/embed/JEcj3mjVafk', 20, 3, true),
 
   ((SELECT id FROM modules WHERE title = 'Gestión del Programa SST' AND course_id = (SELECT id FROM courses WHERE title = 'Formación de Supervisores de Seguridad y Salud Ocupacional')),
    'Programa de Seguridad y Salud en el Trabajo', 'Estructura del PSST, requisitos legales y componentes.', 'mixed',
@@ -758,7 +758,7 @@ La NOM-030-STPS-2009 establece que el PSST debe revisarse al menos una vez al a�
 EL SUPERVISOR es responsable de implementar el PSST en su área: asegurar que se ejecuten las acciones preventivas, que el personal esté capacitado, que los EPP se entreguen y usen, y que se mantengan registros.
 
 INDICADORES DEL PSST: Índice de frecuencia (accidentes/millón horas), Índice de gravedad (días perdidos/millón horas), Tasa de incidentes, Cumplimiento del programa (%), Eficacia de capacitación (%).',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 25, 1, true),
+   'https://www.youtube.com/embed/949z0LmanNU', 25, 1, true),
 
   ((SELECT id FROM modules WHERE title = 'Gestión del Programa SST' AND course_id = (SELECT id FROM courses WHERE title = 'Formación de Supervisores de Seguridad y Salud Ocupacional')),
    'Identificación de Riesgos y Peligros', 'IPERC, matriz de riesgo y jerarquía de controles.', 'mixed',
@@ -771,7 +771,7 @@ MATRIZ DE RIESGO: Herrarquía de probabilidad (Baja, Media, Alta) vs Severidad (
 JERARQUÍA DE CONTROLES (de más a menos efectivo): 1) Eliminación (eliminar el riesgo), 2) Sustitución (cambiar por algo menos peligroso), 3) Controles de ingeniería (resguardos, barreras, ventilación), 4) Controles administrativos (procedimientos, capacitación, señalización), 5) EPP (última línea de defensa).
 
 ACTUALIZACIÓN: La identificación de riesgos debe actualizarse cuando: cambia el proceso, se introducen nuevos equipos, ocurre un accidente, o al menos una vez al año.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 25, 2, true),
+   'https://www.youtube.com/embed/LatBNnHA8ss', 25, 2, true),
 
   ((SELECT id FROM modules WHERE title = 'Investigación de Accidentes' AND course_id = (SELECT id FROM courses WHERE title = 'Formación de Supervisores de Seguridad y Salud Ocupacional')),
    'Metodología de Investigación de Accidentes', 'Pasos de la investigación, árbol de causas y reporte.', 'mixed',
@@ -784,5 +784,5 @@ PASOS DE LA INVESTIGACIÓN: 1) Asegurar el área (atender heridos, controlar el 
 CAUSAS INMEDIATAS: Actos inseguros (no usar EPP, operar sin autorización, saltarse procedimientos) y Condiciones inseguras (equipo dañado, señalización deficiente, iluminación insuficiente).
 
 REPORTE DE INVESTIGACIÓN: Debe incluir descripción del accidente, secuencia de eventos, análisis de causas, acciones correctivas con responsables y fechas. El supervisor firma y da seguimiento.',
-   'https://www.youtube.com/embed/dQw4w9WgXcQ', 25, 1, true)
+   'https://www.youtube.com/embed/qZxlYp4lpNE', 25, 1, true)
 ON CONFLICT DO NOTHING;
