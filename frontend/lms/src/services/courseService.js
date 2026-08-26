@@ -55,7 +55,7 @@ export const courseService = {
   getCourseById: async (id) => {
     try {
       const { data } = await rest.get(
-        `/courses?id=eq.${id}&select=*,instructor:users!instructor_id(first_name,last_name),modules(id,title,description,order_index,lessons(id,title,description,content_type,content_url,video_url,document_url,duration_minutes,order_index,is_required))`
+        `/courses?id=eq.${id}&select=*,instructor:users!instructor_id(first_name,last_name),modules(id,title,description,order_index,lessons(id,title,description,content_type,content_url,video_url,document_url,content,duration_minutes,order_index,is_required))`
       );
       if (!data.length) return { success: false, message: 'Curso no encontrado' };
 
@@ -152,6 +152,30 @@ export const courseService = {
   },
 
   // Obtener lecciones de un módulo
+  // Obtener una lección por ID (incluye content)
+  getLessonById: async (lessonId) => {
+    try {
+      const { data } = await rest.get(
+        `/lessons?id=eq.${lessonId}&select=*`
+      );
+      if (!data.length) return { success: false, message: "Lección no encontrada" };
+
+      // Verificar progreso del usuario
+      const userId = localStorage.getItem("userId");
+      let progress = null;
+      if (userId && userId !== "0") {
+        const { data: prog } = await rest.get(
+          `/lesson_progress?student_id=eq.${userId}&lesson_id=eq.${lessonId}&select=*`
+        );
+        progress = prog[0] || null;
+      }
+
+      return { success: true, lesson: data[0], progress };
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
   getLessons: async (moduleId) => {
     try {
       const { data } = await rest.get(
