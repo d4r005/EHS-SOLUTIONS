@@ -31,12 +31,25 @@ function parseInlines(text) {
   });
 }
 
+// Helper para procesar texto con negritas (**texto**)
+function parseInlines(text) {
+  if (!text) return text;
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="font-black text-navy">{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+}
+
 // Renderiza texto con párrafos y formatea encabezados básicos
 function renderContent(text) {
   if (!text) return null;
 
-  // Dividir por líneas para procesar listas y tablas
-  const lines = text.split('\n');
+  // Normalizar saltos de línea y dividir para procesar bloques
+  const normalizedText = text.replace(/\r\n/g, '\n');
+  const lines = normalizedText.split('\n');
   const renderedElements = [];
   let currentList = [];
   let listType = null; // 'ul' o 'ol'
@@ -45,9 +58,9 @@ function renderContent(text) {
     if (currentList.length > 0) {
       const Tag = listType === 'ol' ? 'ol' : 'ul';
       renderedElements.push(
-        <Tag key={`list-${renderedElements.length}`} className={`${listType === 'ol' ? 'list-decimal' : 'list-disc'} ml-6 mb-4 space-y-1 text-gray-700`}>
+        <Tag key={`list-${renderedElements.length}`} className={`${listType === 'ol' ? 'list-decimal' : 'list-disc'} ml-8 mb-6 space-y-2 text-gray-700`}>
           {currentList.map((item, idx) => (
-            <li key={idx} className="leading-relaxed">
+            <li key={idx} className="leading-relaxed pl-2">
               {parseInlines(item)}
             </li>
           ))}
@@ -60,60 +73,73 @@ function renderContent(text) {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
+
+    // Línea vacía actúa como separador de bloques
     if (!line) {
       flushList();
       continue;
     }
 
-    // Encabezados
+    // Encabezados Markdown
     if (line.startsWith('# ')) {
       flushList();
-      renderedElements.push(<h2 key={i} className="text-2xl font-bold text-navy mt-8 mb-4 border-b pb-2">{line.replace('# ', '')}</h2>);
+      renderedElements.push(<h2 key={i} className="text-2xl font-black text-navy mt-10 mb-5 border-b-2 border-green pb-2 uppercase tracking-tight">{line.slice(2)}</h2>);
     } else if (line.startsWith('## ')) {
       flushList();
-      renderedElements.push(<h3 key={i} className="text-xl font-bold text-navy mt-6 mb-3">{line.replace('## ', '')}</h3>);
+      renderedElements.push(<h3 key={i} className="text-xl font-extrabold text-navy mt-8 mb-4 flex items-center gap-2"><span className="w-1.5 h-6 bg-green rounded-full"></span>{line.slice(3)}</h3>);
     } else if (line.startsWith('### ')) {
       flushList();
-      renderedElements.push(<h4 key={i} className="text-lg font-bold text-navy mt-5 mb-2">{line.replace('### ', '')}</h4>);
+      renderedElements.push(<h4 key={i} className="text-lg font-bold text-navy mt-6 mb-3 italic">{line.slice(4)}</h4>);
     }
-    // Listas Desordenadas (- o *)
+    // Listas Desordenadas
     else if (line.startsWith('- ') || line.startsWith('* ')) {
       if (listType === 'ol') flushList();
       listType = 'ul';
       currentList.push(line.slice(2));
     }
-    // Listas Ordenadas (1. 2.)
+    // Listas Ordenadas
     else if (/^\d+\.\s/.test(line)) {
       if (listType === 'ul') flushList();
       listType = 'ol';
       currentList.push(line.replace(/^\d+\.\s/, ''));
     }
-    // Tablas (bloque básico por pipes)
+    // Tablas Markdown
     else if (line.startsWith('|')) {
       flushList();
-      // Si la línea es de separación (|---|), la ignoramos
       if (line.includes('---')) continue;
+      const cells = line.split('|').filter((_, idx, arr) => idx > 0 && idx < arr.length - 1).map(c => c.trim());
+      const isHeader = i === 0 || (lines[i-1] && lines[i-1].trim() === '') || (lines[i+1] && (lines[i+1].includes('---') || lines[i+1].includes('===')));
 
-      const cells = line.split('|').filter(c => c.trim()).map(c => c.trim());
       renderedElements.push(
-        <div key={i} className="flex border-b border-gray-100 last:border-0 hover:bg-gray-50 transition">
+        <div key={i} className={`flex border-x border-b border-gray-200 ${isHeader ? 'bg-gray-100 border-t border-gray-300' : 'bg-white'} first:rounded-t-lg last:rounded-b-lg overflow-hidden`}>
           {cells.map((cell, cIdx) => (
-            <div key={cIdx} className={`flex-1 p-2 text-sm ${i === 0 || (lines[i-1] && lines[i-1].trim() === '') ? 'font-bold text-navy' : 'text-gray-600'}`}>
+            <div key={cIdx} className={`flex-1 p-3 text-sm ${isHeader ? 'font-black text-navy border-r border-gray-300 last:border-0' : 'text-gray-600 border-r border-gray-100 last:border-0'}`}>
               {parseInlines(cell)}
             </div>
           ))}
         </div>
       );
     }
+    // Notas de "IMPORTANTE" o "NOTA"
+    else if (line.toUpperCase().startsWith('IMPORTANTE:') || line.toUpperCase().startsWith('NOTA:')) {
+      flushList();
+      renderedElements.push(
+        <div key={i} className="bg-green-50 border-l-4 border-green p-4 my-6 rounded-r-lg">
+          <p className="text-sm text-green-800 leading-relaxed font-medium">
+            {parseInlines(line)}
+          </p>
+        </div>
+      );
+    }
     // Párrafos normales
     else {
       flushList();
-      renderedElements.push(<p key={i} className="text-gray-700 leading-relaxed mb-4">{parseInlines(line)}</p>);
+      renderedElements.push(<p key={i} className="text-gray-700 leading-relaxed mb-5 text-justify">{parseInlines(line)}</p>);
     }
   }
 
   flushList();
-  return <div className="markdown-body">{renderedElements}</div>;
+  return <div className="markdown-body max-w-none">{renderedElements}</div>;
 }
 
 

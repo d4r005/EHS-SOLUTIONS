@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { courseService } from '../services/courseService';
 
@@ -130,7 +130,6 @@ const StatCard = ({ icon, label, value, color }) => {
 };
 
 const CourseCard = ({ enrollment }) => {
-  const navigate = useNavigate();
   const courseTitle = enrollment.title || `Curso #${enrollment.course_id}`;
 
   return (
@@ -148,34 +147,34 @@ const CourseCard = ({ enrollment }) => {
 
       {/* Content */}
       <div className="p-4">
-        <h3 className="font-bold text-navy mb-2 line-clamp-1" title={courseTitle}>
+        <h3 className="font-bold text-navy mb-1 line-clamp-1" title={courseTitle}>
           {courseTitle}
         </h3>
-        <p className="text-xs text-gray-500 uppercase font-semibold mb-3">
+        <p className="text-xs text-gray-500 uppercase font-bold mb-4">
           {enrollment.category || 'Capacitación'}
         </p>
 
         {/* Progress Bar */}
-        <div className="mb-4">
+        <div className="mb-5">
           <div className="flex justify-between items-center mb-1">
             <span className="text-xs font-semibold text-navy">Tu progreso</span>
             <span className="text-xs text-gray-600">{Math.round(enrollment.progress_percentage)}%</span>
           </div>
-          <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
             <div
-              className="h-full bg-green-600 transition-all"
+              className="h-full bg-green-600 transition-all duration-1000"
               style={{ width: `${enrollment.progress_percentage}%` }}
             ></div>
           </div>
         </div>
 
-        {/* Button */}
-        <button
-          onClick={() => navigate(`/courses/${enrollment.course_id}`)}
-          className="w-full py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-bold shadow-sm"
+        {/* Action */}
+        <Link
+          to={`/courses/${enrollment.course_id}`}
+          className="block w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-bold shadow-sm text-center"
         >
           Continuar Aprendiendo
-        </button>
+        </Link>
       </div>
     </div>
   );
