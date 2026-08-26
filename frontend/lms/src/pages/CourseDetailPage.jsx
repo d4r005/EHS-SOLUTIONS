@@ -8,7 +8,7 @@ import { paymentService } from '../services/paymentService';
 export const CourseDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, loading: authLoading } = useAuth();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(false);
@@ -110,7 +110,7 @@ export const CourseDetailPage = () => {
   // Admin/instructor pueden revisar el contenido (textos y videos) sin inscribirse
   const canViewContent = isEnrolled || ['admin', 'instructor'].includes(user?.role);
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">

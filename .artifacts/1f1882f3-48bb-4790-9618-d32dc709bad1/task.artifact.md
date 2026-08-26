@@ -1,5 +1,7 @@
-- [ ] Actualizar precios de cursos a 350 MXN (Base de Datos)
-- [ ] Refinar `CourseDetailPage.jsx` para diferenciar entre "Inscribirse" (gratis) y "Comprar" ($350 MXN)
-- [ ] Asegurar que los Quizzes estén vinculados al final de los módulos
-- [ ] Verificar la redirección a MercadoPago
+- [/] Estabilización de Acceso Admin
+    - [ ] Sincronizar estado de carga de Auth en `CourseDetailPage.jsx`
+    - [ ] Habilitar navegación Admin en el Dashboard
+- [ ] Asegurar Visualización de Exámenes
+    - [ ] Crear script de vinculación de Quizzes por Nombre (Rescate)
+    - [ ] Refinar UI del botón de examen en `LessonViewerPage.jsx`
 - [ ] Realizar Commit y Push
