@@ -108,9 +108,9 @@ export const CoursesPage = () => {
                       {course.difficulty_level === 'beginner' ? 'Principiante' : course.difficulty_level === 'intermediate' ? 'Intermedio' : 'Avanzado'}
                     </span>
                     {course.price > 0 ? (
-                      <span className="text-lg font-bold text-green">${course.price}</span>
+                      <span className="text-lg font-bold text-green-600">${course.price}</span>
                     ) : (
-                      <span className="text-sm font-semibold text-green">Gratis</span>
+                      <span className="text-sm font-semibold text-green-600">Gratis</span>
                     )}
                   </div>
                   <h3 className="text-lg font-bold text-navy mb-2">{course.title}</h3>

@@ -73,7 +73,7 @@ export const CourseDetailPage = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <p className="text-2xl text-gray-600 mb-4">{error || 'Curso no encontrado'}</p>
-          <button onClick={() => navigate('/courses')} className="px-6 py-2 bg-green text-white rounded-lg hover:bg-green-hover">
+          <button onClick={() => navigate('/courses')} className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
             Volver a cursos
           </button>
         </div>
@@ -90,7 +90,7 @@ export const CourseDetailPage = () => {
             ← Volver al catálogo
           </button>
           <div className="flex items-start gap-2 mb-4 flex-wrap">
-            <span className="text-sm bg-green px-3 py-1 rounded-full">
+            <span className="text-sm bg-green-600 px-3 py-1 rounded-full text-white">
               {course.difficulty_level === 'beginner' ? 'Principiante' : course.difficulty_level === 'intermediate' ? 'Intermedio' : 'Avanzado'}
             </span>
             {course.category && <span className="text-sm bg-white/20 px-3 py-1 rounded-full">{course.category}</span>}
@@ -116,19 +116,19 @@ export const CourseDetailPage = () => {
                 <p className="text-sm text-gray-600">Tu progreso</p>
                 <div className="flex items-center gap-3 mt-1">
                   <div className="w-48 h-3 bg-gray-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-green transition-all" style={{ width: `${course.enrollment.progress_percentage || 0}%` }} />
+                    <div className="h-full bg-green-600 transition-all" style={{ width: `${course.enrollment.progress_percentage || 0}%` }} />
                   </div>
                   <span className="font-semibold text-navy">{Math.round(course.enrollment.progress_percentage || 0)}%</span>
                 </div>
               </div>
-              <button onClick={handleStartLearning} className="px-6 py-3 bg-green text-white rounded-lg hover:bg-green-hover font-semibold transition">
+              <button onClick={handleStartLearning} className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition">
                 {course.enrollment.progress_percentage > 0 ? 'Continuar Aprendiendo' : 'Comenzar Curso'}
               </button>
             </>
           ) : (
             <>
               <p className="text-gray-600">Inscríbete para acceder a todo el contenido</p>
-              <button onClick={handleEnroll} disabled={enrolling} className="px-6 py-3 bg-green text-white rounded-lg hover:bg-green-hover font-semibold transition disabled:opacity-50">
+              <button onClick={handleEnroll} disabled={enrolling} className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition disabled:opacity-50">
                 {enrolling ? 'Inscribiendo...' : isAuthenticated ? 'Inscribirme' : 'Inicia sesión para inscribirte'}
               </button>
             </>

@@ -87,7 +87,7 @@ export const LessonViewerPage = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <p className="text-xl text-gray-600 mb-4">Lección no encontrada</p>
-          <button onClick={() => navigate(`/courses/${courseId}`)} className="px-6 py-2 bg-green text-white rounded-lg hover:bg-green-hover">
+          <button onClick={() => navigate(`/courses/${courseId}`)} className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
             Volver al curso
           </button>
         </div>
@@ -139,7 +139,7 @@ export const LessonViewerPage = () => {
               <button
                 onClick={handleComplete}
                 disabled={completing}
-                className="w-full py-3 bg-green text-white rounded-lg hover:bg-green-hover font-semibold transition disabled:opacity-50 mb-4"
+                className="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition disabled:opacity-50 mb-4"
               >
                 {completing ? 'Marcando...' : '✓ Marcar como completada'}
               </button>
@@ -182,7 +182,7 @@ export const LessonViewerPage = () => {
                           onClick={() => navigate(`/courses/${courseId}/lessons/${lesson.id}`)}
                           className={`w-full text-left px-3 py-2 rounded-lg text-sm transition ${
                             isActive
-                              ? 'bg-green text-white font-semibold'
+                              ? 'bg-green-600 text-white font-semibold'
                               : 'hover:bg-gray-50 text-gray-700'
                           }`}
                         >
