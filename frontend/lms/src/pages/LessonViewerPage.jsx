@@ -19,17 +19,31 @@ function getYouTubeId(url) {
   return null;
 }
 
-// Renderiza texto con párrafos
+// Renderiza texto con párrafos y formatea encabezados básicos
 function renderContent(text) {
   if (!text) return null;
   const paragraphs = text.split('\n\n').filter(p => p.trim());
   return paragraphs.map((para, i) => {
-    // Si la línea es toda mayúscula, la tratamos como un subtítulo
-    const isHeading = para === para.toUpperCase() && para.length < 120 && !para.includes('.');
-    if (isHeading) {
-      return <h3 key={i} className="text-lg font-bold text-navy mt-5 mb-2">{para}</h3>;
+    const cleanPara = para.trim();
+
+    // Manejar encabezados Markdown (# H1, ## H2, ### H3)
+    if (cleanPara.startsWith('# ')) {
+      return <h2 key={i} className="text-2xl font-bold text-navy mt-6 mb-3">{cleanPara.replace('# ', '')}</h2>;
     }
-    return <p key={i} className="text-gray-700 leading-relaxed mb-3">{para}</p>;
+    if (cleanPara.startsWith('## ')) {
+      return <h3 key={i} className="text-xl font-bold text-navy mt-5 mb-2">{cleanPara.replace('## ', '')}</h3>;
+    }
+    if (cleanPara.startsWith('### ')) {
+      return <h4 key={i} className="text-lg font-bold text-navy mt-4 mb-2">{cleanPara.replace('### ', '')}</h4>;
+    }
+
+    // Si la línea es toda mayúscula, la tratamos como un subtítulo
+    const isHeading = cleanPara === cleanPara.toUpperCase() && cleanPara.length < 120 && !cleanPara.includes('.');
+    if (isHeading) {
+      return <h3 key={i} className="text-lg font-bold text-navy mt-5 mb-2">{cleanPara}</h3>;
+    }
+
+    return <p key={i} className="text-gray-700 leading-relaxed mb-3">{cleanPara}</p>;
   });
 }
 
