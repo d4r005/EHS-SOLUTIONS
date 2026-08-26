@@ -22,14 +22,23 @@ export const QuizPage = () => {
       setLoading(true);
       setError(null);
 
+      console.log("Intentando cargar Quiz ID:", quizId);
+
       const [quizData, existing, qs] = await Promise.all([
         quizService.getQuizById(quizId),
-        quizService.getMyResult(quizId),
+        quizService.getMyResult(quizId).catch(() => null), // No fallar si no hay resultado previo
         quizService.getQuestionsForTaking(quizId)
       ]);
 
+      console.log("Datos recibidos de Supabase:", { quizData, qs });
+
       if (!quizData) {
-        setError('Examen no encontrado');
+        setError(`Examen #${quizId} no encontrado. Verifique que la tabla 'quizzes' tenga permisos de lectura pública (RLS).`);
+        return;
+      }
+
+      if (!qs || qs.length === 0) {
+        setError(`El examen "${quizData.title}" fue encontrado, pero no tiene preguntas vinculadas.`);
         return;
       }
 
@@ -46,8 +55,8 @@ export const QuizPage = () => {
         });
       }
     } catch (err) {
-      console.error(err);
-      setError('No se pudo cargar el examen');
+      console.error("Error crítico en QuizPage:", err);
+      setError('Error al conectar con la base de datos de exámenes.');
     } finally {
       setLoading(false);
     }
