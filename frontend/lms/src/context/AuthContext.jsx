@@ -3,8 +3,11 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
-// URL de la Edge Function de Supabase
-const API_URL = import.meta.env.VITE_API_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co/functions/v1/api';
+// ============================================
+// Auth con Supabase Auth (sin backend propio)
+// ============================================
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co';
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -12,26 +15,54 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Configurar axios con token
+  // Cargar perfil al montar si hay token
   useEffect(() => {
     if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       localStorage.setItem('token', token);
       fetchProfile();
-    } else {
-      delete axios.defaults.headers.common['Authorization'];
     }
   }, [token]);
 
   const fetchProfile = async () => {
     try {
-      const response = await axios.get(`${API_URL}/auth/profile`);
-      setUser(response.data.user);
+      // Obtener usuario de Supabase Auth
+      const authRes = await axios.get(`${SUPABASE_URL}/auth/v1/user`, {
+        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}` },
+      });
+
+      // Buscar perfil en public.users por email
+      const profileRes = await axios.get(
+        `${SUPABASE_URL}/rest/v1/users?email=eq.${authRes.data.email}&select=id,first_name,last_name,email,role`,
+        { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}` } }
+      );
+
+      if (profileRes.data.length) {
+        const profile = profileRes.data[0];
+        setUser({
+          id: profile.id,
+          first_name: profile.first_name,
+          last_name: profile.last_name,
+          email: profile.email,
+          role: profile.role,
+        });
+        localStorage.setItem('userId', profile.id);
+      } else {
+        // Usuario existe en Auth pero no en public.users - usar metadata
+        setUser({
+          id: 0,
+          first_name: authRes.data.user_metadata?.first_name || '',
+          last_name: authRes.data.user_metadata?.last_name || '',
+          email: authRes.data.email,
+          role: authRes.data.user_metadata?.role || 'student',
+        });
+      }
       setError(null);
     } catch (err) {
       console.error('Error fetching profile:', err);
       setToken(null);
       setUser(null);
+      localStorage.removeItem('token');
+      localStorage.removeItem('userId');
     }
   };
 
@@ -39,18 +70,50 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post(`${API_URL}/auth/register`, {
-        first_name: firstName,
-        last_name: lastName,
-        email,
-        password,
-        role: 'student',
-      });
-      setToken(response.data.token);
-      setUser(response.data.user);
+      // 1. Signup en Supabase Auth
+      await axios.post(
+        `${SUPABASE_URL}/auth/v1/signup`,
+        { email, password, user_metadata: { first_name: firstName, last_name: lastName, role: 'student' } },
+        { headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' } }
+      );
+
+      // 2. Login para obtener token
+      const loginRes = await axios.post(
+        `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
+        { email, password },
+        { headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' } }
+      );
+      const accessToken = loginRes.data.access_token;
+
+      // 3. Insertar en public.users
+      await axios.post(
+        `${SUPABASE_URL}/rest/v1/users`,
+        { first_name: firstName, last_name: lastName, email, password: 'managed_by_auth', role: 'student', is_active: true },
+        { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' } }
+      );
+
+      // 4. Obtener perfil
+      const profileRes = await axios.get(
+        `${SUPABASE_URL}/rest/v1/users?email=eq.${email}&select=id,first_name,last_name,email,role`,
+        { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${accessToken}` } }
+      );
+
+      const profile = profileRes.data[0];
+      const newUser = {
+        id: profile.id,
+        first_name: profile.first_name,
+        last_name: profile.last_name,
+        email: profile.email,
+        role: profile.role,
+      };
+
+      setToken(accessToken);
+      setUser(newUser);
+      localStorage.setItem('token', accessToken);
+      localStorage.setItem('userId', profile.id);
       return true;
     } catch (err) {
-      const message = err.response?.data?.message || 'Error al registrarse';
+      const message = err.response?.data?.message || err.response?.data?.msg || 'Error al registrarse';
       setError(message);
       return false;
     } finally {
@@ -62,15 +125,49 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post(`${API_URL}/auth/login`, {
-        email,
-        password,
-      });
-      setToken(response.data.token);
-      setUser(response.data.user);
+      // 1. Login con Supabase Auth
+      const loginRes = await axios.post(
+        `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
+        { email, password },
+        { headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' } }
+      );
+      const accessToken = loginRes.data.access_token;
+
+      // 2. Obtener perfil de public.users
+      const profileRes = await axios.get(
+        `${SUPABASE_URL}/rest/v1/users?email=eq.${email}&select=id,first_name,last_name,email,role`,
+        { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${accessToken}` } }
+      );
+
+      let newUser;
+      if (profileRes.data.length) {
+        const profile = profileRes.data[0];
+        newUser = {
+          id: profile.id,
+          first_name: profile.first_name,
+          last_name: profile.last_name,
+          email: profile.email,
+          role: profile.role,
+        };
+        localStorage.setItem('userId', profile.id);
+      } else {
+        // Fallback: usar metadata de Auth
+        newUser = {
+          id: 0,
+          first_name: loginRes.data.user?.user_metadata?.first_name || '',
+          last_name: loginRes.data.user?.user_metadata?.last_name || '',
+          email: loginRes.data.user?.email || email,
+          role: loginRes.data.user?.user_metadata?.role || 'student',
+        };
+        localStorage.setItem('userId', '0');
+      }
+
+      setToken(accessToken);
+      setUser(newUser);
+      localStorage.setItem('token', accessToken);
       return true;
     } catch (err) {
-      const message = err.response?.data?.message || 'Error al iniciar sesión';
+      const message = err.response?.data?.error_description || err.response?.data?.message || 'Email o contraseña incorrectos';
       setError(message);
       return false;
     } finally {
@@ -82,7 +179,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setUser(null);
     localStorage.removeItem('token');
-    delete axios.defaults.headers.common['Authorization'];
+    localStorage.removeItem('userId');
   };
 
   const value = {
@@ -96,11 +193,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: !!token,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
