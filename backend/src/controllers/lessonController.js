@@ -56,7 +56,7 @@ export const createLesson = async (req, res) => {
   try {
     const {
       module_id, title, description, content_type = 'text',
-      content_url, video_url, document_url, duration_minutes, order_index, is_required = true
+      content_url, video_url, document_url, content, duration_minutes, order_index, is_required = true
     } = req.body;
 
     if (!module_id || !title) {
@@ -65,10 +65,10 @@ export const createLesson = async (req, res) => {
 
     const result = await pool.query(`
       INSERT INTO lessons (module_id, title, description, content_type, content_url,
-        video_url, document_url, duration_minutes, order_index, is_required, created_at, updated_at)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW()) RETURNING *
+        video_url, document_url, content, duration_minutes, order_index, is_required, created_at, updated_at)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW()) RETURNING *
     `, [module_id, title, description, content_type, content_url,
-        video_url, document_url, duration_minutes, order_index || 0, is_required]);
+        video_url, document_url, content, duration_minutes, order_index || 0, is_required]);
 
     res.status(201).json({ success: true, lesson: result.rows[0] });
   } catch (error) {
@@ -83,7 +83,7 @@ export const updateLesson = async (req, res) => {
     const { id } = req.params;
     const {
       title, description, content_type, content_url,
-      video_url, document_url, duration_minutes, order_index, is_required
+      video_url, document_url, content, duration_minutes, order_index, is_required
     } = req.body;
 
     const result = await pool.query(`
@@ -94,13 +94,14 @@ export const updateLesson = async (req, res) => {
         content_url = COALESCE($4, content_url),
         video_url = COALESCE($5, video_url),
         document_url = COALESCE($6, document_url),
-        duration_minutes = COALESCE($7, duration_minutes),
-        order_index = COALESCE($8, order_index),
-        is_required = COALESCE($9, is_required),
+        content = COALESCE($7, content),
+        duration_minutes = COALESCE($8, duration_minutes),
+        order_index = COALESCE($9, order_index),
+        is_required = COALESCE($10, is_required),
         updated_at = NOW()
-      WHERE id = $10 RETURNING *
+      WHERE id = $11 RETURNING *
     `, [title, description, content_type, content_url,
-        video_url, document_url, duration_minutes, order_index, is_required, id]);
+        video_url, document_url, content, duration_minutes, order_index, is_required, id]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ success: false, message: 'Lección no encontrada' });

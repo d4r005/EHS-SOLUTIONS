@@ -2,6 +2,33 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { courseService } from '../services/courseService';
 
+// Extrae el video ID de diferentes formatos de URL de YouTube
+function getYouTubeId(url) {
+  if (!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+  ];
+  for (const p of patterns) {
+    const match = url.match(p);
+    if (match) return match[1];
+  }
+  return null;
+}
+
+// Renderiza texto con párrafos
+function renderContent(text) {
+  if (!text) return null;
+  const paragraphs = text.split('\n\n').filter(p => p.trim());
+  return paragraphs.map((para, i) => {
+    // Si la línea es toda mayúscula, la tratamos como un subtítulo
+    const isHeading = para === para.toUpperCase() && para.length < 120 && !para.includes('.');
+    if (isHeading) {
+      return <h3 key={i} className="text-lg font-bold text-navy mt-5 mb-2">{para}</h3>;
+    }
+    return <p key={i} className="text-gray-700 leading-relaxed mb-3">{para}</p>;
+  });
+}
+
 export const LessonViewerPage = () => {
   const { id: courseId, lessonId } = useParams();
   const navigate = useNavigate();
@@ -27,7 +54,6 @@ export const LessonViewerPage = () => {
       const modulesList = modulesData.modules || [];
       setModules(modulesList);
 
-      // Aplanar todas las lecciones en orden para navegación
       const flat = [];
       modulesList.forEach((m) => {
         m.lessons?.forEach((l) => flat.push({ ...l, moduleId: m.id, moduleTitle: m.title }));
@@ -49,7 +75,6 @@ export const LessonViewerPage = () => {
     try {
       setCompleting(true);
       await courseService.completeLesson(lessonId);
-      // Refrescar para mostrar progreso actualizado
       const lessonData = await courseService.getLessonById(lessonId);
       setCurrentLesson(lessonData.lesson);
       goToNextLesson();
@@ -95,6 +120,8 @@ export const LessonViewerPage = () => {
     );
   }
 
+  const ytId = getYouTubeId(currentLesson.video_url);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-6">
@@ -113,25 +140,50 @@ export const LessonViewerPage = () => {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl shadow-md p-6">
               <h1 className="text-2xl font-bold text-navy mb-3">{currentLesson.title}</h1>
-              {currentLesson.description && <p className="text-gray-600 mb-6">{currentLesson.description}</p>}
+              {currentLesson.description && <p className="text-gray-500 mb-4 italic">{currentLesson.description}</p>}
 
-              {/* Contenido según tipo */}
-              {currentLesson.content_type === 'video' && currentLesson.video_url ? (
+              {/* Video de YouTube */}
+              {ytId && (
+                <div className="mb-6">
+                  <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                    <iframe
+                      className="absolute top-0 left-0 w-full h-full rounded-lg"
+                      src={`https://www.youtube.com/embed/${ytId}`}
+                      title={currentLesson.title}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Video directo (no YouTube) */}
+              {!ytId && currentLesson.content_type === 'video' && currentLesson.video_url && (
                 <div className="mb-6">
                   <video src={currentLesson.video_url} controls className="w-full rounded-lg" />
                 </div>
-              ) : currentLesson.content_type === 'document' && currentLesson.document_url ? (
+              )}
+
+              {/* Documento */}
+              {currentLesson.content_type === 'document' && currentLesson.document_url && (
                 <div className="mb-6">
                   <iframe src={currentLesson.document_url} className="w-full h-[600px] rounded-lg border" title="Documento" />
                 </div>
-              ) : currentLesson.content_url ? (
-                <div className="mb-6">
-                  <iframe src={currentLesson.content_url} className="w-full h-[600px] rounded-lg border" title="Contenido" />
+              )}
+
+              {/* Contenido de texto */}
+              {currentLesson.content && (
+                <div className="prose prose-lg max-w-none mb-6">
+                  {renderContent(currentLesson.content)}
                 </div>
-              ) : (
+              )}
+
+              {/* Placeholder si no hay contenido */}
+              {!ytId && !currentLesson.content && !currentLesson.content_url && !currentLesson.document_url && (
                 <div className="mb-6 bg-gray-100 rounded-lg p-8 text-center">
                   <span className="text-4xl block mb-2">📝</span>
-                  <p className="text-gray-500">Esta lección no tiene contenido multimedia todavía</p>
+                  <p className="text-gray-500">Esta lección no tiene contenido todavía</p>
                 </div>
               )}
 
@@ -187,7 +239,7 @@ export const LessonViewerPage = () => {
                           }`}
                         >
                           <span className="mr-2">
-                            {lesson.content_type === 'video' ? '🎥' : lesson.content_type === 'document' ? '📄' : '📝'}
+                            {lesson.content_type === 'video' ? '🎥' : lesson.content_type === 'document' ? '📄' : lesson.content_type === 'mixed' ? '📚' : '📝'}
                           </span>
                           {lesson.title}
                         </button>

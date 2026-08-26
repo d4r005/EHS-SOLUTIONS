@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS lessons (
   content_url VARCHAR(500),
   video_url VARCHAR(500),
   document_url VARCHAR(500),
+  content TEXT,
   duration_minutes INTEGER,
   order_index INTEGER,
   is_required BOOLEAN DEFAULT TRUE,
@@ -87,7 +88,7 @@ CREATE TABLE IF NOT EXISTS lesson_progress (
   UNIQUE(student_id, lesson_id)
 );
 
--- Tabla de Cuestionarios
+-- Tabla de Quizzes
 CREATE TABLE IF NOT EXISTS quizzes (
   id SERIAL PRIMARY KEY,
   lesson_id INTEGER NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
@@ -101,46 +102,33 @@ CREATE TABLE IF NOT EXISTS quizzes (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla de Preguntas del Cuestionario
+-- Tabla de Preguntas de Quiz
 CREATE TABLE IF NOT EXISTS quiz_questions (
   id SERIAL PRIMARY KEY,
   quiz_id INTEGER NOT NULL REFERENCES quizzes(id) ON DELETE CASCADE,
   question_text TEXT NOT NULL,
-  question_type VARCHAR(50) CHECK (question_type IN ('multiple_choice', 'true_false', 'short_answer', 'essay')),
-  correct_answer TEXT,
+  option_a TEXT,
+  option_b TEXT,
+  option_c TEXT,
+  option_d TEXT,
+  correct_answer VARCHAR(1) CHECK (correct_answer IN ('a', 'b', 'c', 'd')),
+  explanation TEXT,
   order_index INTEGER,
-  points INTEGER DEFAULT 1,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla de Opciones de Respuesta
-CREATE TABLE IF NOT EXISTS quiz_options (
-  id SERIAL PRIMARY KEY,
-  question_id INTEGER NOT NULL REFERENCES quiz_questions(id) ON DELETE CASCADE,
-  option_text TEXT NOT NULL,
-  is_correct BOOLEAN DEFAULT FALSE,
-  order_index INTEGER
-);
-
--- Tabla de Intentos de Cuestionario
-CREATE TABLE IF NOT EXISTS quiz_attempts (
+-- Tabla de Resultados de Quiz
+CREATE TABLE IF NOT EXISTS quiz_results (
   id SERIAL PRIMARY KEY,
   student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   quiz_id INTEGER NOT NULL REFERENCES quizzes(id) ON DELETE CASCADE,
   score DECIMAL(5, 2),
-  passed BOOLEAN,
-  attempted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  total_questions INTEGER,
+  correct_answers INTEGER,
+  answers JSONB,
+  started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   completed_at TIMESTAMP,
-  time_spent_minutes INTEGER
-);
-
--- Tabla de Respuestas a Preguntas
-CREATE TABLE IF NOT EXISTS quiz_answers (
-  id SERIAL PRIMARY KEY,
-  attempt_id INTEGER NOT NULL REFERENCES quiz_attempts(id) ON DELETE CASCADE,
-  question_id INTEGER NOT NULL REFERENCES quiz_questions(id) ON DELETE CASCADE,
-  student_answer TEXT,
-  is_correct BOOLEAN
+  UNIQUE(student_id, quiz_id)
 );
 
 -- Tabla de Certificados
@@ -150,22 +138,7 @@ CREATE TABLE IF NOT EXISTS certificates (
   course_id INTEGER NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
   certificate_number VARCHAR(100) UNIQUE,
   issued_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  expiry_date TIMESTAMP,
-  certificate_url VARCHAR(500),
-  is_valid BOOLEAN DEFAULT TRUE
+  pdf_url VARCHAR(500),
+  is_valid BOOLEAN DEFAULT TRUE,
+  UNIQUE(student_id, course_id)
 );
-
--- Índices para mejorar rendimiento
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_courses_instructor_id ON courses(instructor_id);
-CREATE INDEX idx_modules_course_id ON modules(course_id);
-CREATE INDEX idx_lessons_module_id ON lessons(module_id);
-CREATE INDEX idx_enrollments_student_id ON enrollments(student_id);
-CREATE INDEX idx_enrollments_course_id ON enrollments(course_id);
-CREATE INDEX idx_lesson_progress_student_id ON lesson_progress(student_id);
-CREATE INDEX idx_quiz_attempts_student_id ON quiz_attempts(student_id);
-CREATE INDEX idx_certificates_student_id ON certificates(student_id);
-
--- ============================================
--- FIN DE SCHEMA
--- ============================================
