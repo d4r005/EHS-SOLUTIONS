@@ -99,8 +99,12 @@ export const CoursesPage = () => {
                 onClick={() => navigate(`/courses/${course.id}`)}
                 className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition cursor-pointer"
               >
-                <div className="h-40 bg-gradient-to-br from-navy to-navy-deep flex items-center justify-center">
-                  <span className="text-5xl">📚</span>
+                <div className="h-40 bg-gradient-to-br from-navy to-navy-deep flex items-center justify-center overflow-hidden">
+                  {course.thumbnail_url ? (
+                    <img src={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-5xl">📚</span>
+                  )}
                 </div>
                 <div className="p-5">
                   <div className="flex justify-between items-start mb-2">
