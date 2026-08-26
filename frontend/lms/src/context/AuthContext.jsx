@@ -12,7 +12,7 @@ const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!!localStorage.getItem('token')); // true si hay token
   const [error, setError] = useState(null);
 
   // Cargar perfil al montar si hay token
@@ -20,11 +20,14 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       localStorage.setItem('token', token);
       fetchProfile();
+    } else {
+      setLoading(false);
     }
   }, [token]);
 
   const fetchProfile = async () => {
     try {
+      setLoading(true);
       // Obtener usuario de Supabase Auth
       const authRes = await axios.get(`${SUPABASE_URL}/auth/v1/user`, {
         headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}` },
@@ -85,6 +88,8 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('token');
         localStorage.removeItem('userId');
       }
+    } finally {
+      setLoading(false);
     }
   };
 

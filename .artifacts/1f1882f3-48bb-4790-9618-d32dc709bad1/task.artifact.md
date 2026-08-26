@@ -1,7 +1,5 @@
-- [/] Estabilización de Acceso Admin
-    - [ ] Sincronizar estado de carga de Auth en `CourseDetailPage.jsx`
-    - [ ] Habilitar navegación Admin en el Dashboard
-- [ ] Asegurar Visualización de Exámenes
-    - [ ] Crear script de vinculación de Quizzes por Nombre (Rescate)
-    - [ ] Refinar UI del botón de examen en `LessonViewerPage.jsx`
-- [ ] Realizar Commit y Push
+- [/] Estabilización de Acceso Admin y Visibilidad de Exámenes
+    - [ ] Corregir estado inicial de carga en `AuthContext.jsx` para evitar detección errónea de rol
+    - [ ] Asegurar que `CourseDetailPage.jsx` renderice los badges de examen ("📋 Examen Final")
+    - [ ] Generar y proporcionar el script SQL de Vinculación por Posición (Última lección)
+- [ ] Realizar Commit y Push a GitHub
