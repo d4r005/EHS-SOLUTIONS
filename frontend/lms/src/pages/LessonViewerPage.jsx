@@ -19,17 +19,6 @@ function getYouTubeId(url) {
   return null;
 }
 
-// Helper para procesar texto con negritas (**texto**)
-function parseInlines(text) {
-  if (!text) return text;
-  const parts = text.split(/(\*\*.*?\*\*)/g);
-  return parts.map((part, i) => {
-    if (part.startsWith('**') && part.endsWith('**')) {
-      return <strong key={i} className="font-bold text-navy">{part.slice(2, -2)}</strong>;
-    }
-    return part;
-  });
-}
 
 // Helper para procesar texto con negritas (**texto**)
 function parseInlines(text) {
