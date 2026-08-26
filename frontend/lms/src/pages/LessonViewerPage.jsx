@@ -170,7 +170,9 @@ export const LessonViewerPage = () => {
 
       setCurrentLesson(lessonData.lesson);
 
+      console.log("Buscando examen para lección ID:", lessonId);
       const associatedQuiz = await quizService.getQuizByLesson(lessonId);
+      console.log("Examen encontrado:", associatedQuiz);
       setQuiz(associatedQuiz);
     } catch (err) {
       console.error('Error loading lesson:', err);
@@ -309,13 +311,20 @@ export const LessonViewerPage = () => {
               )}
 
               {/* Botón de examen si la lección tiene uno */}
-              {quiz && (
+              {quiz ? (
                 <button
                   onClick={() => navigate(`/courses/${courseId}/quiz/${quiz.id}`)}
                   className="w-full py-3 border-2 border-navy text-navy rounded-lg hover:bg-navy hover:text-white font-semibold transition mb-3"
                 >
                   📋 Tomar examen: {quiz.title}
                 </button>
+              ) : (
+                user?.role === 'admin' && (
+                  <div className="mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700 text-sm">
+                    <strong>Aviso de Admin:</strong> No se encontró ningún examen vinculado a la lección ID: {lessonId}.
+                    Verifique que el examen esté marcado como "is_active = true" en la base de datos.
+                  </div>
+                )
               )}
 
               {/* Botón completar */}
