@@ -20,6 +20,16 @@ rest.interceptors.request.use((config) => {
 });
 
 export const quizService = {
+  // Obtener un quiz por ID (con seguridad)
+  getQuizById: async (quizId) => {
+    try {
+      const { data } = await rest.get(`/quizzes?id=eq.${quizId}&select=*`);
+      return data[0] || null;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
   // Obtener el quiz asociado a una lección (si existe)
   getQuizByLesson: async (lessonId) => {
     try {

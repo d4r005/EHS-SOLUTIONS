@@ -1,42 +1,37 @@
-# Plan de Implementación: Estabilización de Acceso Admin y Visualización de Exámenes
+# Plan: Activación Global de Exámenes y Solución de Error "No encontrado"
 
-Este plan corrige la inconsistencia detectada donde el rol de Administrador no siempre desbloquea el modo revisión y asegura que los exámenes (Quizzes) aparezcan en las lecciones correspondientes.
+Este plan aborda el error técnico que impide visualizar los exámenes y realiza la carga masiva de evaluaciones para los 7 cursos de la plataforma.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> Se requiere que el usuario verifique si los cursos tienen lecciones cargadas con el título exacto que contiene la palabra "Rescate", ya que el script de Quizzes depende de esto para vincular el examen.
+> El script SQL creará un total de **21 preguntas técnicas** distribuidas en los 7 cursos. Se vincularán automáticamente a la última lección de cada programa.
 
-## 1. Corrección de Inconsistencia en Modo Revisión (Admin)
+## 1. Correcciones de Código (Frontend)
 
-### Problema
-En algunos cursos, el Administrador ve el botón "Inscribirme" en lugar de "Revisar contenido". Esto ocurre por una condición de carrera (race condition) donde la información del curso se carga antes de que el perfil del usuario (y su rol) esté listo en el cliente.
+### [MODIFY] [quizService.js](file:///C:/Users/dtruj/AndroidStudioProjects/EHS-SOLUTIONS/frontend/lms/src/services/quizService.js)
+- Agregar método `getQuizById(id)` para centralizar la obtención de datos del examen con los encabezados de seguridad correctos.
 
-### Solución
-Modificar `CourseDetailPage.jsx` para esperar a que el estado de autenticación termine de cargar antes de decidir qué botón mostrar.
+### [MODIFY] [QuizPage.jsx](file:///C:/Users/dtruj/AndroidStudioProjects/EHS-SOLUTIONS/frontend/lms/src/pages/QuizPage.jsx)
+- Reemplazar el `fetch` directo por la llamada al servicio `quizService.getQuizById`.
+- Asegurar que el estado `loading` se maneje correctamente para evitar parpadeos de "Examen no encontrado".
 
-#### [MODIFY] [CourseDetailPage.jsx](file:///C:/Users/dtruj/AndroidStudioProjects/EHS-SOLUTIONS/frontend/lms/src/pages/CourseDetailPage.jsx)
-- Importar `loading` desde `useAuth`.
-- Si `authLoading` es true, mostrar el spinner de carga en lugar de renderizar el contenido con datos de usuario incompletos.
-- Asegurar que `canViewContent` se recalcule correctamente cuando `user` cambie.
+## 2. Carga Masiva de Contenido (Base de Datos)
 
-## 2. Asegurar Visualización de Exámenes (Quizzes)
-
-### Problema
-Los exámenes no aparecen al final de las lecciones. Esto puede deberse a que el script SQL no encontró la lección correcta para vincular el `quiz_id` debido a IDs desincronizados.
-
-### Solución
-Proporcionar un script SQL de "Vinculación Manual de Quizzes" basado en nombres de cursos y lecciones, y mejorar la visualización en el frontend.
-
-#### [MODIFY] [LessonViewerPage.jsx](file:///C:/Users/dtruj/AndroidStudioProjects/EHS-SOLUTIONS/frontend/lms/src/pages/LessonViewerPage.jsx)
-- Añadir un log de depuración (opcional para desarrollo) para verificar si se está intentando buscar un quiz.
-- Asegurar que el botón de examen sea prominente.
-
-## 3. Mejora en Dashboard para Admin
-
-#### [MODIFY] [DashboardPage.jsx](file:///C:/Users/dtruj/AndroidStudioProjects/EHS-SOLUTIONS/frontend/lms/src/pages/DashboardPage.jsx)
-- Si el usuario es Admin, permitir que el botón "Continuar Aprendiendo" funcione incluso si el progreso es 0 o no hay inscripción formal (modo revisión).
+### [NEW] [full_exams_load.sql](file:///C:/Users/dtruj/AndroidStudioProjects/EHS-SOLUTIONS/database/full_exams_load.sql)
+Prepararé un script que:
+1. **Borra** registros de exámenes previos para evitar duplicidad.
+2. **Crea** un examen para cada uno de los 7 cursos vinculándolo a la lección final.
+3. **Inserta** 3 preguntas técnicas por curso basadas en:
+   - **Alturas**: NOM-009, EPP, Rescate.
+   - **Soldadura**: NOM-027, Riesgos eléctricos, Radiación.
+   - **Brigadas**: Primeros auxilios, Evacuación, Incendios.
+   - **Espacios Confinados**: NOM-033, Atmósferas, Monitoreo.
+   - **LOTO**: Bloqueo, Energías peligrosas, Verificación.
+   - **Instructores**: Andragogía, Diseño didáctico, Evaluación.
+   - **Supervisores**: Liderazgo SST, Investigación de accidentes, Gestión.
 
 ## Verificación Plan
-1. Entrar como Admin y verificar que en TODOS los cursos aparece el botón de "Revisar contenido".
-2. Navegar a la lección final de "Seguridad en Alturas" y confirmar que el botón "📋 Tomar examen" es visible.
+- Acceder a cada uno de los 7 cursos y confirmar que la última lección muestra el botón de examen.
+- Abrir un examen y confirmar que las preguntas se cargan correctamente.
+- Realizar un examen y verificar que el sistema califica y guarda el resultado.

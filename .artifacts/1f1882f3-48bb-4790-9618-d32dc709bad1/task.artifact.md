@@ -1,5 +1,5 @@
-- [/] Estabilización de Acceso Admin y Visibilidad de Exámenes
-    - [ ] Corregir estado inicial de carga en `AuthContext.jsx` para evitar detección errónea de rol
-    - [ ] Asegurar que `CourseDetailPage.jsx` renderice los badges de examen ("📋 Examen Final")
-    - [ ] Generar y proporcionar el script SQL de Vinculación por Posición (Última lección)
+- [ ] Corregir `quizService.js`: Añadir `getQuizById` con seguridad
+- [ ] Corregir `QuizPage.jsx`: Usar el nuevo servicio y manejar estados de carga
+- [ ] Generar `database/full_exams_load.sql` con 7 exámenes y 21 preguntas técnicas
 - [ ] Realizar Commit y Push a GitHub
+- [ ] Entregar script SQL final al usuario

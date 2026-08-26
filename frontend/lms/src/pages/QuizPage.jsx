@@ -20,24 +20,31 @@ export const QuizPage = () => {
   const fetchQuiz = async () => {
     try {
       setLoading(true);
-      const existing = await quizService.getMyResult(quizId);
-      const qs = await quizService.getQuestionsForTaking(quizId);
+      setError(null);
+
+      const [quizData, existing, qs] = await Promise.all([
+        quizService.getQuizById(quizId),
+        quizService.getMyResult(quizId),
+        quizService.getQuestionsForTaking(quizId)
+      ]);
+
+      if (!quizData) {
+        setError('Examen no encontrado');
+        return;
+      }
+
+      setQuiz(quizData);
       setQuestions(qs);
+
       if (existing) {
         setResult({
           score: existing.score,
           total: existing.total_questions,
           correct: existing.correct_answers,
-          passed: existing.score >= 70,
+          passed: existing.score >= (quizData.passing_score || 70),
           alreadyTaken: true,
         });
       }
-      // Necesitamos los datos del quiz (título, passing_score)
-      const quizzesData = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/quizzes?id=eq.${quizId}&select=*`,
-        { headers: { apikey: import.meta.env.VITE_SUPABASE_KEY } }
-      ).then((r) => r.json());
-      setQuiz(quizzesData[0]);
     } catch (err) {
       console.error(err);
       setError('No se pudo cargar el examen');
