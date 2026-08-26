@@ -25,11 +25,21 @@ export const Navbar = () => {
               <Link to="/dashboard" className="text-navy hover:text-green-600">
                 Dashboard
               </Link>
+              {(user.role === 'instructor' || user.role === 'admin') && (
+                <Link to="/instructor" className="text-navy hover:text-green-600">
+                  Instructor
+                </Link>
+              )}
+              {user.role === 'admin' && (
+                <Link to="/admin" className="text-navy hover:text-green-600">
+                  Admin
+                </Link>
+              )}
               <div className="flex items-center gap-3 pl-6 border-l border-gray-200">
-                <div>
+                <Link to="/profile" className="text-right hover:opacity-75 transition">
                   <p className="text-sm font-semibold text-navy">{user.first_name}</p>
                   <p className="text-xs text-gray-500">{user.role}</p>
-                </div>
+                </Link>
                 <button
                   onClick={logout}
                   className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"

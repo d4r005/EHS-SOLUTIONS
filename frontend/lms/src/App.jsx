@@ -7,10 +7,17 @@ import { Navbar } from './components/Navbar';
 import { HomePage } from './pages/HomePage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
+import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { CoursesPage } from './pages/CoursesPage';
 import { CourseDetailPage } from './pages/CourseDetailPage';
 import { LessonViewerPage } from './pages/LessonViewerPage';
+import { QuizPage } from './pages/QuizPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { InstructorDashboard } from './pages/instructor/InstructorDashboard';
+import { CourseEditorPage } from './pages/instructor/CourseEditorPage';
+import { AdminDashboard } from './pages/admin/AdminDashboard';
 
 const PublicRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -47,8 +54,10 @@ function AppContent() {
             </PublicRoute>
           }
         />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-        {/* Protected Routes */}
+        {/* Protected Routes - cualquier usuario autenticado */}
         <Route
           path="/dashboard"
           element={
@@ -58,10 +67,54 @@ function AppContent() {
           }
         />
         <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/courses/:id/lessons/:lessonId"
           element={
             <ProtectedRoute>
               <LessonViewerPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/courses/:id/quiz/:quizId"
+          element={
+            <ProtectedRoute>
+              <QuizPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Instructor / Admin */}
+        <Route
+          path="/instructor"
+          element={
+            <ProtectedRoute allowedRoles={['instructor', 'admin']}>
+              <InstructorDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/instructor/courses/:id"
+          element={
+            <ProtectedRoute allowedRoles={['instructor', 'admin']}>
+              <CourseEditorPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminDashboard />
             </ProtectedRoute>
           }
         />

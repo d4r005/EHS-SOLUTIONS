@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { emailService } from '../services/emailService';
 
 export const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -47,6 +48,7 @@ export const RegisterPage = () => {
     );
 
     if (success) {
+      emailService.sendWelcomeEmail(formData.email, formData.firstName);
       navigate('/dashboard');
     }
   };

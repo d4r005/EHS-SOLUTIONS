@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { courseService } from '../services/courseService';
+import { quizService } from '../services/quizService';
+import { emailService } from '../services/emailService';
+import { certificateService } from '../services/certificateService';
+import { useAuth } from '../context/AuthContext';
 
 // Extrae el video ID de diferentes formatos de URL de YouTube
 function getYouTubeId(url) {
@@ -38,6 +42,8 @@ export const LessonViewerPage = () => {
   const [completing, setCompleting] = useState(false);
   const [allLessons, setAllLessons] = useState([]);
   const [currentLessonIndex, setCurrentLessonIndex] = useState(-1);
+  const [quiz, setQuiz] = useState(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchData();
@@ -64,6 +70,9 @@ export const LessonViewerPage = () => {
       setCurrentLessonIndex(idx);
 
       setCurrentLesson(lessonData.lesson);
+
+      const associatedQuiz = await quizService.getQuizByLesson(lessonId);
+      setQuiz(associatedQuiz);
     } catch (err) {
       console.error('Error loading lesson:', err);
     } finally {
@@ -77,6 +86,19 @@ export const LessonViewerPage = () => {
       await courseService.completeLesson(lessonId);
       const lessonData = await courseService.getLessonById(lessonId);
       setCurrentLesson(lessonData.lesson);
+
+      // Revisar si el curso llegó a 100% para notificar y ofrecer certificado
+      const progress = await courseService.getCourseProgress(courseId);
+      if (progress?.percentage >= 100 && user) {
+        emailService.sendCourseCompletedEmail(user.email, user.first_name, allLessons[0]?.moduleTitle || 'tu curso');
+        try {
+          const cert = await certificateService.getOrCreateCertificate(courseId);
+          emailService.sendCertificateReadyEmail(user.email, user.first_name, allLessons[0]?.moduleTitle || 'tu curso', cert.certificate_number);
+        } catch (e) {
+          // el certificado se puede generar después desde el perfil
+        }
+      }
+
       goToNextLesson();
     } catch (err) {
       console.error('Error completing lesson:', err);
@@ -185,6 +207,16 @@ export const LessonViewerPage = () => {
                   <span className="text-4xl block mb-2">📝</span>
                   <p className="text-gray-500">Esta lección no tiene contenido todavía</p>
                 </div>
+              )}
+
+              {/* Botón de examen si la lección tiene uno */}
+              {quiz && (
+                <button
+                  onClick={() => navigate(`/courses/${courseId}/quiz/${quiz.id}`)}
+                  className="w-full py-3 border-2 border-navy text-navy rounded-lg hover:bg-navy hover:text-white font-semibold transition mb-3"
+                >
+                  📋 Tomar examen: {quiz.title}
+                </button>
               )}
 
               {/* Botón completar */}

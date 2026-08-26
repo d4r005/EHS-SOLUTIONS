@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { courseService } from '../services/courseService';
+import { certificateService } from '../services/certificateService';
+import { paymentService } from '../services/paymentService';
 
 export const CourseDetailPage = () => {
   const { id } = useParams();
@@ -10,10 +12,27 @@ export const CourseDetailPage = () => {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(false);
+  const [paying, setPaying] = useState(false);
+  const [downloadingCert, setDownloadingCert] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchCourse();
+  }, [id]);
+
+  useEffect(() => {
+    // Tras volver de Stripe Checkout, reintenta refrescar unos segundos
+    // por si el webhook todavía está procesando la inscripción
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') === 'success') {
+      let attempts = 0;
+      const interval = setInterval(() => {
+        attempts += 1;
+        fetchCourse();
+        if (attempts >= 5) clearInterval(interval);
+      }, 2000);
+      return () => clearInterval(interval);
+    }
   }, [id]);
 
   const fetchCourse = async () => {
@@ -43,6 +62,38 @@ export const CourseDetailPage = () => {
       setError(err.message || 'Error al inscribirse');
     } finally {
       setEnrolling(false);
+    }
+  };
+
+  const handleBuy = async () => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    try {
+      setPaying(true);
+      await paymentService.startCheckout(id, user);
+      // startCheckout redirige a Stripe; si falla, cae al catch
+    } catch (err) {
+      setError(err.message || 'No se pudo iniciar el pago');
+      setPaying(false);
+    }
+  };
+
+  const handleDownloadCertificate = async () => {
+    try {
+      setDownloadingCert(true);
+      const cert = await certificateService.getOrCreateCertificate(id);
+      certificateService.downloadCertificatePDF(
+        cert,
+        `${user.first_name} ${user.last_name}`,
+        course.title,
+        course.duration_hours
+      );
+    } catch (err) {
+      setError(err.message || 'No se pudo generar el certificado');
+    } finally {
+      setDownloadingCert(false);
     }
   };
 
@@ -123,15 +174,29 @@ export const CourseDetailPage = () => {
                   <span className="font-semibold text-navy">{Math.round(course.enrollment.progress_percentage || 0)}%</span>
                 </div>
               </div>
-              <button onClick={handleStartLearning} className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition">
-                {course.enrollment.progress_percentage > 0 ? 'Continuar Aprendiendo' : 'Comenzar Curso'}
-              </button>
+              <div className="flex gap-3">
+                {course.enrollment.progress_percentage >= 100 && (
+                  <button onClick={handleDownloadCertificate} disabled={downloadingCert} className="px-6 py-3 bg-navy text-white rounded-lg hover:bg-navy-light font-semibold transition disabled:opacity-50">
+                    {downloadingCert ? 'Generando...' : '🏆 Descargar certificado'}
+                  </button>
+                )}
+                <button onClick={handleStartLearning} className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition">
+                  {course.enrollment.progress_percentage > 0 ? 'Continuar Aprendiendo' : 'Comenzar Curso'}
+                </button>
+              </div>
             </>
           ) : canViewContent ? (
             <>
               <p className="text-gray-600">Modo revisión ({user?.role}): puedes ver el contenido sin inscribirte</p>
               <button onClick={handleStartLearning} className="px-6 py-3 bg-navy text-white rounded-lg hover:bg-navy-light font-semibold transition">
                 Revisar contenido
+              </button>
+            </>
+          ) : course.price > 0 ? (
+            <>
+              <p className="text-gray-600">Compra este curso para acceder a todo el contenido</p>
+              <button onClick={handleBuy} disabled={paying} className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition disabled:opacity-50">
+                {paying ? 'Redirigiendo...' : isAuthenticated ? `Comprar por $${course.price} MXN` : 'Inicia sesión para comprar'}
               </button>
             </>
           ) : (

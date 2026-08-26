@@ -49,9 +49,14 @@ export const LoginPage = () => {
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-semibold text-navy mb-2">
-                Contraseña
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-semibold text-navy">
+                  Contraseña
+                </label>
+                <Link to="/forgot-password" className="text-xs text-green-600 hover:text-green-700 font-semibold">
+                  ¿Olvidaste tu contraseña?
+                </Link>
+              </div>
               <input
                 type="password"
                 value={password}
