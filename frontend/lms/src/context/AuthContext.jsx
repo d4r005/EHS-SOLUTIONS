@@ -30,11 +30,28 @@ export const AuthProvider = ({ children }) => {
         headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}` },
       });
 
-      // Buscar perfil en public.users por email
-      const profileRes = await axios.get(
-        `${SUPABASE_URL}/rest/v1/users?email=eq.${authRes.data.email}&select=id,first_name,last_name,email,role`,
+      // 2. Obtener perfil de public.users usando auth_id (más confiable) o email
+      let profileRes = await axios.get(
+        `${SUPABASE_URL}/rest/v1/users?auth_id=eq.${authRes.data.id}&select=id,first_name,last_name,email,role`,
         { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}` } }
       );
+
+      // Si no lo encuentra por auth_id, intentar por email y vincularlo
+      if (!profileRes.data.length) {
+        profileRes = await axios.get(
+          `${SUPABASE_URL}/rest/v1/users?email=eq.${authRes.data.email}&select=id,first_name,last_name,email,role`,
+          { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}` } }
+        );
+
+        if (profileRes.data.length) {
+          // Vincular auth_id al usuario existente
+          await axios.patch(
+            `${SUPABASE_URL}/rest/v1/users?id=eq.${profileRes.data[0].id}`,
+            { auth_id: authRes.data.id },
+            { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}` } }
+          );
+        }
+      }
 
       if (profileRes.data.length) {
         const profile = profileRes.data[0];
@@ -48,6 +65,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('userId', profile.id);
       } else {
         // Usuario existe en Auth pero no en public.users - usar metadata
+        // El trigger de Supabase debería haber creado esto, pero usamos esto como red de seguridad
         setUser({
           id: 0,
           first_name: authRes.data.user_metadata?.first_name || '',
@@ -55,14 +73,18 @@ export const AuthProvider = ({ children }) => {
           email: authRes.data.email,
           role: authRes.data.user_metadata?.role || 'student',
         });
+        localStorage.setItem('userId', '0');
       }
       setError(null);
     } catch (err) {
       console.error('Error fetching profile:', err);
-      setToken(null);
-      setUser(null);
-      localStorage.removeItem('token');
-      localStorage.removeItem('userId');
+      // Solo desconectar si es un error de token inválido (401), no de red
+      if (err.response?.status === 401) {
+        setToken(null);
+        setUser(null);
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+      }
     }
   };
 
@@ -73,7 +95,11 @@ export const AuthProvider = ({ children }) => {
       // 1. Signup en Supabase Auth
       await axios.post(
         `${SUPABASE_URL}/auth/v1/signup`,
-        { email, password, user_metadata: { first_name: firstName, last_name: lastName, role: 'student' } },
+        {
+          email,
+          password,
+          data: { first_name: firstName, last_name: lastName, role: 'student' }
+        },
         { headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' } }
       );
 
@@ -84,17 +110,26 @@ export const AuthProvider = ({ children }) => {
         { headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' } }
       );
       const accessToken = loginRes.data.access_token;
+      const authId = loginRes.data.user.id;
 
-      // 3. Insertar en public.users
+      // 3. Insertar en public.users con auth_id
       await axios.post(
         `${SUPABASE_URL}/rest/v1/users`,
-        { first_name: firstName, last_name: lastName, email, password: 'managed_by_auth', role: 'student', is_active: true },
+        {
+          auth_id: authId,
+          first_name: firstName,
+          last_name: lastName,
+          email,
+          password: 'managed_by_auth',
+          role: 'student',
+          is_active: true
+        },
         { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' } }
       );
 
       // 4. Obtener perfil
       const profileRes = await axios.get(
-        `${SUPABASE_URL}/rest/v1/users?email=eq.${email}&select=id,first_name,last_name,email,role`,
+        `${SUPABASE_URL}/rest/v1/users?auth_id=eq.${authId}&select=id,first_name,last_name,email,role`,
         { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${accessToken}` } }
       );
 
@@ -113,7 +148,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('userId', profile.id);
       return true;
     } catch (err) {
-      const message = err.response?.data?.message || err.response?.data?.msg || 'Error al registrarse';
+      const message = err.response?.data?.msg || err.response?.data?.message || 'Error al registrarse';
       setError(message);
       return false;
     } finally {
@@ -132,12 +167,30 @@ export const AuthProvider = ({ children }) => {
         { headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' } }
       );
       const accessToken = loginRes.data.access_token;
+      const authId = loginRes.data.user.id;
 
       // 2. Obtener perfil de public.users
-      const profileRes = await axios.get(
-        `${SUPABASE_URL}/rest/v1/users?email=eq.${email}&select=id,first_name,last_name,email,role`,
+      let profileRes = await axios.get(
+        `${SUPABASE_URL}/rest/v1/users?auth_id=eq.${authId}&select=id,first_name,last_name,email,role`,
         { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${accessToken}` } }
       );
+
+      // Fallback por email si no tiene auth_id vinculado
+      if (!profileRes.data.length) {
+        profileRes = await axios.get(
+          `${SUPABASE_URL}/rest/v1/users?email=eq.${email}&select=id,first_name,last_name,email,role`,
+          { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${accessToken}` } }
+        );
+
+        if (profileRes.data.length) {
+          // Vincular auth_id ahora
+          await axios.patch(
+            `${SUPABASE_URL}/rest/v1/users?id=eq.${profileRes.data[0].id}`,
+            { auth_id: authId },
+            { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${accessToken}` } }
+          );
+        }
+      }
 
       let newUser;
       if (profileRes.data.length) {
