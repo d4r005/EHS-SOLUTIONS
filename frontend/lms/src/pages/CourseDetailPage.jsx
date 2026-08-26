@@ -56,6 +56,8 @@ export const CourseDetailPage = () => {
   };
 
   const isEnrolled = course?.enrollment;
+  // Admin/instructor pueden revisar el contenido (textos y videos) sin inscribirse
+  const canViewContent = isEnrolled || ['admin', 'instructor'].includes(user?.role);
 
   if (loading) {
     return (
@@ -125,6 +127,13 @@ export const CourseDetailPage = () => {
                 {course.enrollment.progress_percentage > 0 ? 'Continuar Aprendiendo' : 'Comenzar Curso'}
               </button>
             </>
+          ) : canViewContent ? (
+            <>
+              <p className="text-gray-600">Modo revisión ({user?.role}): puedes ver el contenido sin inscribirte</p>
+              <button onClick={handleStartLearning} className="px-6 py-3 bg-navy text-white rounded-lg hover:bg-navy-light font-semibold transition">
+                Revisar contenido
+              </button>
+            </>
           ) : (
             <>
               <p className="text-gray-600">Inscríbete para acceder a todo el contenido</p>
@@ -157,8 +166,8 @@ export const CourseDetailPage = () => {
                       {module.lessons.map((lesson) => (
                         <div
                           key={lesson.id}
-                          onClick={() => isEnrolled && navigate(`/courses/${id}/lessons/${lesson.id}`)}
-                          className={`px-5 py-3 flex items-center justify-between ${isEnrolled ? 'hover:bg-gray-50 cursor-pointer' : 'opacity-70'}`}
+                          onClick={() => canViewContent && navigate(`/courses/${id}/lessons/${lesson.id}`)}
+                          className={`px-5 py-3 flex items-center justify-between ${canViewContent ? 'hover:bg-gray-50 cursor-pointer' : 'opacity-70'}`}
                         >
                           <div className="flex items-center gap-3">
                             <span className="text-gray-400">
