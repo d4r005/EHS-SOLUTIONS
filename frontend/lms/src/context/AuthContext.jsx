@@ -3,6 +3,9 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
+// URL de la Edge Function de Supabase
+const API_URL = import.meta.env.VITE_API_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co/functions/v1/api';
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -22,7 +25,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchProfile = async () => {
     try {
-      const response = await axios.get('/api/auth/profile');
+      const response = await axios.get(`${API_URL}/auth/profile`);
       setUser(response.data.user);
       setError(null);
     } catch (err) {
@@ -36,7 +39,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post('/api/auth/register', {
+      const response = await axios.post(`${API_URL}/auth/register`, {
         first_name: firstName,
         last_name: lastName,
         email,
@@ -59,7 +62,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post('/api/auth/login', {
+      const response = await axios.post(`${API_URL}/auth/login`, {
         email,
         password,
       });

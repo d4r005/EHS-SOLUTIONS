@@ -1,0 +1,5 @@
+# Supabase config
+project_id = "tsqlpjliqslgzookdqvg"
+
+[functions.api]
+verify_jwt = false
