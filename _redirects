@@ -1,1 +1,8 @@
-/app/*  /app/index.html  200
+/app/login                              /app/index.html  200
+/app/register                           /app/index.html  200
+/app/dashboard                          /app/index.html  200
+/app/courses                            /app/index.html  200
+/app/courses/:id                        /app/index.html  200
+/app/courses/:id/lessons/:lessonId      /app/index.html  200
+/app                                     /app/index.html  200
+/app/*                                  /app/index.html  200
