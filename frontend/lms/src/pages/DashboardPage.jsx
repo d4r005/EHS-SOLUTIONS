@@ -130,7 +130,10 @@ const StatCard = ({ icon, label, value, color }) => {
 };
 
 const CourseCard = ({ enrollment }) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const courseTitle = enrollment.title || `Curso #${enrollment.course_id}`;
+  const isAdmin = ['admin', 'instructor'].includes(user?.role);
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition">
@@ -157,13 +160,15 @@ const CourseCard = ({ enrollment }) => {
         {/* Progress Bar */}
         <div className="mb-5">
           <div className="flex justify-between items-center mb-1">
-            <span className="text-xs font-semibold text-navy">Tu progreso</span>
-            <span className="text-xs text-gray-600">{Math.round(enrollment.progress_percentage)}%</span>
+            <span className="text-xs font-semibold text-navy">
+              {isAdmin ? 'Estado: Modo Revisión' : 'Tu progreso'}
+            </span>
+            {!isAdmin && <span className="text-xs text-gray-600">{Math.round(enrollment.progress_percentage)}%</span>}
           </div>
           <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
             <div
-              className="h-full bg-green-600 transition-all duration-1000"
-              style={{ width: `${enrollment.progress_percentage}%` }}
+              className={`h-full ${isAdmin ? 'bg-navy' : 'bg-green-600'} transition-all duration-1000`}
+              style={{ width: `${isAdmin ? 100 : enrollment.progress_percentage}%` }}
             ></div>
           </div>
         </div>
@@ -171,9 +176,9 @@ const CourseCard = ({ enrollment }) => {
         {/* Action */}
         <Link
           to={`/courses/${enrollment.course_id}`}
-          className="block w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-bold shadow-sm text-center"
+          className={`block w-full py-3 ${isAdmin ? 'bg-navy hover:bg-navy-light' : 'bg-green-600 hover:bg-green-700'} text-white rounded-lg transition text-sm font-bold shadow-sm text-center`}
         >
-          Continuar Aprendiendo
+          {isAdmin ? '🛡️ Revisar Curso' : 'Continuar Aprendiendo'}
         </Link>
       </div>
     </div>

@@ -55,7 +55,7 @@ export const courseService = {
   getCourseById: async (id) => {
     try {
       const { data } = await rest.get(
-        `/courses?id=eq.${id}&select=*,instructor:users!instructor_id(first_name,last_name),modules(id,title,description,order_index,lessons(id,title,description,content_type,content_url,video_url,document_url,content,duration_minutes,order_index,is_required))`
+        `/courses?id=eq.${id}&select=*,instructor:users!instructor_id(first_name,last_name),modules(id,title,description,order_index,lessons(id,title,description,content_type,content_url,video_url,document_url,content,duration_minutes,order_index,is_required,quizzes(id)))`
       );
       if (!data.length) return { success: false, message: 'Curso no encontrado' };
 

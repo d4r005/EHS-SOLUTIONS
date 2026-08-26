@@ -107,8 +107,9 @@ export const CourseDetailPage = () => {
   };
 
   const isEnrolled = course?.enrollment;
+  const isAdmin = ['admin', 'instructor'].includes(user?.role);
   // Admin/instructor pueden revisar el contenido (textos y videos) sin inscribirse
-  const canViewContent = isEnrolled || ['admin', 'instructor'].includes(user?.role);
+  const canViewContent = isEnrolled || isAdmin;
 
   if (loading || authLoading) {
     return (
@@ -163,7 +164,19 @@ export const CourseDetailPage = () => {
       <div className="max-w-5xl mx-auto px-4 py-8">
         {/* Action bar */}
         <div className="bg-white rounded-xl shadow-md p-6 mb-8 flex items-center justify-between flex-wrap gap-4">
-          {isEnrolled ? (
+          {isAdmin ? (
+            <>
+              <div className="bg-navy/5 px-4 py-2 rounded-lg border border-navy/10">
+                <p className="text-navy font-bold flex items-center gap-2">
+                  <span className="text-xl">🛡️</span> Modo Revisión: {user?.role}
+                </p>
+                <p className="text-xs text-gray-500">Tienes acceso total al contenido para evaluación.</p>
+              </div>
+              <button onClick={handleStartLearning} className="px-6 py-3 bg-navy text-white rounded-lg hover:bg-navy-light font-bold transition shadow-sm">
+                Revisar contenido
+              </button>
+            </>
+          ) : isEnrolled ? (
             <>
               <div>
                 <p className="text-sm text-gray-600">Tu progreso</p>
@@ -184,13 +197,6 @@ export const CourseDetailPage = () => {
                   {course.enrollment.progress_percentage > 0 ? 'Continuar Aprendiendo' : 'Comenzar Curso'}
                 </button>
               </div>
-            </>
-          ) : canViewContent ? (
-            <>
-              <p className="text-gray-600">Modo revisión ({user?.role}): puedes ver el contenido sin inscribirte</p>
-              <button onClick={handleStartLearning} className="px-6 py-3 bg-navy text-white rounded-lg hover:bg-navy-light font-semibold transition">
-                Revisar contenido
-              </button>
             </>
           ) : course.price > 0 ? (
             <>
@@ -228,21 +234,31 @@ export const CourseDetailPage = () => {
                   </div>
                   {module.lessons?.length > 0 && (
                     <div className="divide-y divide-gray-100">
-                      {module.lessons.map((lesson) => (
-                        <div
-                          key={lesson.id}
-                          onClick={() => canViewContent && navigate(`/courses/${id}/lessons/${lesson.id}`)}
-                          className={`px-5 py-3 flex items-center justify-between ${canViewContent ? 'hover:bg-gray-50 cursor-pointer' : 'opacity-70'}`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className="text-gray-400">
-                              {lesson.content_type === 'video' ? '🎥' : lesson.content_type === 'document' ? '📄' : '📝'}
-                            </span>
-                            <span className="text-gray-700">{lesson.title}</span>
+                      {module.lessons.map((lesson) => {
+                        const hasQuiz = lesson.quizzes && lesson.quizzes.length > 0;
+                        return (
+                          <div
+                            key={lesson.id}
+                            onClick={() => canViewContent && navigate(`/courses/${id}/lessons/${lesson.id}`)}
+                            className={`px-5 py-4 flex items-center justify-between group ${canViewContent ? 'hover:bg-gray-50 cursor-pointer' : 'opacity-70'}`}
+                          >
+                            <div className="flex items-center gap-4">
+                              <span className="text-gray-400 group-hover:text-green-600 transition">
+                                {lesson.content_type === 'video' ? '🎥' : lesson.content_type === 'document' ? '📄' : '📝'}
+                              </span>
+                              <div>
+                                <p className="text-gray-700 font-medium group-hover:text-navy transition">{lesson.title}</p>
+                                {hasQuiz && (
+                                  <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-navy text-white text-[10px] font-bold rounded uppercase tracking-wider">
+                                    📋 Examen Final
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <span className="text-xs text-gray-400 font-medium">{lesson.duration_minutes || 0} min</span>
                           </div>
-                          <span className="text-xs text-gray-400">{lesson.duration_minutes || 0} min</span>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>
