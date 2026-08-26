@@ -132,6 +132,15 @@
         .nav-cta::after { display: none; }
         .nav-cta:hover { background: var(--green-hover); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(118,184,42,0.3); }
 
+        .nav-login {
+            color: var(--navy) !important;
+            border: 1.5px solid var(--navy);
+            padding: 0.55rem 1.1rem;
+            border-radius: 8px;
+        }
+        .nav-login::after { display: none; }
+        .nav-login:hover { background: var(--navy); color: white !important; }
+
         .menu-toggle {
             display: none;
             flex-direction: column;
@@ -1361,6 +1370,7 @@
                 <a href="#nosotros">Nosotros</a>
                 <a href="#cursos">Programas</a>
                 <a href="#proceso">Proceso</a>
+                <a href="/app/login" class="nav-login">Iniciar Sesión</a>
                 <a href="#contacto" class="nav-cta">Contacto</a>
             </nav>
             <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>

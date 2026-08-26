@@ -75,7 +75,7 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
+    <Router basename="/app">
       <AuthProvider>
         <AppContent />
       </AuthProvider>
