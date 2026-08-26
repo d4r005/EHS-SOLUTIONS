@@ -1,9 +1,5 @@
-- [x] Corregir Dashboard:
-    - [x] Habilitar navegación en `CourseCard`
-    - [x] Mostrar título real del curso
-- [x] Refinar Visor de Lecciones:
-    - [x] Implementar soporte para negritas (`**`)
-    - [x] Implementar soporte para listas (`-`, `1.`)
-    - [x] Añadir espaciado profesional entre bloques
-    - [x] Manejo básico de tablas Markdown
-- [x] Realizar Commit y Push
+- [ ] Actualizar precios de cursos a 350 MXN (Base de Datos)
+- [ ] Refinar `CourseDetailPage.jsx` para diferenciar entre "Inscribirse" (gratis) y "Comprar" ($350 MXN)
+- [ ] Asegurar que los Quizzes estén vinculados al final de los módulos
+- [ ] Verificar la redirección a MercadoPago
+- [ ] Realizar Commit y Push
