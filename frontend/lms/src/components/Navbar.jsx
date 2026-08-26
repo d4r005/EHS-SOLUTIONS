@@ -15,13 +15,15 @@ export const Navbar = () => {
         </Link>
 
         <div className="flex items-center gap-6">
+          {/* Cursos visible para todos */}
+          <Link to="/courses" className="text-navy hover:text-green-600">
+            Cursos
+          </Link>
+
           {user ? (
             <>
               <Link to="/dashboard" className="text-navy hover:text-green-600">
                 Dashboard
-              </Link>
-              <Link to="/courses" className="text-navy hover:text-green-600">
-                Cursos
               </Link>
               <div className="flex items-center gap-3 pl-6 border-l border-gray-200">
                 <div>

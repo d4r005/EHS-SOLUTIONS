@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './context/ProtectedRoute';
 import { Navbar } from './components/Navbar';
@@ -8,8 +8,10 @@ import { HomePage } from './pages/HomePage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { CoursesPage } from './pages/CoursesPage';
+import { CourseDetailPage } from './pages/CourseDetailPage';
+import { LessonViewerPage } from './pages/LessonViewerPage';
 
-// Componente para rutas públicas que redirigen a dashboard si ya estás logueado
 const PublicRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
   if (isAuthenticated) {
@@ -25,6 +27,10 @@ function AppContent() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
+        <Route path="/courses" element={<CoursesPage />} />
+        <Route path="/courses/:id" element={<CourseDetailPage />} />
+
+        {/* Auth Routes */}
         <Route
           path="/login"
           element={
@@ -48,6 +54,14 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/courses/:id/lessons/:lessonId"
+          element={
+            <ProtectedRoute>
+              <LessonViewerPage />
             </ProtectedRoute>
           }
         />
