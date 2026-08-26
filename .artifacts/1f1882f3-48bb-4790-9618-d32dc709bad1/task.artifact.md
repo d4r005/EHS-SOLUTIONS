@@ -1,10 +1,9 @@
-- [/] Corrección de Acceso y Sincronización
-    - [ ] Crear SQL Fix 2.0 (Triggers de sincronización y RLS global)
-    - [ ] Actualizar `AuthContext.jsx` para manejo robusto de `userId`
-- [ ] Activación de Módulos LMS
-    - [ ] Vincular Quizzes en el visor de lecciones
-    - [ ] Activar botón de Certificado en el detalle del curso
-    - [ ] Integrar flujo de checkout con MercadoPago
-- [ ] Refinamiento de Dashboards
-    - [ ] Admin: Lista de usuarios y reportes
-    - [ ] Instructor: Editor de contenido
+- [x] Corregir Dashboard:
+    - [x] Habilitar navegación en `CourseCard`
+    - [x] Mostrar título real del curso
+- [x] Refinar Visor de Lecciones:
+    - [x] Implementar soporte para negritas (`**`)
+    - [x] Implementar soporte para listas (`-`, `1.`)
+    - [x] Añadir espaciado profesional entre bloques
+    - [x] Manejo básico de tablas Markdown
+- [x] Realizar Commit y Push

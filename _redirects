@@ -1,6 +1,2 @@
-/app/login /app/ 200
-/app/register /app/ 200
-/app/dashboard /app/ 200
-/app/courses /app/ 200
-/app/courses/:id /app/ 200
-/app/courses/:id/lessons/:lessonId /app/ 200
+/app/* /app/index.html 200
+/api/* /api/:splat 200

@@ -19,33 +19,103 @@ function getYouTubeId(url) {
   return null;
 }
 
+// Helper para procesar texto con negritas (**texto**)
+function parseInlines(text) {
+  if (!text) return text;
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="font-bold text-navy">{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+}
+
 // Renderiza texto con párrafos y formatea encabezados básicos
 function renderContent(text) {
   if (!text) return null;
-  const paragraphs = text.split('\n\n').filter(p => p.trim());
-  return paragraphs.map((para, i) => {
-    const cleanPara = para.trim();
 
-    // Manejar encabezados Markdown (# H1, ## H2, ### H3)
-    if (cleanPara.startsWith('# ')) {
-      return <h2 key={i} className="text-2xl font-bold text-navy mt-6 mb-3">{cleanPara.replace('# ', '')}</h2>;
+  // Dividir por líneas para procesar listas y tablas
+  const lines = text.split('\n');
+  const renderedElements = [];
+  let currentList = [];
+  let listType = null; // 'ul' o 'ol'
+
+  const flushList = () => {
+    if (currentList.length > 0) {
+      const Tag = listType === 'ol' ? 'ol' : 'ul';
+      renderedElements.push(
+        <Tag key={`list-${renderedElements.length}`} className={`${listType === 'ol' ? 'list-decimal' : 'list-disc'} ml-6 mb-4 space-y-1 text-gray-700`}>
+          {currentList.map((item, idx) => (
+            <li key={idx} className="leading-relaxed">
+              {parseInlines(item)}
+            </li>
+          ))}
+        </Tag>
+      );
+      currentList = [];
+      listType = null;
     }
-    if (cleanPara.startsWith('## ')) {
-      return <h3 key={i} className="text-xl font-bold text-navy mt-5 mb-2">{cleanPara.replace('## ', '')}</h3>;
-    }
-    if (cleanPara.startsWith('### ')) {
-      return <h4 key={i} className="text-lg font-bold text-navy mt-4 mb-2">{cleanPara.replace('### ', '')}</h4>;
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) {
+      flushList();
+      continue;
     }
 
-    // Si la línea es toda mayúscula, la tratamos como un subtítulo
-    const isHeading = cleanPara === cleanPara.toUpperCase() && cleanPara.length < 120 && !cleanPara.includes('.');
-    if (isHeading) {
-      return <h3 key={i} className="text-lg font-bold text-navy mt-5 mb-2">{cleanPara}</h3>;
+    // Encabezados
+    if (line.startsWith('# ')) {
+      flushList();
+      renderedElements.push(<h2 key={i} className="text-2xl font-bold text-navy mt-8 mb-4 border-b pb-2">{line.replace('# ', '')}</h2>);
+    } else if (line.startsWith('## ')) {
+      flushList();
+      renderedElements.push(<h3 key={i} className="text-xl font-bold text-navy mt-6 mb-3">{line.replace('## ', '')}</h3>);
+    } else if (line.startsWith('### ')) {
+      flushList();
+      renderedElements.push(<h4 key={i} className="text-lg font-bold text-navy mt-5 mb-2">{line.replace('### ', '')}</h4>);
     }
+    // Listas Desordenadas (- o *)
+    else if (line.startsWith('- ') || line.startsWith('* ')) {
+      if (listType === 'ol') flushList();
+      listType = 'ul';
+      currentList.push(line.slice(2));
+    }
+    // Listas Ordenadas (1. 2.)
+    else if (/^\d+\.\s/.test(line)) {
+      if (listType === 'ul') flushList();
+      listType = 'ol';
+      currentList.push(line.replace(/^\d+\.\s/, ''));
+    }
+    // Tablas (bloque básico por pipes)
+    else if (line.startsWith('|')) {
+      flushList();
+      // Si la línea es de separación (|---|), la ignoramos
+      if (line.includes('---')) continue;
 
-    return <p key={i} className="text-gray-700 leading-relaxed mb-3">{cleanPara}</p>;
-  });
+      const cells = line.split('|').filter(c => c.trim()).map(c => c.trim());
+      renderedElements.push(
+        <div key={i} className="flex border-b border-gray-100 last:border-0 hover:bg-gray-50 transition">
+          {cells.map((cell, cIdx) => (
+            <div key={cIdx} className={`flex-1 p-2 text-sm ${i === 0 || (lines[i-1] && lines[i-1].trim() === '') ? 'font-bold text-navy' : 'text-gray-600'}`}>
+              {parseInlines(cell)}
+            </div>
+          ))}
+        </div>
+      );
+    }
+    // Párrafos normales
+    else {
+      flushList();
+      renderedElements.push(<p key={i} className="text-gray-700 leading-relaxed mb-4">{parseInlines(line)}</p>);
+    }
+  }
+
+  flushList();
+  return <div className="markdown-body">{renderedElements}</div>;
 }
+
 
 export const LessonViewerPage = () => {
   const { id: courseId, lessonId } = useParams();

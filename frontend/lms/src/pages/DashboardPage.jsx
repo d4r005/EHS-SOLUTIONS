@@ -129,24 +129,35 @@ const StatCard = ({ icon, label, value, color }) => {
 };
 
 const CourseCard = ({ enrollment }) => {
+  const navigate = useNavigate();
+  const courseTitle = enrollment.title || `Curso #${enrollment.course_id}`;
+
   return (
     <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition">
       {/* Thumbnail */}
       <div className="h-32 bg-gradient-to-br from-navy to-navy-deep relative">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-4xl">📚</span>
-        </div>
+        {enrollment.thumbnail_url ? (
+          <img src={enrollment.thumbnail_url} alt={courseTitle} className="w-full h-full object-cover" />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-4xl">📚</span>
+          </div>
+        )}
       </div>
 
       {/* Content */}
       <div className="p-4">
-        <h3 className="font-bold text-navy mb-2">Curso #{enrollment.id}</h3>
-        <p className="text-sm text-gray-600 mb-3">{enrollment.status}</p>
+        <h3 className="font-bold text-navy mb-2 line-clamp-1" title={courseTitle}>
+          {courseTitle}
+        </h3>
+        <p className="text-xs text-gray-500 uppercase font-semibold mb-3">
+          {enrollment.category || 'Capacitación'}
+        </p>
 
         {/* Progress Bar */}
-        <div className="mb-3">
+        <div className="mb-4">
           <div className="flex justify-between items-center mb-1">
-            <span className="text-xs font-semibold text-navy">Progreso</span>
+            <span className="text-xs font-semibold text-navy">Tu progreso</span>
             <span className="text-xs text-gray-600">{Math.round(enrollment.progress_percentage)}%</span>
           </div>
           <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -158,7 +169,10 @@ const CourseCard = ({ enrollment }) => {
         </div>
 
         {/* Button */}
-        <button className="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-semibold">
+        <button
+          onClick={() => navigate(`/courses/${enrollment.course_id}`)}
+          className="w-full py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-bold shadow-sm"
+        >
           Continuar Aprendiendo
         </button>
       </div>
