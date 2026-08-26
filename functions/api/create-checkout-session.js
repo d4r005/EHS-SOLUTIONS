@@ -13,17 +13,18 @@ export async function onRequestPost({ request, env }) {
       return json({ message: 'course_id, student_id y student_email son requeridos' }, 400);
     }
 
-    if (!env.MERCADOPAGO_ACCESS_TOKEN) {
+    const MP_TOKEN = env.MERCADOPAGO_ACCESS_TOKEN;
+    if (!MP_TOKEN) {
       return json({ message: 'Pagos no configurados: falta MERCADOPAGO_ACCESS_TOKEN en el servidor' }, 500);
     }
 
-    const supabaseUrl = env.VITE_SUPABASE_URL || env.SUPABASE_URL;
-    const supabaseKey = env.SUPABASE_SERVICE_ROLE_KEY || env.VITE_SUPABASE_KEY;
+    const SUPABASE_URL = env.SUPABASE_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co';
+    const SUPABASE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 
     // Obtener el curso desde Supabase (nunca confiar en un precio enviado por el cliente)
     const courseRes = await fetch(
-      `${supabaseUrl}/rest/v1/courses?id=eq.${course_id}&is_published=eq.true&select=id,title,price`,
-      { headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` } }
+      `${SUPABASE_URL}/rest/v1/courses?id=eq.${course_id}&is_published=eq.true&select=id,title,price`,
+      { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } }
     );
     const courses = await courseRes.json();
     const course = courses[0];
@@ -65,7 +66,7 @@ export async function onRequestPost({ request, env }) {
     const mpRes = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${env.MERCADOPAGO_ACCESS_TOKEN}`,
+        Authorization: `Bearer ${MP_TOKEN}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(preference),

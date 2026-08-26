@@ -21,13 +21,14 @@ export async function onRequestPost({ request, env }) {
 
     const paymentId = body.data.id;
 
-    if (!env.MERCADOPAGO_ACCESS_TOKEN) {
+    const MP_TOKEN = env.MERCADOPAGO_ACCESS_TOKEN;
+    if (!MP_TOKEN) {
       return new Response('Falta MERCADOPAGO_ACCESS_TOKEN', { status: 500 });
     }
 
     // Obtener los detalles del pago desde la API de MercadoPago
     const payRes = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
-      headers: { Authorization: `Bearer ${env.MERCADOPAGO_ACCESS_TOKEN}` },
+      headers: { Authorization: `Bearer ${MP_TOKEN}` },
     });
     const payment = await payRes.json();
 
@@ -44,12 +45,12 @@ export async function onRequestPost({ request, env }) {
       return new Response('Metadata incompleta', { status: 200 });
     }
 
-    const supabaseUrl = env.VITE_SUPABASE_URL || env.SUPABASE_URL;
+    const SUPABASE_URL = env.SUPABASE_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co';
     const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (serviceKey) {
       // Crear inscripción (idempotente por UNIQUE(student_id, course_id))
-      await fetch(`${supabaseUrl}/rest/v1/enrollments`, {
+      await fetch(`${SUPABASE_URL}/rest/v1/enrollments`, {
         method: 'POST',
         headers: {
           apikey: serviceKey,
@@ -66,7 +67,7 @@ export async function onRequestPost({ request, env }) {
       });
 
       // Registrar la orden de pago
-      await fetch(`${supabaseUrl}/rest/v1/orders`, {
+      await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
         method: 'POST',
         headers: {
           apikey: serviceKey,
