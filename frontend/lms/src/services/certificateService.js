@@ -1,24 +1,5 @@
-import axios from 'axios';
 import { jsPDF } from 'jspdf';
-
-// ============================================
-// EHS Solutions - Certificados (formato similar a DC-3 STPS)
-// Generación de PDF 100% client-side con jsPDF
-// ============================================
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co';
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
-
-const rest = axios.create({
-  baseURL: `${SUPABASE_URL}/rest/v1`,
-  headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' },
-});
-
-rest.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+import { rest } from './api';
 
 function generateCertificateNumber(studentId, courseId) {
   const year = new Date().getFullYear();

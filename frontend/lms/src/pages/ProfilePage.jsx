@@ -3,10 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import { courseService } from '../services/courseService';
 import { certificateService } from '../services/certificateService';
 import { dc3Service } from '../services/dc3Service';
+import { rest, SUPABASE_URL, SUPABASE_KEY } from '../services/api';
 import axios from 'axios';
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co';
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
 
 export const ProfilePage = () => {
   const { user, token } = useAuth();
@@ -35,9 +33,8 @@ export const ProfilePage = () => {
 
   const fetchExtraProfile = async () => {
     try {
-      const { data } = await axios.get(
-        `${SUPABASE_URL}/rest/v1/users?id=eq.${user.id}&select=curp,ocupacion,puesto,company_name,company_rfc`,
-        { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}` } }
+      const { data } = await rest.get(
+        `/users?id=eq.${user.id}&select=curp,ocupacion,puesto,company_name,company_rfc`
       );
       if (data?.[0]) {
         setForm((f) => ({
@@ -75,12 +72,11 @@ export const ProfilePage = () => {
     setSaving(true);
     setMessage(null);
     try {
-      await axios.patch(
-        `${SUPABASE_URL}/rest/v1/users?id=eq.${user.id}`,
+      await rest.patch(
+        `/users?id=eq.${user.id}`,
         { first_name: form.first_name, last_name: form.last_name, phone: form.phone, bio: form.bio,
           curp: form.curp, ocupacion: form.ocupacion, puesto: form.puesto,
-          company_name: form.company_name, company_rfc: form.company_rfc },
-        { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }
+          company_name: form.company_name, company_rfc: form.company_rfc }
       );
       setMessage({ type: 'success', text: 'Perfil actualizado. Los cambios se reflejarán al volver a iniciar sesión.' });
     } catch (err) {
@@ -102,6 +98,7 @@ export const ProfilePage = () => {
       return;
     }
     try {
+      // Supabase Auth no está en PostgREST (/rest/v1), usamos axios directo con SUPABASE_URL
       await axios.put(
         `${SUPABASE_URL}/auth/v1/user`,
         { password: pwForm.password },

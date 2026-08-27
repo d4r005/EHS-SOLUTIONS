@@ -1,23 +1,4 @@
-import axios from 'axios';
-
-// ============================================
-// EHS Solutions - Servicio de Quizzes/Exámenes
-// Usa Supabase REST API (PostgREST) directamente
-// ============================================
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co';
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
-
-const rest = axios.create({
-  baseURL: `${SUPABASE_URL}/rest/v1`,
-  headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' },
-});
-
-rest.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+import { rest } from './api';
 
 export const quizService = {
   // Obtener un quiz por ID (con seguridad)

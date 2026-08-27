@@ -1,29 +1,4 @@
-import axios from 'axios';
-
-// ============================================
-// EHS Solutions - Frontend API Service
-// Usa Supabase REST API (PostgREST) directamente
-// Sin backend propio necesario
-// ============================================
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co';
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
-
-// Cliente PostgREST
-const rest = axios.create({
-  baseURL: `${SUPABASE_URL}/rest/v1`,
-  headers: {
-    apikey: SUPABASE_KEY,
-    'Content-Type': 'application/json',
-  },
-});
-
-// Interceptor: agregar token de auth automáticamente
-rest.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+import { rest } from './api';
 
 export const courseService = {
   // Listar cursos publicados

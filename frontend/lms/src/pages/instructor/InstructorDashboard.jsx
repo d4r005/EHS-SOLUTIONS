@@ -1,17 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import axios from 'axios';
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co';
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
-
-const rest = axios.create({ baseURL: `${SUPABASE_URL}/rest/v1`, headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' } });
-rest.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+import { rest } from '../../services/api';
 
 export const InstructorDashboard = () => {
   const { user } = useAuth();

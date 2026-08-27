@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co';
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
+import { SUPABASE_URL, SUPABASE_KEY } from '../services/api';
 
 export const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
@@ -20,7 +18,14 @@ export const ForgotPasswordPage = () => {
       await axios.post(
         `${SUPABASE_URL}/auth/v1/recover`,
         { email },
-        { headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' }, params: { redirect_to: redirectTo } }
+        {
+          headers: {
+            apikey: SUPABASE_KEY,
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_KEY}`
+          },
+          params: { redirect_to: redirectTo }
+        }
       );
       setSent(true);
     } catch (err) {

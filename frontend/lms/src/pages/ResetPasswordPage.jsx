@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co';
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
+import { SUPABASE_URL, SUPABASE_KEY } from '../services/api';
 
 // Supabase redirige con el token en el hash: #access_token=...&type=recovery
 function getAccessTokenFromHash() {

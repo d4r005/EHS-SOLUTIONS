@@ -1,21 +1,33 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { rest, SUPABASE_URL, SUPABASE_KEY } from '../services/api';
 
 const AuthContext = createContext();
 
-// ============================================
-// Auth con Supabase Auth (sin backend propio)
-// ============================================
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co';
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
+// Debug: Verificar si las llaves están cargadas
+if (!SUPABASE_KEY) {
+  console.error('⚠️ ERROR: VITE_SUPABASE_KEY no encontrada. Asegúrate de haber creado el archivo .env y reiniciado el servidor (npm run dev).');
+}
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [loading, setLoading] = useState(!!localStorage.getItem('token')); // true si hay token
+  const [loading, setLoading] = useState(!!localStorage.getItem('token'));
   const [error, setError] = useState(null);
 
-  // Cargar perfil al montar si hay token
+  // Helper para headers (usado solo para llamadas a /auth que no van por 'rest')
+  const getAuthHeaders = (accessToken = null) => {
+    const headers = {
+      'apikey': SUPABASE_KEY,
+      'Content-Type': 'application/json'
+    };
+    const finalToken = accessToken || token || localStorage.getItem('token');
+    if (finalToken) {
+      headers['Authorization'] = `Bearer ${finalToken}`;
+    }
+    return headers;
+  };
+
   useEffect(() => {
     if (token) {
       localStorage.setItem('token', token);
@@ -28,31 +40,19 @@ export const AuthProvider = ({ children }) => {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      // Obtener usuario de Supabase Auth
+      // Petición a Supabase Auth para validar el token y obtener metadatos
       const authRes = await axios.get(`${SUPABASE_URL}/auth/v1/user`, {
-        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}` },
+        headers: getAuthHeaders(),
       });
 
-      // 2. Obtener perfil de public.users usando auth_id (más confiable) o email
-      let profileRes = await axios.get(
-        `${SUPABASE_URL}/rest/v1/users?auth_id=eq.${authRes.data.id}&select=id,first_name,last_name,email,role`,
-        { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}` } }
-      );
+      // Petición a nuestra tabla pública de perfiles usando la instancia 'rest' con interceptores
+      let profileRes = await rest.get(`/users?auth_id=eq.${authRes.data.id}&select=id,first_name,last_name,email,role`);
 
-      // Si no lo encuentra por auth_id, intentar por email y vincularlo
       if (!profileRes.data.length) {
-        profileRes = await axios.get(
-          `${SUPABASE_URL}/rest/v1/users?email=eq.${authRes.data.email}&select=id,first_name,last_name,email,role`,
-          { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}` } }
-        );
+        profileRes = await rest.get(`/users?email=eq.${authRes.data.email}&select=id,first_name,last_name,email,role`);
 
         if (profileRes.data.length) {
-          // Vincular auth_id al usuario existente
-          await axios.patch(
-            `${SUPABASE_URL}/rest/v1/users?id=eq.${profileRes.data[0].id}`,
-            { auth_id: authRes.data.id },
-            { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}` } }
-          );
+          await rest.patch(`/users?id=eq.${profileRes.data[0].id}`, { auth_id: authRes.data.id });
         }
       }
 
@@ -67,8 +67,6 @@ export const AuthProvider = ({ children }) => {
         });
         localStorage.setItem('userId', profile.id);
       } else {
-        // Usuario existe en Auth pero no en public.users - usar metadata
-        // El trigger de Supabase debería haber creado esto, pero usamos esto como red de seguridad
         setUser({
           id: 0,
           first_name: authRes.data.user_metadata?.first_name || '',
@@ -80,14 +78,8 @@ export const AuthProvider = ({ children }) => {
       }
       setError(null);
     } catch (err) {
-      console.error('Error fetching profile:', err);
-      // Solo desconectar si es un error de token inválido (401), no de red
-      if (err.response?.status === 401) {
-        setToken(null);
-        setUser(null);
-        localStorage.removeItem('token');
-        localStorage.removeItem('userId');
-      }
+      console.error('Error al cargar perfil:', err);
+      // El interceptor de api.js ya maneja el 401 y el logout si el refresco falla
     } finally {
       setLoading(false);
     }
@@ -97,8 +89,6 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      // 1. Signup en Supabase Auth
-      // El trigger handle_new_user creará el perfil en public.users automáticamente
       const signupRes = await axios.post(
         `${SUPABASE_URL}/auth/v1/signup`,
         {
@@ -106,35 +96,33 @@ export const AuthProvider = ({ children }) => {
           password,
           data: { first_name: firstName, last_name: lastName, role: 'student' }
         },
-        { headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' } }
+        { headers: getAuthHeaders() }
       );
 
-      // Si Supabase requiere confirmación de email y no se ha logueado automáticamente
       if (!signupRes.data.access_token) {
-        setError('Registro exitoso. Por favor verifica tu email para activar tu cuenta.');
+        setError('Registro exitoso. Revisa tu correo para confirmar tu cuenta antes de iniciar sesión.');
         setLoading(false);
         return false;
       }
 
       const accessToken = signupRes.data.access_token;
+      const refreshToken = signupRes.data.refresh_token;
       const authId = signupRes.data.user.id;
 
-      // 2. Esperar un momento a que el trigger termine y obtener perfil
-      // Hacemos un pequeño retraso o reintento si es necesario
+      localStorage.setItem('token', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+
       let profileRes;
-      let retries = 3;
+      let retries = 5;
       while (retries > 0) {
-        profileRes = await axios.get(
-          `${SUPABASE_URL}/rest/v1/users?auth_id=eq.${authId}&select=id,first_name,last_name,email,role`,
-          { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${accessToken}` } }
-        );
+        profileRes = await rest.get(`/users?auth_id=eq.${authId}&select=id,first_name,last_name,email,role`);
         if (profileRes.data.length > 0) break;
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 800));
         retries--;
       }
 
       if (profileRes.data.length === 0) {
-        throw new Error('El perfil de usuario no se pudo crear automáticamente. Contacta a soporte.');
+        throw new Error('Cuenta creada, pero hubo un retraso sincronizando tu perfil. Por favor intenta iniciar sesión en unos momentos.');
       }
 
       const profile = profileRes.data[0];
@@ -148,13 +136,12 @@ export const AuthProvider = ({ children }) => {
 
       setToken(accessToken);
       setUser(newUser);
-      localStorage.setItem('token', accessToken);
       localStorage.setItem('userId', profile.id);
       return true;
     } catch (err) {
       console.error('Error en registro:', err);
-      const message = err.response?.data?.msg || err.response?.data?.message || err.message || 'Error al registrarse';
-      setError(message);
+      const msg = err.response?.data?.msg || err.response?.data?.message || err.message;
+      setError(msg || 'Error al registrarse');
       return false;
     } finally {
       setLoading(false);
@@ -165,36 +152,23 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      // 1. Login con Supabase Auth
       const loginRes = await axios.post(
         `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
         { email, password },
-        { headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' } }
+        { headers: getAuthHeaders() }
       );
+
       const accessToken = loginRes.data.access_token;
+      const refreshToken = loginRes.data.refresh_token;
       const authId = loginRes.data.user.id;
 
-      // 2. Obtener perfil de public.users
-      let profileRes = await axios.get(
-        `${SUPABASE_URL}/rest/v1/users?auth_id=eq.${authId}&select=id,first_name,last_name,email,role`,
-        { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${accessToken}` } }
-      );
+      localStorage.setItem('token', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
 
-      // Fallback por email si no tiene auth_id vinculado
+      let profileRes = await rest.get(`/users?auth_id=eq.${authId}&select=id,first_name,last_name,email,role`);
+
       if (!profileRes.data.length) {
-        profileRes = await axios.get(
-          `${SUPABASE_URL}/rest/v1/users?email=eq.${email}&select=id,first_name,last_name,email,role`,
-          { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${accessToken}` } }
-        );
-
-        if (profileRes.data.length) {
-          // Vincular auth_id ahora
-          await axios.patch(
-            `${SUPABASE_URL}/rest/v1/users?id=eq.${profileRes.data[0].id}`,
-            { auth_id: authId },
-            { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${accessToken}` } }
-          );
-        }
+        profileRes = await rest.get(`/users?email=eq.${email}&select=id,first_name,last_name,email,role`);
       }
 
       let newUser;
@@ -209,7 +183,6 @@ export const AuthProvider = ({ children }) => {
         };
         localStorage.setItem('userId', profile.id);
       } else {
-        // Fallback: usar metadata de Auth
         newUser = {
           id: 0,
           first_name: loginRes.data.user?.user_metadata?.first_name || '',
@@ -222,11 +195,11 @@ export const AuthProvider = ({ children }) => {
 
       setToken(accessToken);
       setUser(newUser);
-      localStorage.setItem('token', accessToken);
       return true;
     } catch (err) {
-      const message = err.response?.data?.error_description || err.response?.data?.message || 'Email o contraseña incorrectos';
-      setError(message);
+      console.error('Error en login:', err);
+      const msg = err.response?.data?.error_description || err.response?.data?.message || 'Email o contraseña incorrectos';
+      setError(msg);
       return false;
     } finally {
       setLoading(false);
@@ -237,6 +210,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setUser(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('userId');
   };
 
