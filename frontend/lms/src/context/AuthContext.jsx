@@ -98,7 +98,8 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       // 1. Signup en Supabase Auth
-      await axios.post(
+      // El trigger handle_new_user creará el perfil en public.users automáticamente
+      const signupRes = await axios.post(
         `${SUPABASE_URL}/auth/v1/signup`,
         {
           email,
@@ -108,35 +109,33 @@ export const AuthProvider = ({ children }) => {
         { headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' } }
       );
 
-      // 2. Login para obtener token
-      const loginRes = await axios.post(
-        `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
-        { email, password },
-        { headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' } }
-      );
-      const accessToken = loginRes.data.access_token;
-      const authId = loginRes.data.user.id;
+      // Si Supabase requiere confirmación de email y no se ha logueado automáticamente
+      if (!signupRes.data.access_token) {
+        setError('Registro exitoso. Por favor verifica tu email para activar tu cuenta.');
+        setLoading(false);
+        return false;
+      }
 
-      // 3. Insertar en public.users con auth_id
-      await axios.post(
-        `${SUPABASE_URL}/rest/v1/users`,
-        {
-          auth_id: authId,
-          first_name: firstName,
-          last_name: lastName,
-          email,
-          password: 'managed_by_auth',
-          role: 'student',
-          is_active: true
-        },
-        { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' } }
-      );
+      const accessToken = signupRes.data.access_token;
+      const authId = signupRes.data.user.id;
 
-      // 4. Obtener perfil
-      const profileRes = await axios.get(
-        `${SUPABASE_URL}/rest/v1/users?auth_id=eq.${authId}&select=id,first_name,last_name,email,role`,
-        { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${accessToken}` } }
-      );
+      // 2. Esperar un momento a que el trigger termine y obtener perfil
+      // Hacemos un pequeño retraso o reintento si es necesario
+      let profileRes;
+      let retries = 3;
+      while (retries > 0) {
+        profileRes = await axios.get(
+          `${SUPABASE_URL}/rest/v1/users?auth_id=eq.${authId}&select=id,first_name,last_name,email,role`,
+          { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${accessToken}` } }
+        );
+        if (profileRes.data.length > 0) break;
+        await new Promise(resolve => setTimeout(resolve, 500));
+        retries--;
+      }
+
+      if (profileRes.data.length === 0) {
+        throw new Error('El perfil de usuario no se pudo crear automáticamente. Contacta a soporte.');
+      }
 
       const profile = profileRes.data[0];
       const newUser = {
@@ -153,7 +152,8 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('userId', profile.id);
       return true;
     } catch (err) {
-      const message = err.response?.data?.msg || err.response?.data?.message || 'Error al registrarse';
+      console.error('Error en registro:', err);
+      const message = err.response?.data?.msg || err.response?.data?.message || err.message || 'Error al registrarse';
       setError(message);
       return false;
     } finally {

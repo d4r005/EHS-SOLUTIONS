@@ -1,8 +1,14 @@
-- [/] Reparación de Registro y Asignación de Admin
-    - [ ] Proporcionar SQL para desbloquear tabla `users`
-    - [ ] Esperar registro del usuario
-    - [ ] Proporcionar SQL para promoción a Admin
-- [ ] Actualizar Documentación
-    - [ ] Modificar `DEPLOY.md`
-    - [ ] Modificar `database/schema_with_seed.sql`
-- [ ] Realizar Commit y Push
+- [x] Reparación de Registro y Asignación de Admin
+    - [x] Proporcionar SQL para desbloquear tabla `users`
+    - [x] Proporcionar script `fix_auth_schema.sql` para Supabase
+    - [/] Esperar registro del usuario para promoción a Admin
+- [x] Configurar Entorno Frontend
+    - [x] Crear archivo `frontend/lms/.env` con llaves de Supabase
+- [x] Ajustar Lógica de Autenticación
+    - [x] Modificar `AuthContext.jsx` para registro automático vía trigger
+- [ ] Plantilla de Certificados (DC-3)
+    - [ ] Confirmar formato (PNG vs PDF)
+    - [ ] Calibrar coordenadas de texto
+- [ ] Pruebas de Verificación
+    - [ ] Probar registro de nuevo usuario
+    - [ ] Probar inicio de sesión

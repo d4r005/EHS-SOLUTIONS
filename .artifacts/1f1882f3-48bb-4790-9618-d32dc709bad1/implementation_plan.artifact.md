@@ -1,36 +1,31 @@
-# Plan: Reparación de Registro y Asignación de Administrador
+# Plan: Uso de Plantilla para Certificados (DC-3)
 
-Este plan resuelve el error técnico que impide el registro de nuevos usuarios y detalla el proceso para establecer a Dario Robles como el administrador oficial de la plataforma.
+Este plan detalla cómo integrar tu plantilla personalizada (PDF o Imagen) en el sistema de generación de certificados de EHS Solutions.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> El error `null value in column "password"` ocurre porque la base de datos exige una contraseña en la tabla pública, pero ahora las contraseñas las maneja Supabase de forma segura. Debemos eliminar esa restricción.
+> Para usar tu plantilla, necesitamos decidir el formato técnico:
+> 1. **Opción A (Recomendada por simplicidad)**: Convertir tu PDF a una imagen **PNG de alta resolución (300 DPI)**. Esto permite usar la librería actual (`jsPDF`) y es muy fácil de ajustar.
+> 2. **Opción B (Vectorial)**: Usar el PDF directamente con una nueva librería llamada `pdf-lib`. Es más complejo de configurar pero mantiene la calidad original del PDF.
 
-## 1. Reparación Técnica de Registro (SQL)
+## Propuesta: Opción A (Imagen de Fondo)
 
-### [MODIFY] [public.users table]
-- Eliminar la restricción `NOT NULL` de la columna `password` en la tabla `public.users`. Esto permitirá que el sistema cree tu perfil automáticamente al registrarte sin errores.
+### 1. Preparación de Archivo
+- Debes guardar tu plantilla como `template.png` en la carpeta `frontend/lms/public/assets/`.
+- Si no existe la carpeta, la crearemos.
 
-## 2. Proceso de Cambio de Administrador
+### 2. Modificación de Código
+#### [MODIFY] [certificateService.js](file:///C:/Users/dtruj/AndroidStudioProjects/EHS-SOLUTIONS/frontend/lms/src/services/certificateService.js)
+- Reemplazar el código de "dibujo manual" (bordes, logos, títulos) por una sola instrucción que cargue `template.png` como fondo de página completa.
+- Ajustar las coordenadas (X, Y) del Nombre del Alumno, Nombre del Curso, Fecha y Folio para que coincidan exactamente con los espacios en blanco de tu plantilla.
 
-### Paso 1: Registro (Tú lo realizas)
-Debes intentar registrarte nuevamente en la página con los datos:
-- **Email**: `d4r005@gmail.com`
-- **Contraseña**: `Branco2025`
-- **Nombre**: `Dario Robles`
+## Pasos a seguir
 
-### Paso 2: Promoción a Admin (SQL)
-Una vez que el registro sea exitoso, ejecutaremos un comando SQL para darte el rol de `admin` de forma manual en la base de datos.
-
-## 3. Actualización de Identidad de Marca
-
-#### [MODIFY] [DEPLOY.md](file:///C:/Users/dtruj/AndroidStudioProjects/EHS-SOLUTIONS/DEPLOY.md)
-- Actualizar las credenciales maestras en la documentación técnica del proyecto.
-
-#### [MODIFY] [schema_with_seed.sql](file:///C:/Users/dtruj/AndroidStudioProjects/EHS-SOLUTIONS/database/schema_with_seed.sql)
-- Actualizar el usuario semilla (seed) para futuros despliegues.
+1. **Confirmar Formato**: ¿Prefieres usar una imagen de fondo (PNG) o el PDF directo?
+2. **Subir Archivo**: Necesitarás colocar el archivo en la ruta que te indicaré.
+3. **Calibración**: Una vez aplicado el código, generaremos un certificado de prueba para mover los textos unos milímetros arriba/abajo hasta que queden perfectos en los huecos de tu diseño.
 
 ## Verificación Plan
-- Al registrarte, ya no deberías ver el mensaje rojo de error.
-- Al ejecutar el comando de promoción, verás las pestañas "Instructor" y "Admin" en tu menú superior.
+- Descargar un certificado con la nueva plantilla.
+- Verificar que el texto no se encime con tus logos o firmas ya impresas en la plantilla.
