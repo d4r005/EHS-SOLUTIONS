@@ -3,11 +3,10 @@ import { useAuth } from '../context/AuthContext';
 import { courseService } from '../services/courseService';
 import { certificateService } from '../services/certificateService';
 import { dc3Service } from '../services/dc3Service';
-import { rest, SUPABASE_URL, SUPABASE_KEY } from '../services/api';
-import axios from 'axios';
+import { rest, authApi, SUPABASE_URL, SUPABASE_KEY } from '../services/api';
 
 export const ProfilePage = () => {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const [enrollments, setEnrollments] = useState([]);
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -98,12 +97,7 @@ export const ProfilePage = () => {
       return;
     }
     try {
-      // Supabase Auth no está en PostgREST (/rest/v1), usamos axios directo con SUPABASE_URL
-      await axios.put(
-        `${SUPABASE_URL}/auth/v1/user`,
-        { password: pwForm.password },
-        { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }
-      );
+      await authApi.put('/user', { password: pwForm.password });
       setPwMessage({ type: 'success', text: 'Contraseña actualizada correctamente' });
       setPwForm({ password: '', confirm: '' });
     } catch (err) {

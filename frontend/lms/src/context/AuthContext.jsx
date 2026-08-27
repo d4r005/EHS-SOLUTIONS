@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { rest, SUPABASE_URL, SUPABASE_KEY } from '../services/api';
+import { rest, authApi, SUPABASE_URL, SUPABASE_KEY } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -15,19 +15,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(!!localStorage.getItem('token'));
   const [error, setError] = useState(null);
 
-  // Helper para headers (usado solo para llamadas a /auth que no van por 'rest')
-  const getAuthHeaders = (accessToken = null) => {
-    const headers = {
-      'apikey': SUPABASE_KEY,
-      'Content-Type': 'application/json'
-    };
-    const finalToken = accessToken || token || localStorage.getItem('token');
-    if (finalToken) {
-      headers['Authorization'] = `Bearer ${finalToken}`;
-    }
-    return headers;
-  };
-
   useEffect(() => {
     if (token) {
       localStorage.setItem('token', token);
@@ -40,12 +27,10 @@ export const AuthProvider = ({ children }) => {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      // Petición a Supabase Auth para validar el token y obtener metadatos
-      const authRes = await axios.get(`${SUPABASE_URL}/auth/v1/user`, {
-        headers: getAuthHeaders(),
-      });
+      // Petición a Supabase Auth usando authApi (protegido por interceptor)
+      const authRes = await authApi.get('/user');
 
-      // Petición a nuestra tabla pública de perfiles usando la instancia 'rest' con interceptores
+      // Petición a nuestra tabla pública de perfiles
       let profileRes = await rest.get(`/users?auth_id=eq.${authRes.data.id}&select=id,first_name,last_name,email,role`);
 
       if (!profileRes.data.length) {
@@ -79,7 +64,8 @@ export const AuthProvider = ({ children }) => {
       setError(null);
     } catch (err) {
       console.error('Error al cargar perfil:', err);
-      // El interceptor de api.js ya maneja el 401 y el logout si el refresco falla
+      // Si falla la carga del perfil, forzamos logout para evitar estado inconsistente
+      logout();
     } finally {
       setLoading(false);
     }
@@ -89,15 +75,11 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const signupRes = await axios.post(
-        `${SUPABASE_URL}/auth/v1/signup`,
-        {
-          email,
-          password,
-          data: { first_name: firstName, last_name: lastName, role: 'student' }
-        },
-        { headers: getAuthHeaders() }
-      );
+      const signupRes = await authApi.post('/signup', {
+        email,
+        password,
+        data: { first_name: firstName, last_name: lastName, role: 'student' }
+      });
 
       if (!signupRes.data.access_token) {
         setError('Registro exitoso. Revisa tu correo para confirmar tu cuenta antes de iniciar sesión.');
@@ -152,11 +134,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const loginRes = await axios.post(
-        `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
-        { email, password },
-        { headers: getAuthHeaders() }
-      );
+      const loginRes = await authApi.post('/token?grant_type=password', { email, password });
 
       const accessToken = loginRes.data.access_token;
       const refreshToken = loginRes.data.refresh_token;

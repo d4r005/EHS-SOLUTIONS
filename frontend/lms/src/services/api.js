@@ -66,11 +66,11 @@ rest.interceptors.response.use(
           localStorage.removeItem('token');
           localStorage.removeItem('refreshToken');
           localStorage.removeItem('userId');
-          window.location.href = '/login';
+          window.location.href = '/app/login';
         }
       } else {
         // No hay refresh token, redirigir al login
-        window.location.href = '/login';
+        window.location.href = '/app/login';
       }
     }
 
@@ -78,5 +78,58 @@ rest.interceptors.response.use(
   }
 );
 
-export { rest, SUPABASE_URL, SUPABASE_KEY };
+// Instancia para Supabase Auth ( /auth/v1 )
+const authApi = axios.create({
+  baseURL: `${SUPABASE_URL}/auth/v1`,
+  headers: {
+    apikey: SUPABASE_KEY,
+    'Content-Type': 'application/json',
+  },
+});
+
+// Interceptor para authApi también (para el token)
+authApi.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Mismo interceptor de 401 para authApi
+authApi.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (refreshToken) {
+        try {
+          const res = await axios.post(
+            `${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`,
+            { refresh_token: refreshToken },
+            { headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' } }
+          );
+          const { access_token, refresh_token } = res.data;
+          localStorage.setItem('token', access_token);
+          localStorage.setItem('refreshToken', refresh_token);
+          originalRequest.headers.Authorization = `Bearer ${access_token}`;
+          return authApi(originalRequest);
+        } catch (refreshError) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('userId');
+          window.location.href = '/app/login';
+        }
+      } else {
+        window.location.href = '/app/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+export { rest, authApi, SUPABASE_URL, SUPABASE_KEY };
 export default rest;

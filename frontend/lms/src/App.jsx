@@ -28,6 +28,19 @@ const PublicRoute = ({ children }) => {
 };
 
 function AppContent() {
+  const { loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin text-5xl mb-4">⏳</div>
+          <p className="text-gray-600 font-semibold">Cargando perfil...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
