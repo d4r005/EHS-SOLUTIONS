@@ -132,36 +132,32 @@ const StatCard = ({ icon, label, value, color }) => {
 };
 
 const CourseCard = ({ enrollment }) => {
-  const navigate = useNavigate();
   const { user } = useAuth();
 
-  // Priorizar los datos que vienen del curso vinculado
-  const courseData = enrollment.course || {};
-  const courseTitle = courseData.title || enrollment.title || `Curso #${enrollment.course_id}`;
-  const thumbnail = courseData.thumbnail_url || enrollment.thumbnail_url;
-  const category = courseData.category || enrollment.category || 'Capacitación';
+  // Priorizar datos del objeto 'course' que viene del JOIN de Supabase
+  const c = enrollment.course || {};
+  const courseTitle = c.title || enrollment.title || `Curso #${enrollment.course_id}`;
+  const thumbnail = c.thumbnail_url || enrollment.thumbnail_url;
+  const category = c.category || enrollment.category || 'Capacitación';
 
   const isAdmin = ['admin', 'instructor'].includes(user?.role);
 
   return (
-    <div
-      onClick={() => navigate(`/courses/${enrollment.course_id}`)}
-      className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition cursor-pointer group"
-    >
+    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition flex flex-col h-full group">
       {/* Thumbnail */}
-      <div className="h-32 bg-gradient-to-br from-navy to-navy-deep relative overflow-hidden">
+      <div className="h-40 bg-gradient-to-br from-navy to-navy-deep relative overflow-hidden flex-shrink-0">
         {thumbnail ? (
           <img src={thumbnail} alt={courseTitle} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-4xl">📚</span>
+            <span className="text-5xl">📚</span>
           </div>
         )}
       </div>
 
       {/* Content */}
-      <div className="p-4">
-        <h3 className="font-bold text-navy mb-1 line-clamp-1 group-hover:text-green-600 transition" title={courseTitle}>
+      <div className="p-5 flex flex-col flex-grow">
+        <h3 className="font-bold text-navy text-lg mb-1 line-clamp-2 group-hover:text-green-600 transition" title={courseTitle}>
           {courseTitle}
         </h3>
         <p className="text-xs text-gray-500 uppercase font-bold mb-4">
@@ -169,27 +165,30 @@ const CourseCard = ({ enrollment }) => {
         </p>
 
         {/* Progress Bar */}
-        <div className="mb-5">
+        <div className="mb-6">
           <div className="flex justify-between items-center mb-1">
             <span className="text-xs font-semibold text-navy">
               {isAdmin ? 'Estado: Modo Revisión' : 'Tu progreso'}
             </span>
-            {!isAdmin && <span className="text-xs text-gray-600">{Math.round(enrollment.progress_percentage)}%</span>}
+            {!isAdmin && <span className="text-xs text-gray-600 font-bold">{Math.round(enrollment.progress_percentage || 0)}%</span>}
           </div>
           <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
             <div
               className={`h-full ${isAdmin ? 'bg-navy' : 'bg-green-600'} transition-all duration-1000`}
-              style={{ width: `${isAdmin ? 100 : enrollment.progress_percentage}%` }}
+              style={{ width: `${isAdmin ? 100 : (enrollment.progress_percentage || 0)}%` }}
             ></div>
           </div>
         </div>
 
-        {/* Action Button */}
-        <button
-          className={`w-full py-3 ${isAdmin ? 'bg-navy hover:bg-navy-light' : 'bg-green-600 hover:bg-green-700'} text-white rounded-lg transition text-sm font-bold shadow-sm`}
-        >
-          {isAdmin ? '🛡️ Revisar Curso' : 'Continuar Aprendiendo'}
-        </button>
+        {/* Action Link - El botón ahora es un Link real */}
+        <div className="mt-auto">
+          <Link
+            to={`/courses/${enrollment.course_id}`}
+            className={`block w-full py-3 ${isAdmin ? 'bg-navy hover:bg-navy-light' : 'bg-green-600 hover:bg-green-700'} text-white rounded-lg transition text-sm font-bold shadow-sm text-center`}
+          >
+            {isAdmin ? '🛡️ Revisar Curso' : 'Continuar Aprendiendo'}
+          </Link>
+        </div>
       </div>
     </div>
   );
