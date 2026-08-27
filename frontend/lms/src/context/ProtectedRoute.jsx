@@ -5,6 +5,11 @@ import { useAuth } from './AuthContext';
 export const ProtectedRoute = ({ children, allowedRoles }) => {
   const { isAuthenticated, user, loading } = useAuth();
 
+  // Si está cargando el perfil, no redirigir todavía
+  if (loading) {
+    return null; // El AppContent mostrará el spinner
+  }
+
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }

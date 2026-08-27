@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { courseService } from '../services/courseService';
 
 export const DashboardPage = () => {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -15,8 +15,10 @@ export const DashboardPage = () => {
   });
 
   useEffect(() => {
-    fetchMyCourses();
-  }, []);
+    if (isAuthenticated && user) {
+      fetchMyCourses();
+    }
+  }, [isAuthenticated, user]);
 
   const fetchMyCourses = async () => {
     try {

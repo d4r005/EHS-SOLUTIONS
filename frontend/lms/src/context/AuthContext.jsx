@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { rest, authApi, SUPABASE_URL, SUPABASE_KEY } from '../services/api';
+import { rest, authApi, SUPABASE_URL, SUPABASE_KEY, clearSessionAndRedirect } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -52,6 +52,7 @@ export const AuthProvider = ({ children }) => {
         });
         localStorage.setItem('userId', profile.id);
       } else {
+        // Usuario autenticado en Supabase Auth pero sin fila en tabla 'users'
         setUser({
           id: 0,
           first_name: authRes.data.user_metadata?.first_name || '',
@@ -64,8 +65,11 @@ export const AuthProvider = ({ children }) => {
       setError(null);
     } catch (err) {
       console.error('Error al cargar perfil:', err);
-      // Si falla la carga del perfil, forzamos logout para evitar estado inconsistente
-      logout();
+      // Si el error es 401, el interceptor de api.js ya llamó a clearSessionAndRedirect
+      // En cualquier otro error grave, limpiamos estado local
+      if (err.response?.status !== 401) {
+        logout();
+      }
     } finally {
       setLoading(false);
     }
@@ -93,40 +97,15 @@ export const AuthProvider = ({ children }) => {
 
       localStorage.setItem('token', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
+      setToken(accessToken); // Esto disparará useEffect -> fetchProfile
 
-      let profileRes;
-      let retries = 5;
-      while (retries > 0) {
-        profileRes = await rest.get(`/users?auth_id=eq.${authId}&select=id,first_name,last_name,email,role`);
-        if (profileRes.data.length > 0) break;
-        await new Promise(resolve => setTimeout(resolve, 800));
-        retries--;
-      }
-
-      if (profileRes.data.length === 0) {
-        throw new Error('Cuenta creada, pero hubo un retraso sincronizando tu perfil. Por favor intenta iniciar sesión en unos momentos.');
-      }
-
-      const profile = profileRes.data[0];
-      const newUser = {
-        id: profile.id,
-        first_name: profile.first_name,
-        last_name: profile.last_name,
-        email: profile.email,
-        role: profile.role,
-      };
-
-      setToken(accessToken);
-      setUser(newUser);
-      localStorage.setItem('userId', profile.id);
       return true;
     } catch (err) {
       console.error('Error en registro:', err);
       const msg = err.response?.data?.msg || err.response?.data?.message || err.message;
       setError(msg || 'Error al registrarse');
-      return false;
-    } finally {
       setLoading(false);
+      return false;
     }
   };
 
@@ -138,58 +117,25 @@ export const AuthProvider = ({ children }) => {
 
       const accessToken = loginRes.data.access_token;
       const refreshToken = loginRes.data.refresh_token;
-      const authId = loginRes.data.user.id;
 
       localStorage.setItem('token', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
+      setToken(accessToken); // Esto disparará useEffect -> fetchProfile
 
-      let profileRes = await rest.get(`/users?auth_id=eq.${authId}&select=id,first_name,last_name,email,role`);
-
-      if (!profileRes.data.length) {
-        profileRes = await rest.get(`/users?email=eq.${email}&select=id,first_name,last_name,email,role`);
-      }
-
-      let newUser;
-      if (profileRes.data.length) {
-        const profile = profileRes.data[0];
-        newUser = {
-          id: profile.id,
-          first_name: profile.first_name,
-          last_name: profile.last_name,
-          email: profile.email,
-          role: profile.role,
-        };
-        localStorage.setItem('userId', profile.id);
-      } else {
-        newUser = {
-          id: 0,
-          first_name: loginRes.data.user?.user_metadata?.first_name || '',
-          last_name: loginRes.data.user?.user_metadata?.last_name || '',
-          email: loginRes.data.user?.email || email,
-          role: loginRes.data.user?.user_metadata?.role || 'student',
-        };
-        localStorage.setItem('userId', '0');
-      }
-
-      setToken(accessToken);
-      setUser(newUser);
       return true;
     } catch (err) {
       console.error('Error en login:', err);
       const msg = err.response?.data?.error_description || err.response?.data?.message || 'Email o contraseña incorrectos';
       setError(msg);
-      return false;
-    } finally {
       setLoading(false);
+      return false;
     }
   };
 
   const logout = () => {
-    setToken(null);
     setUser(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('userId');
+    setToken(null);
+    clearSessionAndRedirect();
   };
 
   const value = {
@@ -200,7 +146,7 @@ export const AuthProvider = ({ children }) => {
     register,
     login,
     logout,
-    isAuthenticated: !!token,
+    isAuthenticated: !!user && !!token,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

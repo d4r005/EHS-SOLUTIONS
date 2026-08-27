@@ -12,72 +12,6 @@ const rest = axios.create({
   },
 });
 
-// Interceptor de solicitud para añadir el token
-rest.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    } else {
-      config.headers.Authorization = `Bearer ${SUPABASE_KEY}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Interceptor de respuesta para manejar la expiración del token (401)
-rest.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-
-    // Si el error es 401 y no hemos reintentado ya
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      const refreshToken = localStorage.getItem('refreshToken');
-
-      if (refreshToken) {
-        try {
-          // Intentar refrescar el token usando el endpoint de Supabase Auth
-          const res = await axios.post(
-            `${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`,
-            { refresh_token: refreshToken },
-            {
-              headers: {
-                apikey: SUPABASE_KEY,
-                'Content-Type': 'application/json',
-              },
-            }
-          );
-
-          const { access_token, refresh_token } = res.data;
-
-          // Guardar los nuevos tokens
-          localStorage.setItem('token', access_token);
-          localStorage.setItem('refreshToken', refresh_token);
-
-          // Reintentar la petición original con el nuevo token
-          originalRequest.headers.Authorization = `Bearer ${access_token}`;
-          return rest(originalRequest);
-        } catch (refreshError) {
-          console.error('Error al refrescar el token:', refreshError);
-          // Si el refresco falla, cerrar sesión
-          localStorage.removeItem('token');
-          localStorage.removeItem('refreshToken');
-          localStorage.removeItem('userId');
-          window.location.href = '/app/login';
-        }
-      } else {
-        // No hay refresh token, redirigir al login
-        window.location.href = '/app/login';
-      }
-    }
-
-    return Promise.reject(error);
-  }
-);
-
 // Instancia para Supabase Auth ( /auth/v1 )
 const authApi = axios.create({
   baseURL: `${SUPABASE_URL}/auth/v1`,
@@ -87,49 +21,70 @@ const authApi = axios.create({
   },
 });
 
-// Interceptor para authApi también (para el token)
-authApi.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Mismo interceptor de 401 para authApi
-authApi.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      const refreshToken = localStorage.getItem('refreshToken');
-      if (refreshToken) {
-        try {
-          const res = await axios.post(
-            `${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`,
-            { refresh_token: refreshToken },
-            { headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' } }
-          );
-          const { access_token, refresh_token } = res.data;
-          localStorage.setItem('token', access_token);
-          localStorage.setItem('refreshToken', refresh_token);
-          originalRequest.headers.Authorization = `Bearer ${access_token}`;
-          return authApi(originalRequest);
-        } catch (refreshError) {
-          localStorage.removeItem('token');
-          localStorage.removeItem('refreshToken');
-          localStorage.removeItem('userId');
-          window.location.href = '/app/login';
-        }
-      } else {
-        window.location.href = '/app/login';
-      }
-    }
-    return Promise.reject(error);
+// Función centralizada para limpiar sesión y redirigir
+const clearSessionAndRedirect = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('userId');
+  // Evitar bucles de redirección si ya estamos en login o home
+  if (!window.location.pathname.includes('/login') && window.location.pathname !== '/') {
+    window.location.href = '/app/login';
   }
-);
+};
 
-export { rest, authApi, SUPABASE_URL, SUPABASE_KEY };
+const setupInterceptors = (instance) => {
+  instance.interceptors.request.use(
+    (config) => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      } else {
+        config.headers.Authorization = `Bearer ${SUPABASE_KEY}`;
+      }
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
+
+  instance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
+
+      // Si el error es 401 y no hemos reintentado
+      if (error.response?.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
+        const refreshToken = localStorage.getItem('refreshToken');
+
+        if (refreshToken) {
+          try {
+            const res = await axios.post(
+              `${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`,
+              { refresh_token: refreshToken },
+              { headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' } }
+            );
+
+            const { access_token, refresh_token } = res.data;
+            localStorage.setItem('token', access_token);
+            localStorage.setItem('refreshToken', refresh_token);
+
+            originalRequest.headers.Authorization = `Bearer ${access_token}`;
+            return instance(originalRequest);
+          } catch (refreshError) {
+            console.error('Error al refrescar token:', refreshError);
+            clearSessionAndRedirect();
+          }
+        } else {
+          clearSessionAndRedirect();
+        }
+      }
+      return Promise.reject(error);
+    }
+  );
+};
+
+setupInterceptors(rest);
+setupInterceptors(authApi);
+
+export { rest, authApi, SUPABASE_URL, SUPABASE_KEY, clearSessionAndRedirect };
 export default rest;
