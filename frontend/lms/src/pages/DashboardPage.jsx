@@ -134,15 +134,20 @@ const StatCard = ({ icon, label, value, color }) => {
 const CourseCard = ({ enrollment }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const courseTitle = enrollment.title || `Curso #${enrollment.course_id}`;
+
+  // Usar los datos del curso que vienen del JOIN en courseService.getMyCourses
+  const courseTitle = enrollment.title || enrollment.course?.title || `Curso #${enrollment.course_id}`;
+  const thumbnail = enrollment.thumbnail_url || enrollment.course?.thumbnail_url;
+  const category = enrollment.category || enrollment.course?.category || 'Capacitación';
+
   const isAdmin = ['admin', 'instructor'].includes(user?.role);
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition">
       {/* Thumbnail */}
       <div className="h-32 bg-gradient-to-br from-navy to-navy-deep relative">
-        {enrollment.thumbnail_url ? (
-          <img src={enrollment.thumbnail_url} alt={courseTitle} className="w-full h-full object-cover" />
+        {thumbnail ? (
+          <img src={thumbnail} alt={courseTitle} className="w-full h-full object-cover" />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-4xl">📚</span>
@@ -156,7 +161,7 @@ const CourseCard = ({ enrollment }) => {
           {courseTitle}
         </h3>
         <p className="text-xs text-gray-500 uppercase font-bold mb-4">
-          {enrollment.category || 'Capacitación'}
+          {category}
         </p>
 
         {/* Progress Bar */}
