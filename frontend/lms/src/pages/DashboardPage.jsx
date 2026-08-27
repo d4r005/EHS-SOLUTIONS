@@ -135,19 +135,23 @@ const CourseCard = ({ enrollment }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // Usar los datos del curso que vienen del JOIN en courseService.getMyCourses
-  const courseTitle = enrollment.title || enrollment.course?.title || `Curso #${enrollment.course_id}`;
-  const thumbnail = enrollment.thumbnail_url || enrollment.course?.thumbnail_url;
-  const category = enrollment.category || enrollment.course?.category || 'Capacitación';
+  // Priorizar los datos que vienen del curso vinculado
+  const courseData = enrollment.course || {};
+  const courseTitle = courseData.title || enrollment.title || `Curso #${enrollment.course_id}`;
+  const thumbnail = courseData.thumbnail_url || enrollment.thumbnail_url;
+  const category = courseData.category || enrollment.category || 'Capacitación';
 
   const isAdmin = ['admin', 'instructor'].includes(user?.role);
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition">
+    <div
+      onClick={() => navigate(`/courses/${enrollment.course_id}`)}
+      className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition cursor-pointer group"
+    >
       {/* Thumbnail */}
-      <div className="h-32 bg-gradient-to-br from-navy to-navy-deep relative">
+      <div className="h-32 bg-gradient-to-br from-navy to-navy-deep relative overflow-hidden">
         {thumbnail ? (
-          <img src={thumbnail} alt={courseTitle} className="w-full h-full object-cover" />
+          <img src={thumbnail} alt={courseTitle} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-4xl">📚</span>
@@ -157,7 +161,7 @@ const CourseCard = ({ enrollment }) => {
 
       {/* Content */}
       <div className="p-4">
-        <h3 className="font-bold text-navy mb-1 line-clamp-1" title={courseTitle}>
+        <h3 className="font-bold text-navy mb-1 line-clamp-1 group-hover:text-green-600 transition" title={courseTitle}>
           {courseTitle}
         </h3>
         <p className="text-xs text-gray-500 uppercase font-bold mb-4">
@@ -180,13 +184,12 @@ const CourseCard = ({ enrollment }) => {
           </div>
         </div>
 
-        {/* Action */}
-        <Link
-          to={`/courses/${enrollment.course_id}`}
-          className={`block w-full py-3 ${isAdmin ? 'bg-navy hover:bg-navy-light' : 'bg-green-600 hover:bg-green-700'} text-white rounded-lg transition text-sm font-bold shadow-sm text-center`}
+        {/* Action Button */}
+        <button
+          className={`w-full py-3 ${isAdmin ? 'bg-navy hover:bg-navy-light' : 'bg-green-600 hover:bg-green-700'} text-white rounded-lg transition text-sm font-bold shadow-sm`}
         >
           {isAdmin ? '🛡️ Revisar Curso' : 'Continuar Aprendiendo'}
-        </Link>
+        </button>
       </div>
     </div>
   );
