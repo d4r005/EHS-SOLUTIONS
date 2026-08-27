@@ -35,8 +35,11 @@ const clearSessionAndRedirect = () => {
 const setupInterceptors = (instance) => {
   instance.interceptors.request.use(
     (config) => {
+      // No enviar token si es una petición de login o registro
+      const isAuthPath = config.url?.includes('/token') || config.url?.includes('/signup');
+
       const token = localStorage.getItem('token');
-      if (token) {
+      if (token && !isAuthPath) {
         config.headers.Authorization = `Bearer ${token}`;
       } else {
         config.headers.Authorization = `Bearer ${SUPABASE_KEY}`;

@@ -79,6 +79,10 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
+      // Limpiar rastro de sesión previa
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+
       const signupRes = await authApi.post('/signup', {
         email,
         password,
@@ -113,6 +117,10 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
+      // Limpiar rastro de sesión previa antes de intentar login nuevo
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+
       const loginRes = await authApi.post('/token?grant_type=password', { email, password });
 
       const accessToken = loginRes.data.access_token;
