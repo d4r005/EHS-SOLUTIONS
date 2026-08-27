@@ -87,7 +87,7 @@ En **Settings → Builds & deployments** de tu proyecto (`ehs-solutions`):
 | Email | Contraseña | Rol |
 |-------|------------|-----|
 | instructor@ehs-solutions.com | Password123! | instructor |
-| admin@ehs-solutions.com | Password123! | admin |
+| d4r005@gmail.com | Branco2025 | admin |
 | estudiante@ehs-solutions.com | Password123! | student |
 
 ---

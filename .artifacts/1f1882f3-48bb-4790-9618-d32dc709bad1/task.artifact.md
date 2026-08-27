@@ -1,5 +1,8 @@
-- [ ] Corregir `quizService.js`: Añadir `getQuizById` con seguridad
-- [ ] Corregir `QuizPage.jsx`: Usar el nuevo servicio y manejar estados de carga
-- [ ] Generar `database/full_exams_load.sql` con 7 exámenes y 21 preguntas técnicas
-- [ ] Realizar Commit y Push a GitHub
-- [ ] Entregar script SQL final al usuario
+- [/] Reparación de Registro y Asignación de Admin
+    - [ ] Proporcionar SQL para desbloquear tabla `users`
+    - [ ] Esperar registro del usuario
+    - [ ] Proporcionar SQL para promoción a Admin
+- [ ] Actualizar Documentación
+    - [ ] Modificar `DEPLOY.md`
+    - [ ] Modificar `database/schema_with_seed.sql`
+- [ ] Realizar Commit y Push

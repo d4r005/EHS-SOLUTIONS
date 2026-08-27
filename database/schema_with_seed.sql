@@ -148,7 +148,7 @@ ON CONFLICT (email) DO NOTHING;
 
 -- Usuario Admin
 INSERT INTO users (first_name, last_name, email, password, role, bio, is_active)
-VALUES ('Admin', 'EHS', 'admin@ehs-solutions.com', '$2b$10$J1NZQvHhPeT8Sbh0DP0N3usf/KiW3g6.jkbx7LKyk0OW3myY/zYUy', 'admin', 'Administrador del sistema EHS Solutions.', true)
+VALUES ('Dario', 'Robles', 'd4r005@gmail.com', 'managed_by_auth', 'admin', 'Administrador del sistema EHS Solutions.', true)
 ON CONFLICT (email) DO NOTHING;
 
 -- Usuario Estudiante de ejemplo

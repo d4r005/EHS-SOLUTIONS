@@ -1,37 +1,36 @@
-# Plan: Activación Global de Exámenes y Solución de Error "No encontrado"
+# Plan: Reparación de Registro y Asignación de Administrador
 
-Este plan aborda el error técnico que impide visualizar los exámenes y realiza la carga masiva de evaluaciones para los 7 cursos de la plataforma.
+Este plan resuelve el error técnico que impide el registro de nuevos usuarios y detalla el proceso para establecer a Dario Robles como el administrador oficial de la plataforma.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> El script SQL creará un total de **21 preguntas técnicas** distribuidas en los 7 cursos. Se vincularán automáticamente a la última lección de cada programa.
+> El error `null value in column "password"` ocurre porque la base de datos exige una contraseña en la tabla pública, pero ahora las contraseñas las maneja Supabase de forma segura. Debemos eliminar esa restricción.
 
-## 1. Correcciones de Código (Frontend)
+## 1. Reparación Técnica de Registro (SQL)
 
-### [MODIFY] [quizService.js](file:///C:/Users/dtruj/AndroidStudioProjects/EHS-SOLUTIONS/frontend/lms/src/services/quizService.js)
-- Agregar método `getQuizById(id)` para centralizar la obtención de datos del examen con los encabezados de seguridad correctos.
+### [MODIFY] [public.users table]
+- Eliminar la restricción `NOT NULL` de la columna `password` en la tabla `public.users`. Esto permitirá que el sistema cree tu perfil automáticamente al registrarte sin errores.
 
-### [MODIFY] [QuizPage.jsx](file:///C:/Users/dtruj/AndroidStudioProjects/EHS-SOLUTIONS/frontend/lms/src/pages/QuizPage.jsx)
-- Reemplazar el `fetch` directo por la llamada al servicio `quizService.getQuizById`.
-- Asegurar que el estado `loading` se maneje correctamente para evitar parpadeos de "Examen no encontrado".
+## 2. Proceso de Cambio de Administrador
 
-## 2. Carga Masiva de Contenido (Base de Datos)
+### Paso 1: Registro (Tú lo realizas)
+Debes intentar registrarte nuevamente en la página con los datos:
+- **Email**: `d4r005@gmail.com`
+- **Contraseña**: `Branco2025`
+- **Nombre**: `Dario Robles`
 
-### [NEW] [full_exams_load.sql](file:///C:/Users/dtruj/AndroidStudioProjects/EHS-SOLUTIONS/database/full_exams_load.sql)
-Prepararé un script que:
-1. **Borra** registros de exámenes previos para evitar duplicidad.
-2. **Crea** un examen para cada uno de los 7 cursos vinculándolo a la lección final.
-3. **Inserta** 3 preguntas técnicas por curso basadas en:
-   - **Alturas**: NOM-009, EPP, Rescate.
-   - **Soldadura**: NOM-027, Riesgos eléctricos, Radiación.
-   - **Brigadas**: Primeros auxilios, Evacuación, Incendios.
-   - **Espacios Confinados**: NOM-033, Atmósferas, Monitoreo.
-   - **LOTO**: Bloqueo, Energías peligrosas, Verificación.
-   - **Instructores**: Andragogía, Diseño didáctico, Evaluación.
-   - **Supervisores**: Liderazgo SST, Investigación de accidentes, Gestión.
+### Paso 2: Promoción a Admin (SQL)
+Una vez que el registro sea exitoso, ejecutaremos un comando SQL para darte el rol de `admin` de forma manual en la base de datos.
+
+## 3. Actualización de Identidad de Marca
+
+#### [MODIFY] [DEPLOY.md](file:///C:/Users/dtruj/AndroidStudioProjects/EHS-SOLUTIONS/DEPLOY.md)
+- Actualizar las credenciales maestras en la documentación técnica del proyecto.
+
+#### [MODIFY] [schema_with_seed.sql](file:///C:/Users/dtruj/AndroidStudioProjects/EHS-SOLUTIONS/database/schema_with_seed.sql)
+- Actualizar el usuario semilla (seed) para futuros despliegues.
 
 ## Verificación Plan
-- Acceder a cada uno de los 7 cursos y confirmar que la última lección muestra el botón de examen.
-- Abrir un examen y confirmar que las preguntas se cargan correctamente.
-- Realizar un examen y verificar que el sistema califica y guarda el resultado.
+- Al registrarte, ya no deberías ver el mensaje rojo de error.
+- Al ejecutar el comando de promoción, verás las pestañas "Instructor" y "Admin" en tu menú superior.
