@@ -77,8 +77,10 @@ export async function onRequestPost({ request, env }) {
       return json({ message: mpData.message || 'Error al crear la preferencia de pago' }, 500);
     }
 
-    // init_point = URL de pago en producción, sandbox_init_point = pruebas
-    const checkoutUrl = mpData.init_point || mpData.sandbox_init_point;
+    // Forzar el uso del punto de inicio de sandbox si el token empieza con TEST-
+    const checkoutUrl = MP_TOKEN.startsWith('TEST-')
+      ? mpData.sandbox_init_point
+      : (mpData.init_point || mpData.sandbox_init_point);
 
     return json({ url: checkoutUrl, preference_id: mpData.id });
   } catch (err) {
