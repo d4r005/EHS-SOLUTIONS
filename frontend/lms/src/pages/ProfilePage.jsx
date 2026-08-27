@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { courseService } from '../services/courseService';
 import { certificateService } from '../services/certificateService';
+import { dc3Service } from '../services/dc3Service';
 import axios from 'axios';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co';
@@ -12,7 +13,7 @@ export const ProfilePage = () => {
   const [enrollments, setEnrollments] = useState([]);
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ first_name: '', last_name: '', phone: '', bio: '' });
+  const [form, setForm] = useState({ first_name: '', last_name: '', phone: '', bio: '', curp: '', ocupacion: '', puesto: '', company_name: '', company_rfc: '' });
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState(null);
   const [pwForm, setPwForm] = useState({ password: '', confirm: '' });
@@ -20,15 +21,38 @@ export const ProfilePage = () => {
 
   useEffect(() => {
     if (user) {
-      setForm({
+      setForm((f) => ({
+        ...f,
         first_name: user.first_name || '',
         last_name: user.last_name || '',
         phone: user.phone || '',
         bio: user.bio || '',
-      });
+      }));
       fetchData();
+      fetchExtraProfile();
     }
   }, [user]);
+
+  const fetchExtraProfile = async () => {
+    try {
+      const { data } = await axios.get(
+        `${SUPABASE_URL}/rest/v1/users?id=eq.${user.id}&select=curp,ocupacion,puesto,company_name,company_rfc`,
+        { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}` } }
+      );
+      if (data?.[0]) {
+        setForm((f) => ({
+          ...f,
+          curp: data[0].curp || '',
+          ocupacion: data[0].ocupacion || '',
+          puesto: data[0].puesto || '',
+          company_name: data[0].company_name || '',
+          company_rfc: data[0].company_rfc || '',
+        }));
+      }
+    } catch (err) {
+      console.error('Error al cargar datos DC-3:', err);
+    }
+  };
 
   const fetchData = async () => {
     try {
@@ -53,7 +77,9 @@ export const ProfilePage = () => {
     try {
       await axios.patch(
         `${SUPABASE_URL}/rest/v1/users?id=eq.${user.id}`,
-        { first_name: form.first_name, last_name: form.last_name, phone: form.phone, bio: form.bio },
+        { first_name: form.first_name, last_name: form.last_name, phone: form.phone, bio: form.bio,
+          curp: form.curp, ocupacion: form.ocupacion, puesto: form.puesto,
+          company_name: form.company_name, company_rfc: form.company_rfc },
         { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }
       );
       setMessage({ type: 'success', text: 'Perfil actualizado. Los cambios se reflejarán al volver a iniciar sesión.' });
@@ -89,12 +115,32 @@ export const ProfilePage = () => {
   };
 
   const handleDownloadCertificate = async (cert) => {
-    certificateService.downloadCertificatePDF(
-      cert,
-      `${user.first_name} ${user.last_name}`,
-      cert.course?.title || 'Curso',
-      cert.course?.duration_hours
-    );
+    const enrollment = enrollments.find((e) => e.course_id === cert.course_id);
+    try {
+      await dc3Service.generateAndDownload({
+        nombreTrabajador: `${form.last_name} ${form.first_name}`.trim().toUpperCase(),
+        curp: form.curp,
+        ocupacion: form.ocupacion,
+        puesto: form.puesto,
+        empresa: form.company_name,
+        rfc: form.company_rfc,
+        nombreCurso: cert.course?.title || 'Curso',
+        duracionHoras: cert.course?.duration_hours,
+        fechaInicio: enrollment?.enrollment_date,
+        fechaFin: cert.issued_date,
+        categoria: cert.course?.category,
+        folio: cert.certificate_number,
+      });
+    } catch (err) {
+      console.error('Error al generar DC-3:', err);
+      // Fallback: certificado simple si algo falla con la plantilla oficial
+      certificateService.downloadCertificatePDF(
+        cert,
+        `${form.first_name} ${form.last_name}`,
+        cert.course?.title || 'Curso',
+        cert.course?.duration_hours
+      );
+    }
   };
 
   return (
@@ -130,6 +176,36 @@ export const ProfilePage = () => {
               <textarea value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={3}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600" />
             </div>
+
+            <div className="md:col-span-2 pt-2 mt-2 border-t border-gray-100">
+              <p className="text-sm text-gray-500 mb-3">Datos para tu constancia DC-3 (opcional, pero recomendado para tramitarla ante la STPS)</p>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-navy mb-1">CURP</label>
+              <input value={form.curp} maxLength={18} onChange={(e) => setForm({ ...form, curp: e.target.value.toUpperCase() })}
+                placeholder="18 caracteres" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-navy mb-1">Ocupación específica</label>
+              <input value={form.ocupacion} onChange={(e) => setForm({ ...form, ocupacion: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-navy mb-1">Puesto</label>
+              <input value={form.puesto} onChange={(e) => setForm({ ...form, puesto: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-navy mb-1">Empresa (razón social)</label>
+              <input value={form.company_name} onChange={(e) => setForm({ ...form, company_name: e.target.value })}
+                placeholder="Deja en blanco si eres independiente" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-navy mb-1">RFC de la empresa</label>
+              <input value={form.company_rfc} maxLength={13} onChange={(e) => setForm({ ...form, company_rfc: e.target.value.toUpperCase() })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600" />
+            </div>
+
             {message && (
               <div className={`md:col-span-2 px-4 py-2 rounded-lg text-sm ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
                 {message.text}
