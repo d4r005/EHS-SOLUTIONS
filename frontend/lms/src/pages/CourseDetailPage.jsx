@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { courseService } from '../services/courseService';
 import { certificateService } from '../services/certificateService';
 import { paymentService } from '../services/paymentService';
+import { rest } from '../services/api';
 
 export const CourseDetailPage = () => {
   const { id } = useParams();
@@ -15,6 +16,7 @@ export const CourseDetailPage = () => {
   const [paying, setPaying] = useState(false);
   const [downloadingCert, setDownloadingCert] = useState(false);
   const [error, setError] = useState(null);
+  const [completedLessonIds, setCompletedLessonIds] = useState(new Set());
 
   useEffect(() => {
     fetchCourse();
@@ -40,6 +42,30 @@ export const CourseDetailPage = () => {
       setLoading(true);
       const data = await courseService.getCourseById(id);
       setCourse(data.course);
+
+      // Cargar lecciones completadas para saber dónde reanudar
+      if (data.course?.enrollment) {
+        try {
+          const progressData = await courseService.getCourseProgress(id);
+          if (progressData?.progress) {
+            // Obtener IDs de lecciones completadas
+            const userId = localStorage.getItem('userId');
+            const modules = data.course.modules || [];
+            const allLessonIds = [];
+            modules.forEach(m => {
+              (m.lessons || []).forEach(l => allLessonIds.push(l.id));
+            });
+            if (allLessonIds.length && userId && userId !== '0') {
+              const { data: prog } = await rest.get(
+                `/lesson_progress?student_id=eq.${userId}&is_completed=eq.true&lesson_id=in.(${allLessonIds.join(',')})&select=lesson_id`
+              );
+              setCompletedLessonIds(new Set((prog || []).map(p => p.lesson_id)));
+            }
+          }
+        } catch (e) {
+          console.error('Error fetching progress:', e);
+        }
+      }
     } catch (err) {
       setError('Error al cargar el curso');
       console.error(err);
@@ -73,7 +99,6 @@ export const CourseDetailPage = () => {
     try {
       setPaying(true);
       await paymentService.startCheckout(id, user);
-      // startCheckout redirige a Stripe; si falla, cae al catch
     } catch (err) {
       setError(err.message || 'No se pudo iniciar el pago');
       setPaying(false);
@@ -98,9 +123,25 @@ export const CourseDetailPage = () => {
   };
 
   const handleStartLearning = () => {
-    // Navegar a la primera lección del primer módulo
-    const firstModule = course.modules?.[0];
-    const firstLesson = firstModule?.lessons?.[0];
+    // Buscar la primera lección no completada
+    const allLessons = [];
+    (course.modules || []).forEach(m => {
+      (m.lessons || []).forEach(l => allLessons.push(l));
+    });
+
+    if (allLessons.length === 0) return;
+
+    // Si hay progreso, buscar la primera lección no completada
+    if (completedLessonIds.size > 0) {
+      const nextLesson = allLessons.find(l => !completedLessonIds.has(l.id));
+      if (nextLesson) {
+        navigate(`/courses/${id}/lessons/${nextLesson.id}`);
+        return;
+      }
+    }
+
+    // Si no hay progreso o todo completado, ir a la primera lección
+    const firstLesson = allLessons[0];
     if (firstLesson) {
       navigate(`/courses/${id}/lessons/${firstLesson.id}`);
     }
@@ -151,7 +192,7 @@ export const CourseDetailPage = () => {
           </div>
           <h1 className="text-4xl font-bold mb-3">{course.title}</h1>
           <p className="text-xl text-gray-300 mb-4">{course.short_description || course.description}</p>
-          <div className="flex items-center gap-6 text-sm text-gray-300">
+          <div className="flex items-center gap-6 text-sm text-gray-300 flex-wrap">
             <span>👤 {course.instructor_first_name} {course.instructor_last_name}</span>
             <span>⏱️ {course.duration_hours || 0} horas</span>
             <span>📦 {course.module_count} módulos</span>
@@ -236,6 +277,7 @@ export const CourseDetailPage = () => {
                     <div className="divide-y divide-gray-100">
                       {module.lessons.map((lesson) => {
                         const hasQuiz = lesson.quizzes && lesson.quizzes.length > 0;
+                        const isCompleted = completedLessonIds.has(lesson.id);
                         return (
                           <div
                             key={lesson.id}
@@ -244,10 +286,12 @@ export const CourseDetailPage = () => {
                           >
                             <div className="flex items-center gap-4">
                               <span className="text-gray-400 group-hover:text-green-600 transition">
-                                {lesson.content_type === 'video' ? '🎥' : lesson.content_type === 'document' ? '📄' : '📝'}
+                                {isCompleted ? '✅' : lesson.content_type === 'video' ? '🎥' : lesson.content_type === 'document' ? '📄' : '📝'}
                               </span>
                               <div>
-                                <p className="text-gray-700 font-medium group-hover:text-navy transition">{lesson.title}</p>
+                                <p className={`text-gray-700 font-medium group-hover:text-navy transition ${isCompleted ? 'text-green-700' : ''}`}>
+                                  {lesson.title}
+                                </p>
                                 {hasQuiz && (
                                   <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-navy text-white text-[10px] font-bold rounded uppercase tracking-wider">
                                     📋 Examen Final
