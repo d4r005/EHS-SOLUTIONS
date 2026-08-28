@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './context/ProtectedRoute';
 import { Navbar } from './components/Navbar';
@@ -149,13 +150,24 @@ function App() {
   );
 }
 
-const NotFound = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <div className="text-center">
-      <h1 className="text-4xl font-bold text-navy mb-4">404</h1>
-      <p className="text-gray-600">Página no encontrada</p>
+const NotFound = () => {
+  // Auto-redirige al home. Esto también repara a usuarios cuyo navegador
+  // guardó en caché un redirect 308 viejo de Cloudflare (ej. /app/200),
+  // de cuando el _redirects anterior convertía /app/login en ese path.
+  const navigate = useNavigate();
+  useEffect(() => {
+    const timer = setTimeout(() => navigate('/', { replace: true }), 1200);
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold text-navy mb-4">404</h1>
+        <p className="text-gray-600">Página no encontrada. Redirigiendo al inicio...</p>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default App;

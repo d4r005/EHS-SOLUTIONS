@@ -1,5 +1,6 @@
-// Pages Function: sirve el React app para rutas virtuales bajo /app/*
-// Los assets estáticos (JS, CSS, PDFs) los sirve Cloudflare directamente antes de llamar esta función.
+// GENERADO AUTOMÁTICAMENTE por build.sh — no editar a mano.
+// Sirve el React app para rutas virtuales bajo /app/*.
+// Los assets estáticos (JS, CSS) los sirve Cloudflare directamente (ver _routes.json).
 const REACT_HTML = `<!doctype html>
 <html lang="es">
   <head>
@@ -8,7 +9,7 @@ const REACT_HTML = `<!doctype html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="EHS Solutions - Plataforma de Capacitación en Seguridad, Salud y Medio Ambiente" />
     <title>EHS Solutions | Plataforma LMS</title>
-    <script type="module" crossorigin src="/app/assets/app-Di02tgOg.js"></script>
+    <script type="module" crossorigin src="/app/assets/app-LGNsei3p.js"></script>
     <link rel="stylesheet" crossorigin href="/app/assets/asset-B0LHfdhK.css">
   </head>
   <body>
