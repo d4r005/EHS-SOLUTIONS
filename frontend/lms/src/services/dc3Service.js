@@ -5,8 +5,8 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 // Usa la plantilla real proporcionada (dc3-template.pdf, en /public)
 // que ya trae impresos el logo, el agente capacitador STPS y la firma
 // del instructor (JESUS DARIO ROBLES TRUJILLO STPS-ROTJ920320-IP4-0005).
-// Aquí solo sobreponemos los datos variables del trabajador y del curso
-// en las coordenadas exactas de cada casilla del formato oficial.
+// Coordenadas re-calibradas midiendo con precisión cada etiqueta y su
+// renglón/celda en blanco correspondiente dentro del PDF original.
 // ============================================
 
 // Mapeo simple de categoría de curso -> clave de área temática (catálogo STPS)
@@ -81,11 +81,11 @@ export const dc3Service = {
     // --- DATOS DEL TRABAJADOR ---
     draw(nombreTrabajador, 30, 171, 10);
 
-    // CURP: 18 celdas entre x=24.4 y x=301.0 (~15.35pt cada una)
-    const curpCells = [25.1, 40.4, 55.8, 71.2, 86.5, 101.9, 117.3, 132.5, 148.1, 163.3, 178.7, 194.2, 209.6, 224.9, 240.3, 255.7, 271.0, 286.4];
+    // CURP: 18 celdas (fila en blanco top=191.2 bot=201.2)
+    const curpCells = [32.8, 49.8, 65.5, 80.4, 93.9, 111.9, 127.3, 142.0, 157.3, 173.4, 186.1, 203.8, 218.8, 231.6, 249.9, 265.6, 280.6, 293.6];
     const curpChars = (curp || '').toUpperCase().split('');
     curpChars.forEach((ch, i) => {
-      if (i < curpCells.length) draw(ch, curpCells[i] + 4, 198.5, 9);
+      if (i < curpCells.length) draw(ch, curpCells[i] + 4, 200, 9);
     });
 
     draw(ocupacion, 306, 198, 8);
@@ -94,29 +94,32 @@ export const dc3Service = {
     // --- DATOS DE LA EMPRESA ---
     draw(empresa || 'Independiente / Persona física', 30, 286, 9);
 
-    // RFC: celdas entre x=25.1 y x~237.9
-    const rfcCells = [25.1, 46.1, 59.6, 73.9, 89.1, 103.3, 117.6, 131.8, 146.3, 160.6, 174.9, 189.1, 203.3, 217.6];
+    // RFC: 14 celdas (fila en blanco top=303.8 bot=313.8)
+    const rfcCells = [52.6, 66.5, 81.1, 95.8, 110.1, 124.3, 138.9, 153.0, 167.3, 181.6, 195.9, 210.2, 227.7, 245.3];
     const rfcChars = (rfc || '').toUpperCase().split('');
     rfcChars.forEach((ch, i) => {
-      if (i < rfcCells.length) draw(ch, rfcCells[i] + 4, 312.5, 9);
+      if (i < rfcCells.length) draw(ch, rfcCells[i] + 4, 312, 9);
     });
 
     // --- DATOS DEL PROGRAMA DE CAPACITACIÓN ---
-    draw(nombreCurso, 30, 424, 10);
-    draw(String(duracionHoras || ''), 95, 412, 9);
+    // "Nombre del curso": etiqueta top=343.9-353.9, renglón en blanco top=357.2-366.2
+    draw(nombreCurso, 30, 364, 10);
 
+    // "Duración en horas": etiqueta top=368.6-378.6, renglón en blanco top=381.4-391.5
+    draw(String(duracionHoras || ''), 30, 389, 9);
+
+    // Periodo de ejecución: celdas individuales por dígito (renglón top=383.8-393.9)
+    const fechaIniCells = [260.1, 275.9, 292.2, 308.3, 326.7, 348.2, 369.5, 390.7]; // Año(4) Mes(2) Día(2)
+    const fechaFinCells = [432.8, 452.4, 471.9, 491.5, 511.8, 532.8, 554.1, 575.6];
     const ini = formatFecha(fechaInicio);
     const fin = formatFecha(fechaFin);
-    // Fecha inicio: Año (x~252.7-315.9), Mes (316.6-358.8), Día (359.5-400.9)
-    draw(ini.anio, 274, 399, 9);
-    draw(ini.mes, 328, 399, 9);
-    draw(ini.dia, 372, 399, 9);
-    // Fecha fin: Año (423.4-500.9), Mes (501.6-543.0), Día (543.7-585.8)
-    draw(fin.anio, 452, 399, 9);
-    draw(fin.mes, 512, 399, 9);
-    draw(fin.dia, 556, 399, 9);
+    const iniDigits = `${ini.anio}${ini.mes}${ini.dia}`.split('');
+    const finDigits = `${fin.anio}${fin.mes}${fin.dia}`.split('');
+    iniDigits.forEach((ch, i) => { if (i < fechaIniCells.length) draw(ch, fechaIniCells[i] + 3, 392, 9); });
+    finDigits.forEach((ch, i) => { if (i < fechaFinCells.length) draw(ch, fechaFinCells[i] + 3, 392, 9); });
 
-    draw(getAreaTematica(categoria), 30, 413, 9);
+    // "Área temática del curso": etiqueta top=394.9-404.9, renglón en blanco top=407.7-417.8
+    draw(getAreaTematica(categoria), 30, 416, 9);
 
     // Folio interno (referencia EHS Solutions, no forma parte oficial del DC-3)
     if (folio) {

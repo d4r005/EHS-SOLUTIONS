@@ -120,7 +120,7 @@ export const constanciaService = {
     // --- Nombre del curso (entre "el curso de" y "Con duración de") ---
     drawCentered(page, fontBold, nombreCurso || '', {
       centerX: CENTER_X,
-      baselineY: PAGE_H - 496,
+      baselineY: PAGE_H - 486,
       size: 15,
       color: NAVY,
       maxWidth: 640,
@@ -132,8 +132,8 @@ export const constanciaService = {
     if (duracionTexto) {
       page.drawText(duracionTexto, {
         x: 636,
-        y: PAGE_H - 517,
-        size: 11,
+        y: PAGE_H - 516,
+        size: 14,
         font: fontRegular,
         color: NAVY,
       });
@@ -144,8 +144,8 @@ export const constanciaService = {
     if (periodoTexto) {
       page.drawText(periodoTexto, {
         x: 545,
-        y: PAGE_H - 541,
-        size: 11,
+        y: PAGE_H - 540,
+        size: 15,
         font: fontRegular,
         color: NAVY,
       });
