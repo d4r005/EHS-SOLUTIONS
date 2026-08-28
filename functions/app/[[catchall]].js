@@ -1,26 +1,27 @@
-// Pages Function: sirve el React app para cualquier ruta /app/* que no sea un asset estático
-// Cloudflare sirve archivos estáticos PRIMERO, así que esto solo se ejecuta para rutas virtuales (dashboard, login, etc.)
-export async function onRequest(context) {
-  const { request, env } = context;
-  
-  // Intentar servir como asset estático primero
-  try {
-    const assetResponse = await env.ASSETS.fetch(request);
-    if (assetResponse.status !== 404) {
-      return assetResponse;
-    }
-  } catch (e) {
-    // Continuar al fallback
-  }
-  
-  // Fallback: servir el React index.html
-  const htmlResponse = await env.ASSETS.fetch(new Request(new URL('/app/index.html', request.url)));
-  const html = await htmlResponse.text();
-  
-  return new Response(html, {
+// Pages Function: sirve el React app para rutas virtuales bajo /app/*
+// Los assets estáticos (JS, CSS, PDFs) los sirve Cloudflare directamente antes de llamar esta función.
+const REACT_HTML = `<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="EHS Solutions - Plataforma de Capacitación en Seguridad, Salud y Medio Ambiente" />
+    <title>EHS Solutions | Plataforma LMS</title>
+    <script type="module" crossorigin src="/app/assets/app-CXBmxzrk.js"></script>
+    <link rel="stylesheet" crossorigin href="/app/assets/asset-B0LHfdhK.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>`;
+
+export async function onRequest() {
+  return new Response(REACT_HTML, {
     status: 200,
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-cache',
     },
   });
 }
