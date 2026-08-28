@@ -1,2 +1,2 @@
-/app/* /app/index.html 200
-/api/* /api/:splat 200
+/app/*  /app/200.html  200
+/api/*  /api/:splat  200
