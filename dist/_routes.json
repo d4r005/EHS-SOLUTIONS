@@ -1,5 +1,5 @@
 {
   "version": 1,
   "include": ["/app/*"],
-  "exclude": ["/app/assets/*"]
+  "exclude": ["/app/assets/*", "/app/*.pdf"]
 }

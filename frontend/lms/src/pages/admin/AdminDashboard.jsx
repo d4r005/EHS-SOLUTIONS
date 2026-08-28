@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { adminService } from '../../services/adminService';
 import { dc3Service } from '../../services/dc3Service';
 import { constanciaService } from '../../services/constanciaService';
+import { OCUPACIONES_STPS } from '../../data/ocupaciones';
 
 export const AdminDashboard = () => {
   const [tab, setTab] = useState('reports');
@@ -318,8 +319,12 @@ export const AdminDashboard = () => {
                     <input type="text" value={testForm.curp} onChange={(e) => setTestForm({...testForm, curp: e.target.value})} className="w-full border border-gray-300 rounded p-2 text-sm" />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 mb-1">Ocupación</label>
-                    <input type="text" value={testForm.ocupacion} onChange={(e) => setTestForm({...testForm, ocupacion: e.target.value})} className="w-full border border-gray-300 rounded p-2 text-sm" />
+                    <label className="block text-xs font-bold text-gray-500 mb-1">Ocupación (Catálogo STPS)</label>
+                    <select value={testForm.ocupacion} onChange={(e) => setTestForm({...testForm, ocupacion: e.target.value})} className="w-full border border-gray-300 rounded p-2 text-sm bg-white">
+                      {OCUPACIONES_STPS.map(o => (
+                        <option key={o} value={o}>{o}</option>
+                      ))}
+                    </select>
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-500 mb-1">Puesto</label>
@@ -334,8 +339,26 @@ export const AdminDashboard = () => {
                     <input type="text" value={testForm.rfc} onChange={(e) => setTestForm({...testForm, rfc: e.target.value})} className="w-full border border-gray-300 rounded p-2 text-sm" />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-xs font-bold text-gray-500 mb-1">Nombre del Curso</label>
-                    <input type="text" value={testForm.curso} onChange={(e) => setTestForm({...testForm, curso: e.target.value})} className="w-full border border-gray-300 rounded p-2 text-sm" />
+                    <label className="block text-xs font-bold text-gray-500 mb-1">Seleccionar Curso</label>
+                    <select
+                      value={testForm.curso}
+                      onChange={(e) => {
+                        const c = courses.find(x => x.title === e.target.value);
+                        setTestForm({
+                          ...testForm,
+                          curso: e.target.value,
+                          horas: c?.duration_hours || 8,
+                          categoria: c?.category || 'SEGURIDAD'
+                        });
+                      }}
+                      className="w-full border border-gray-300 rounded p-2 text-sm bg-white"
+                    >
+                      <option value="">-- Selecciona un curso --</option>
+                      {courses.map(c => (
+                        <option key={c.id} value={c.title}>{c.title}</option>
+                      ))}
+                      {!courses.length && <option disabled>No hay cursos cargados</option>}
+                    </select>
                   </div>
                 </div>
 

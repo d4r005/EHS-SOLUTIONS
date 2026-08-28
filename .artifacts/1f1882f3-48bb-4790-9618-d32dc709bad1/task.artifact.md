@@ -2,13 +2,13 @@
     - [x] Proporcionar SQL para desbloquear tabla `users`
     - [x] Proporcionar script `fix_auth_schema.sql` para Supabase
     - [/] Esperar registro del usuario para promoción a Admin
-- [x] Configurar Entorno Frontend
-    - [x] Crear archivo `frontend/lms/.env` con llaves de Supabase
 - [x] Ajustar Lógica de Autenticación
     - [x] Modificar `AuthContext.jsx` para registro automático vía trigger
-- [ ] Plantilla de Certificados (DC-3)
-    - [ ] Confirmar formato (PNG vs PDF)
-    - [ ] Calibrar coordenadas de texto
-- [ ] Pruebas de Verificación
-    - [ ] Probar registro de nuevo usuario
-    - [ ] Probar inicio de sesión
+    - [x] Robustecer todos los servicios con cabeceras correctas
+- [x] Configuración en Cloudflare Pages
+    - [x] Usuario: Cargar variables en el dashboard
+    - [x] Usuario: Cambiar `VITE_SUPABASE_...` de "Secret" a "Text"
+    - [/] Usuario: Disparar nuevo despliegue (Redeploy)
+- [ ] Pruebas de Verificación Final
+    - [ ] Realizar login exitoso en producción
+    - [ ] Verificar acceso al Dashboard
