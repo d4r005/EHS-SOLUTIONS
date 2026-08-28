@@ -62,28 +62,27 @@ export const dc3Service = {
     };
 
     // --- DATOS DEL TRABAJADOR ---
-    // Nombre: Apellido Paterno, Materno y Nombres
+    // Nombre: Apellidos y Nombres (Orden STPS)
     draw(nombreTrabajador, 30, 171, 10);
 
-    // CURP RE-CALIBRADO: Iniciar en el PRIMER CUADRO (X=30.5)
-    // Centrado: ancho celda ~16.5, ancho letra ~9 -> offset ~3.5
-    const curpCells = [30.5, 47.0, 63.5, 80.0, 96.5, 113.0, 129.5, 146.0, 162.5, 179.0, 195.5, 212.0, 228.5, 245.0, 261.5, 278.0, 294.5, 311.0];
+    // CURP RE-CALIBRADO: Iniciar en el PRIMER CUADRO (X=25.8) y centrar (+4.2)
+    const curpCells = [25.8, 41.1, 56.5, 71.9, 87.2, 102.6, 118.0, 133.2, 148.8, 164.0, 179.4, 194.9, 210.3, 225.6, 241.0, 256.4, 271.7, 287.1];
     const curpChars = (curp || '').toUpperCase().split('');
     curpChars.forEach((ch, i) => {
-      if (i < curpCells.length) draw(ch, curpCells[i] + 3.2, 198, 9);
+      if (i < curpCells.length) draw(ch, curpCells[i] + 4.2, 198, 9);
     });
 
     draw(ocupacion, 306, 198, 8);
-    draw(puesto, 30, 221.5, 9); // Correr a la izquierda (X=30)
+    draw(puesto, 30, 221.5, 9); // Izquierda
 
     // --- DATOS DE LA EMPRESA ---
     draw(empresa || 'Independiente / Persona física', 30, 286, 9);
 
-    // RFC RE-CALIBRADO: Iniciar en el PRIMER CUADRO (X=30.5)
-    const rfcCells = [30.5, 47.5, 64.5, 81.5, 98.5, 115.5, 132.5, 149.5, 166.5, 183.5, 200.5, 217.5, 234.5, 251.5];
+    // RFC RE-CALIBRADO: Iniciar en el PRIMER CUADRO (X=25.8)
+    const rfcCells = [25.8, 43.1, 57.5, 72.3, 87.1, 101.3, 115.9, 130.0, 144.3, 158.6, 172.9, 187.2, 204.7, 222.3];
     const rfcChars = (rfc || '').toUpperCase().split('');
     rfcChars.forEach((ch, i) => {
-      if (i < rfcCells.length) draw(ch, rfcCells[i] + 3.5, 310, 9);
+      if (i < rfcCells.length) draw(ch, rfcCells[i] + 4.5, 310, 9);
     });
 
     // --- DATOS DEL PROGRAMA DE CAPACITACIÓN ---
@@ -91,14 +90,14 @@ export const dc3Service = {
     draw(String(duracionHoras || ''), 30, 389, 9);
 
     // Periodo de ejecución RE-CALIBRADO: Iniciar en primer cuadro y centrar
-    const fechaIniCells = [243.5, 259.0, 275.5, 292.0, 314.0, 335.5, 356.5, 378.0];
-    const fechaFinCells = [416.5, 432.0, 448.5, 465.0, 487.0, 508.5, 529.5, 551.0];
+    const fechaIniCells = [238.1, 253.9, 270.2, 286.3, 304.7, 326.2, 347.5, 368.7];
+    const fechaFinCells = [411.8, 431.4, 450.9, 470.5, 490.8, 511.8, 533.1, 554.6];
     const ini = formatFecha(fechaInicio);
     const fin = formatFecha(fechaFin);
     const iniDigits = `${ini.anio}${ini.mes}${ini.dia}`.split('');
     const finDigits = `${fin.anio}${fin.mes}${fin.dia}`.split('');
-    iniDigits.forEach((ch, i) => { if (i < fechaIniCells.length) draw(ch, fechaIniCells[i] + 3.2, 391, 9); });
-    finDigits.forEach((ch, i) => { if (i < fechaFinCells.length) draw(ch, fechaFinCells[i] + 3.2, 391, 9); });
+    iniDigits.forEach((ch, i) => { if (i < fechaIniCells.length) draw(ch, fechaIniCells[i] + 4.0, 391, 9); });
+    finDigits.forEach((ch, i) => { if (i < fechaFinCells.length) draw(ch, fechaFinCells[i] + 4.0, 391, 9); });
 
     draw(getAreaTematica(categoria), 30, 416, 9);
 
