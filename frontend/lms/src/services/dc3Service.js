@@ -65,39 +65,40 @@ export const dc3Service = {
     // Nombre: Apellido Paterno, Materno y Nombres
     draw(nombreTrabajador, 30, 171, 10);
 
-    // CURP RE-CALIBRADO: Iniciar en el PRIMER CUADRO (X=25)
-    const curpCells = [25.8, 41.1, 56.5, 71.9, 87.2, 102.6, 118.0, 133.2, 148.8, 164.0, 179.4, 194.9, 210.3, 225.6, 241.0, 256.4, 271.7, 287.1];
+    // CURP RE-CALIBRADO: Iniciar en el PRIMER CUADRO (X=30.5)
+    // Centrado: ancho celda ~16.5, ancho letra ~9 -> offset ~3.5
+    const curpCells = [30.5, 47.0, 63.5, 80.0, 96.5, 113.0, 129.5, 146.0, 162.5, 179.0, 195.5, 212.0, 228.5, 245.0, 261.5, 278.0, 294.5, 311.0];
     const curpChars = (curp || '').toUpperCase().split('');
     curpChars.forEach((ch, i) => {
-      if (i < curpCells.length) draw(ch, curpCells[i] + 3.8, 198, 9);
+      if (i < curpCells.length) draw(ch, curpCells[i] + 3.2, 198, 9);
     });
 
     draw(ocupacion, 306, 198, 8);
-    draw(puesto, 65, 221.5, 9);
+    draw(puesto, 30, 221.5, 9); // Correr a la izquierda (X=30)
 
     // --- DATOS DE LA EMPRESA ---
     draw(empresa || 'Independiente / Persona física', 30, 286, 9);
 
-    // RFC RE-CALIBRADO: Iniciar en el PRIMER CUADRO (X=42)
-    const rfcCells = [42.6, 56.5, 71.1, 85.8, 100.1, 114.3, 128.9, 143.0, 157.3, 171.6, 185.9, 200.2, 217.7, 235.3];
+    // RFC RE-CALIBRADO: Iniciar en el PRIMER CUADRO (X=30.5)
+    const rfcCells = [30.5, 47.5, 64.5, 81.5, 98.5, 115.5, 132.5, 149.5, 166.5, 183.5, 200.5, 217.5, 234.5, 251.5];
     const rfcChars = (rfc || '').toUpperCase().split('');
     rfcChars.forEach((ch, i) => {
-      if (i < rfcCells.length) draw(ch, rfcCells[i] + 4, 310, 9);
+      if (i < rfcCells.length) draw(ch, rfcCells[i] + 3.5, 310, 9);
     });
 
     // --- DATOS DEL PROGRAMA DE CAPACITACIÓN ---
     draw(nombreCurso, 30, 364, 10);
     draw(String(duracionHoras || ''), 30, 389, 9);
 
-    // Periodo de ejecución RE-CALIBRADO: Iniciar en el PRIMER CUADRO
-    const fechaIniCells = [248.1, 263.9, 280.2, 296.3, 314.7, 336.2, 357.5, 378.7];
-    const fechaFinCells = [420.8, 440.4, 459.9, 479.5, 499.8, 520.8, 542.1, 563.6];
+    // Periodo de ejecución RE-CALIBRADO: Iniciar en primer cuadro y centrar
+    const fechaIniCells = [243.5, 259.0, 275.5, 292.0, 314.0, 335.5, 356.5, 378.0];
+    const fechaFinCells = [416.5, 432.0, 448.5, 465.0, 487.0, 508.5, 529.5, 551.0];
     const ini = formatFecha(fechaInicio);
     const fin = formatFecha(fechaFin);
     const iniDigits = `${ini.anio}${ini.mes}${ini.dia}`.split('');
     const finDigits = `${fin.anio}${fin.mes}${fin.dia}`.split('');
-    iniDigits.forEach((ch, i) => { if (i < fechaIniCells.length) draw(ch, fechaIniCells[i] + 3.5, 391, 9); });
-    finDigits.forEach((ch, i) => { if (i < fechaFinCells.length) draw(ch, fechaFinCells[i] + 3.5, 391, 9); });
+    iniDigits.forEach((ch, i) => { if (i < fechaIniCells.length) draw(ch, fechaIniCells[i] + 3.2, 391, 9); });
+    finDigits.forEach((ch, i) => { if (i < fechaFinCells.length) draw(ch, fechaFinCells[i] + 3.2, 391, 9); });
 
     draw(getAreaTematica(categoria), 30, 416, 9);
 
@@ -111,14 +112,14 @@ export const dc3Service = {
         // Posicionamiento abajo a la izquierda
         page.drawImage(qrImage, {
           x: 30,
-          y: 60,
-          width: 55,
-          height: 55,
+          y: 45, // Ajustado para que quepa bien abajo
+          width: 50,
+          height: 50,
         });
 
         page.drawText(`Folio de validación: ${folio}`, {
           x: 30,
-          y: 50,
+          y: 35,
           size: 7,
           font,
           color: rgb(0, 0, 0),

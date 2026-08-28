@@ -14,7 +14,8 @@ export const AdminDashboard = () => {
 
   // Estado para el Laboratorio DC-3 (pruebas)
   const [testForm, setTestForm] = useState({
-    nombre: 'ROBLES TRUJILLO JESUS DARIO',
+    nombres: 'JESUS DARIO',
+    apellidos: 'ROBLES TRUJILLO',
     curp: 'ROTJ920320HNLBRS04',
     ocupacion: '04.6 Procesos industriales',
     puesto: 'COORDINADOR EHS',
@@ -89,7 +90,7 @@ export const AdminDashboard = () => {
 
   const handleTestDC3 = async () => {
     await dc3Service.generateAndDownload({
-      nombreTrabajador: testForm.nombre.toUpperCase(),
+      nombreTrabajador: `${testForm.apellidos} ${testForm.nombres}`.toUpperCase(),
       curp: testForm.curp,
       ocupacion: testForm.ocupacion,
       puesto: testForm.puesto,
@@ -106,7 +107,7 @@ export const AdminDashboard = () => {
 
   const handleTestConstancia = async () => {
     await constanciaService.generateAndDownload({
-      nombreAlumno: testForm.nombre,
+      nombreAlumno: `${testForm.nombres} ${testForm.apellidos}`,
       nombreCurso: testForm.curso,
       duracionHoras: testForm.horas,
       fechaInicio: new Date().toISOString(),
@@ -311,8 +312,12 @@ export const AdminDashboard = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 mb-1">Nombre (Paterno Materno Nombres)</label>
-                    <input type="text" value={testForm.nombre} onChange={(e) => setTestForm({...testForm, nombre: e.target.value})} className="w-full border border-gray-300 rounded p-2 text-sm" />
+                    <label className="block text-xs font-bold text-gray-500 mb-1">Nombre(s)</label>
+                    <input type="text" value={testForm.nombres} onChange={(e) => setTestForm({...testForm, nombres: e.target.value})} className="w-full border border-gray-300 rounded p-2 text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 mb-1">Apellidos (Paterno y Materno)</label>
+                    <input type="text" value={testForm.apellidos} onChange={(e) => setTestForm({...testForm, apellidos: e.target.value})} className="w-full border border-gray-300 rounded p-2 text-sm" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-500 mb-1">CURP</label>
