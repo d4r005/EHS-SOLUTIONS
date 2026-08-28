@@ -1,12 +1,8 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import QRCode from 'qrcode';
 
 // ============================================
 // EHS Solutions - Generador de Constancia/Diploma OFICIAL
-// Usa la plantilla real proporcionada (constancia-template.pdf, en /public)
-// que ya trae impresos el logo, el sello, los iconos SST y la firma
-// del instructor (JESUS DARIO ROBLES TRUJILLO STPS-ROTJ920320-IP4-0005).
-// Aquí solo sobreponemos: nombre del alumno, nombre del curso, duración
-// y periodo, en las coordenadas exactas del diseño (1152x768 pt).
 // ============================================
 
 const NAVY = rgb(0 / 255, 40 / 255, 85 / 255);
@@ -40,15 +36,11 @@ function formatPeriodo(fechaInicio, fechaFin) {
   return formatFechaLarga(fechaFin || fechaInicio);
 }
 
-// Dibuja texto centrado horizontalmente en centerX; si no cabe en maxWidth,
-// reduce el tamaño de fuente progresivamente y, si aun así no cabe,
-// envuelve en 2 líneas.
 function drawCentered(page, font, text, { centerX, baselineY, size, color, maxWidth, lineGap = 14 }) {
   if (!text) return;
   let fontSize = size;
   let width = font.widthOfTextAtSize(text, fontSize);
 
-  // Reducir tamaño hasta un mínimo razonable
   const minSize = Math.max(9, size - 6);
   while (width > maxWidth && fontSize > minSize) {
     fontSize -= 0.5;
@@ -60,7 +52,6 @@ function drawCentered(page, font, text, { centerX, baselineY, size, color, maxWi
     return;
   }
 
-  // No cabe en una línea: envolver en 2 líneas por palabras
   const words = text.split(' ');
   let line1 = '';
   let line2 = '';
@@ -84,13 +75,6 @@ function drawCentered(page, font, text, { centerX, baselineY, size, color, maxWi
 export const constanciaService = {
   /**
    * Genera el PDF de la Constancia/Diploma oficial rellenado y lo descarga.
-   * @param {Object} params
-   * @param {string} params.nombreAlumno - Nombre completo del estudiante
-   * @param {string} params.nombreCurso
-   * @param {number} params.duracionHoras
-   * @param {string} params.fechaInicio - ISO date (inscripción)
-   * @param {string} params.fechaFin - ISO date (fecha de emisión del certificado)
-   * @param {string} params.folio - folio interno del certificado
    */
   generateAndDownload: async ({
     nombreAlumno,
@@ -108,58 +92,71 @@ export const constanciaService = {
     const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
     const page = pdfDoc.getPage(0);
 
-    // --- Nombre del alumno (línea bajo "A", arriba de la regla en y≈436) ---
+    // --- Datos variables ---
     drawCentered(page, fontBold, (nombreAlumno || '').toUpperCase(), {
       centerX: CENTER_X,
       baselineY: PAGE_H - 424,
-      size: 22,
+      size: 24,
       color: NAVY,
-      maxWidth: 620,
+      maxWidth: 700,
     });
 
-    // --- Nombre del curso (entre "el curso de" y "Con duración de") ---
     drawCentered(page, fontBold, nombreCurso || '', {
       centerX: CENTER_X,
       baselineY: PAGE_H - 486,
-      size: 15,
+      size: 18,
       color: NAVY,
-      maxWidth: 640,
-      lineGap: 15,
+      maxWidth: 750,
+      lineGap: 18,
     });
 
-    // --- Duración (después de "Con duración de") ---
     const duracionTexto = duracionHoras ? `${duracionHoras} horas` : '';
     if (duracionTexto) {
       page.drawText(duracionTexto, {
         x: 636,
         y: PAGE_H - 516,
-        size: 14,
-        font: fontRegular,
-        color: NAVY,
-      });
-    }
-
-    // --- Periodo (después de "Del") ---
-    const periodoTexto = formatPeriodo(fechaInicio, fechaFin);
-    if (periodoTexto) {
-      page.drawText(periodoTexto, {
-        x: 545,
-        y: PAGE_H - 540,
         size: 15,
         font: fontRegular,
         color: NAVY,
       });
     }
 
-    // Folio interno (referencia EHS Solutions, discreto en la esquina inferior)
-    if (folio) {
-      page.drawText(`Folio: ${folio}`, {
-        x: 30,
-        y: 14,
-        size: 7,
+    const periodoTexto = formatPeriodo(fechaInicio, fechaFin);
+    if (periodoTexto) {
+      page.drawText(periodoTexto, {
+        x: 545,
+        y: PAGE_H - 540,
+        size: 16,
         font: fontRegular,
-        color: rgb(0.5, 0.5, 0.5),
+        color: NAVY,
       });
+    }
+
+    // --- QR Y FOLIO DE VALIDACIÓN ---
+    if (folio) {
+      try {
+        const qrUrl = `https://ehs-solutions.pages.dev/app/verify?f=${folio}`;
+        const qrDataUrl = await QRCode.toDataURL(qrUrl, { margin: 1, width: 200, color: { dark: '#002855' } });
+        const qrImage = await pdfDoc.embedPng(qrDataUrl);
+
+        // Posicionamiento en esquina inferior derecha (basado en DiplomaGenerator.kt)
+        page.drawImage(qrImage, {
+          x: PAGE_W - 160,
+          y: 60,
+          width: 90,
+          height: 90,
+        });
+
+        page.drawText(`Folio de validación: ${folio}`, {
+          x: PAGE_W - 250,
+          y: 45,
+          size: 9,
+          font: fontRegular,
+          color: rgb(0.5, 0.5, 0.5),
+        });
+      } catch (e) {
+        console.error('Error QR Constancia:', e);
+      }
     }
 
     const pdfBytes = await pdfDoc.save();

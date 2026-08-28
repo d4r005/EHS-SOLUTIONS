@@ -1,12 +1,8 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import QRCode from 'qrcode';
 
 // ============================================
 // EHS Solutions - Generador de Formato DC-3 OFICIAL
-// Usa la plantilla real proporcionada (dc3-template.pdf, en /public)
-// que ya trae impresos el logo, el agente capacitador STPS y la firma
-// del instructor (JESUS DARIO ROBLES TRUJILLO STPS-ROTJ920320-IP4-0005).
-// Coordenadas re-calibradas midiendo con precisión cada etiqueta y su
-// renglón/celda en blanco correspondiente dentro del PDF original.
 // ============================================
 
 // Mapeo simple de categoría de curso -> clave de área temática (catálogo STPS)
@@ -31,19 +27,6 @@ function formatFecha(dateStr) {
 export const dc3Service = {
   /**
    * Genera el PDF del Formato DC-3 oficial rellenado y lo descarga.
-   * @param {Object} params
-   * @param {string} params.nombreTrabajador - Apellido paterno, materno y nombre(s)
-   * @param {string} params.curp
-   * @param {string} params.ocupacion
-   * @param {string} params.puesto
-   * @param {string} params.empresa - Nombre o razón social (o "Persona física / Independiente")
-   * @param {string} params.rfc
-   * @param {string} params.nombreCurso
-   * @param {number} params.duracionHoras
-   * @param {string} params.fechaInicio - ISO date (inscripción)
-   * @param {string} params.fechaFin - ISO date (fecha de emisión del certificado)
-   * @param {string} params.categoria - categoría del curso, para inferir área temática
-   * @param {string} params.folio - folio interno del certificado (se imprime pequeño abajo)
    */
   generateAndDownload: async ({
     nombreTrabajador,
@@ -102,10 +85,7 @@ export const dc3Service = {
     });
 
     // --- DATOS DEL PROGRAMA DE CAPACITACIÓN ---
-    // "Nombre del curso": etiqueta top=343.9-353.9, renglón en blanco top=357.2-366.2
     draw(nombreCurso, 30, 364, 10);
-
-    // "Duración en horas": etiqueta top=368.6-378.6, renglón en blanco top=381.4-391.5
     draw(String(duracionHoras || ''), 30, 389, 9);
 
     // Periodo de ejecución: celdas individuales por dígito (renglón top=383.8-393.9)
@@ -118,18 +98,31 @@ export const dc3Service = {
     iniDigits.forEach((ch, i) => { if (i < fechaIniCells.length) draw(ch, fechaIniCells[i] + 3, 392, 9); });
     finDigits.forEach((ch, i) => { if (i < fechaFinCells.length) draw(ch, fechaFinCells[i] + 3, 392, 9); });
 
-    // "Área temática del curso": etiqueta top=394.9-404.9, renglón en blanco top=407.7-417.8
     draw(getAreaTematica(categoria), 30, 416, 9);
 
-    // Folio interno (referencia EHS Solutions, no forma parte oficial del DC-3)
+    // --- QR DE VALIDACIÓN ---
     if (folio) {
-      page.drawText(`Folio interno EHS Solutions: ${folio}`, {
-        x: 30,
-        y: pageHeight - 452,
-        size: 6.5,
-        font,
-        color: rgb(0.5, 0.5, 0.5),
-      });
+      try {
+        const qrUrl = `https://ehs-solutions.pages.dev/app/verify?f=${folio}`;
+        const qrDataUrl = await QRCode.toDataURL(qrUrl, { margin: 1, width: 200 });
+        const qrImage = await pdfDoc.embedPng(qrDataUrl);
+        page.drawImage(qrImage, {
+          x: 480,
+          y: pageHeight - 75,
+          width: 55,
+          height: 55,
+        });
+
+        page.drawText(`Folio: ${folio}`, {
+          x: 30,
+          y: pageHeight - 452,
+          size: 7,
+          font,
+          color: rgb(0.3, 0.3, 0.3),
+        });
+      } catch (e) {
+        console.error('Error QR:', e);
+      }
     }
 
     const pdfBytes = await pdfDoc.save();
@@ -137,7 +130,7 @@ export const dc3Service = {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `DC3_${(nombreTrabajador || 'constancia').replace(/\s+/g, '_')}.pdf`;
+    a.download = `DC3_${(nombreTrabajador || 'documento').replace(/\s+/g, '_')}.pdf`;
     document.body.appendChild(a);
     a.click();
     a.remove();
