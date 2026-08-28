@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Build combinado: marketing (raíz) + LMS React (bajo /app)
 set -e
 
 echo "== Limpiando dist =="
@@ -20,10 +19,9 @@ echo "== Copiando build de LMS a dist/app =="
 mkdir -p dist/app
 cp -r frontend/lms/dist/* dist/app/
 
-echo "== Creando 200.html para SPA fallback =="
+echo "== Copiando 200.html y _routes.json =="
 cp dist/app/index.html dist/app/200.html
-
-echo "== Copiando reglas de rutas (_redirects) =="
+cp _routes.json dist/
 cp _redirects dist/
 
 echo "== Build combinado listo en /dist =="
