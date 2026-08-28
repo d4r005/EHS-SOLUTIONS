@@ -327,14 +327,22 @@ export const LessonViewerPage = () => {
                 )
               )}
 
-              {/* Botón completar */}
-              <button
-                onClick={handleComplete}
-                disabled={completing}
-                className="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition disabled:opacity-50 mb-4"
-              >
-                {completing ? 'Marcando...' : '✓ Marcar como completada'}
-              </button>
+              {/* Botón completar - Solo se muestra si NO hay examen, o si es admin para pruebas */}
+              {(!quiz || user?.role === 'admin') && (
+                <button
+                  onClick={handleComplete}
+                  disabled={completing}
+                  className="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition disabled:opacity-50 mb-4"
+                >
+                  {completing ? 'Marcando...' : '✓ Marcar como completada'}
+                </button>
+              )}
+
+              {quiz && (
+                <div className="mb-4 p-4 bg-blue-50 border-l-4 border-blue-400 text-blue-800 text-sm">
+                  <strong>Requisito de acreditación:</strong> Esta lección requiere aprobar el examen para marcarse como completada.
+                </div>
+              )}
 
               {/* Navegación */}
               <div className="flex justify-between gap-4">

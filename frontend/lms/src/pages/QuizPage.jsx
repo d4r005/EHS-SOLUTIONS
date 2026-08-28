@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { quizService } from '../services/quizService';
+import { courseService } from '../services/courseService';
 
 export const QuizPage = () => {
   const { id: courseId, quizId } = useParams();
@@ -75,6 +76,16 @@ export const QuizPage = () => {
       setSubmitting(true);
       setError(null);
       const res = await quizService.submitQuiz(quiz, answers);
+
+      // Si aprobó, marcar la lección como completada automáticamente
+      if (res.passed) {
+        try {
+          await courseService.completeLesson(quiz.lesson_id);
+        } catch (err) {
+          console.error("Error al marcar lección como completada tras examen:", err);
+        }
+      }
+
       setResult(res);
     } catch (err) {
       setError(err.message || 'Error al enviar el examen');
@@ -131,9 +142,26 @@ export const QuizPage = () => {
             {result.alreadyTaken && (
               <p className="text-sm text-gray-500 mb-4">Ya habías presentado este examen anteriormente.</p>
             )}
-            <button onClick={() => navigate(`/courses/${courseId}`)} className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition">
-              Volver al curso
-            </button>
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              {!result.passed && (
+                <button
+                  onClick={() => {
+                    setResult(null);
+                    setAnswers({});
+                  }}
+                  className="px-6 py-3 bg-navy text-white rounded-lg hover:bg-navy-light font-semibold transition"
+                >
+                  🔄 Reintentar examen
+                </button>
+              )}
+              <button
+                onClick={() => navigate(`/courses/${courseId}`)}
+                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition"
+              >
+                Volver al curso
+              </button>
+            </div>
           </div>
         ) : (
           <div className="space-y-5">

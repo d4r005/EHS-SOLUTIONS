@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { courseService } from '../services/courseService';
 import { certificateService } from '../services/certificateService';
+import { dc3Service } from '../services/dc3Service';
+import { constanciaService } from '../services/constanciaService';
 import { paymentService } from '../services/paymentService';
 import { rest } from '../services/api';
 
@@ -15,8 +17,10 @@ export const CourseDetailPage = () => {
   const [enrolling, setEnrolling] = useState(false);
   const [paying, setPaying] = useState(false);
   const [downloadingCert, setDownloadingCert] = useState(false);
+  const [downloadingDC3, setDownloadingDC3] = useState(false);
   const [error, setError] = useState(null);
   const [completedLessonIds, setCompletedLessonIds] = useState(new Set());
+  const [profileData, setProfileData] = useState(null);
 
   useEffect(() => {
     fetchCourse();
@@ -42,6 +46,12 @@ export const CourseDetailPage = () => {
       setLoading(true);
       const data = await courseService.getCourseById(id);
       setCourse(data.course);
+
+      // Cargar datos extra del perfil para certificados
+      if (user?.id) {
+        const { data: prof } = await rest.get(`/users?id=eq.${user.id}&select=curp,ocupacion,puesto,company_name,company_rfc`);
+        if (prof?.[0]) setProfileData(prof[0]);
+      }
 
       // Cargar lecciones completadas para saber dónde reanudar
       if (data.course?.enrollment) {
@@ -105,20 +115,47 @@ export const CourseDetailPage = () => {
     }
   };
 
-  const handleDownloadCertificate = async () => {
+  const handleDownloadConstancia = async () => {
     try {
       setDownloadingCert(true);
       const cert = await certificateService.getOrCreateCertificate(id);
-      certificateService.downloadCertificatePDF(
-        cert,
-        `${user.first_name} ${user.last_name}`,
-        course.title,
-        course.duration_hours
-      );
+      await constanciaService.generateAndDownload({
+        nombreAlumno: `${user.first_name} ${user.last_name}`.trim(),
+        nombreCurso: course.title,
+        duracionHoras: course.duration_hours,
+        fechaInicio: course.enrollment?.enrollment_date,
+        fechaFin: cert.issued_date,
+        folio: cert.certificate_number,
+      });
     } catch (err) {
-      setError(err.message || 'No se pudo generar el certificado');
+      setError(err.message || 'No se pudo generar la constancia');
     } finally {
       setDownloadingCert(false);
+    }
+  };
+
+  const handleDownloadDC3 = async () => {
+    try {
+      setDownloadingDC3(true);
+      const cert = await certificateService.getOrCreateCertificate(id);
+      await dc3Service.generateAndDownload({
+        nombreTrabajador: `${user.last_name} ${user.first_name}`.trim().toUpperCase(),
+        curp: profileData?.curp,
+        ocupacion: profileData?.ocupacion,
+        puesto: profileData?.puesto,
+        empresa: profileData?.company_name,
+        rfc: profileData?.company_rfc,
+        nombreCurso: course.title,
+        duracionHoras: course.duration_hours,
+        fechaInicio: course.enrollment?.enrollment_date,
+        fechaFin: cert.issued_date,
+        categoria: course.category,
+        folio: cert.certificate_number,
+      });
+    } catch (err) {
+      setError(err.message || 'No se pudo generar el DC-3. Verifique su perfil.');
+    } finally {
+      setDownloadingDC3(false);
     }
   };
 
@@ -228,11 +265,24 @@ export const CourseDetailPage = () => {
                   <span className="font-semibold text-navy">{Math.round(course.enrollment.progress_percentage || 0)}%</span>
                 </div>
               </div>
-              <div className="flex gap-3">
+              <div className="flex gap-3 flex-wrap">
                 {course.enrollment.progress_percentage >= 100 && (
-                  <button onClick={handleDownloadCertificate} disabled={downloadingCert} className="px-6 py-3 bg-navy text-white rounded-lg hover:bg-navy-light font-semibold transition disabled:opacity-50">
-                    {downloadingCert ? 'Generando...' : '🏆 Descargar certificado'}
-                  </button>
+                  <>
+                    <button
+                      onClick={handleDownloadConstancia}
+                      disabled={downloadingCert}
+                      className="px-6 py-3 bg-navy text-white rounded-lg hover:bg-navy-light font-semibold transition disabled:opacity-50"
+                    >
+                      {downloadingCert ? 'Generando...' : '🏆 Diploma'}
+                    </button>
+                    <button
+                      onClick={handleDownloadDC3}
+                      disabled={downloadingDC3}
+                      className="px-6 py-3 border-2 border-navy text-navy rounded-lg hover:bg-navy hover:text-white font-semibold transition disabled:opacity-50"
+                    >
+                      {downloadingDC3 ? 'Generando...' : '📄 DC-3'}
+                    </button>
+                  </>
                 )}
                 <button onClick={handleStartLearning} className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition">
                   {course.enrollment.progress_percentage > 0 ? 'Continuar Aprendiendo' : 'Comenzar Curso'}
