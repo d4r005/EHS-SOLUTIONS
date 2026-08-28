@@ -57,46 +57,49 @@ export const dc3Service = {
         y: pageHeight - top,
         size,
         font,
-        color: rgb(0.05, 0.1, 0.3),
+        color: rgb(0, 0, 0), // NEGRO según solicitud
       });
     };
 
     // --- DATOS DEL TRABAJADOR ---
+    // Nombre: Apellido Paterno, Materno y Nombres
     draw(nombreTrabajador, 30, 171, 10);
 
-    // CURP: 18 celdas (fila en blanco top=191.2 bot=201.2)
-    const curpCells = [32.8, 49.8, 65.5, 80.4, 93.9, 111.9, 127.3, 142.0, 157.3, 173.4, 186.1, 203.8, 218.8, 231.6, 249.9, 265.6, 280.6, 293.6];
+    // CURP CALIBRADO: Fila en blanco top=191.2 bot=201.2
+    // Ajuste de X (+5) y Y (subir a 198)
+    const curpCells = [35.8, 52.8, 68.5, 83.4, 96.9, 114.9, 130.3, 145.0, 160.3, 176.4, 189.1, 206.8, 221.8, 234.6, 252.9, 268.6, 283.6, 296.6];
     const curpChars = (curp || '').toUpperCase().split('');
     curpChars.forEach((ch, i) => {
-      if (i < curpCells.length) draw(ch, curpCells[i] + 4, 200, 9);
+      if (i < curpCells.length) draw(ch, curpCells[i] + 4, 198, 9);
     });
 
     draw(ocupacion, 306, 198, 8);
-    draw(puesto, 65, 223.5, 9);
+    draw(puesto, 65, 221.5, 9); // Subido de 223.5 a 221.5
 
     // --- DATOS DE LA EMPRESA ---
     draw(empresa || 'Independiente / Persona física', 30, 286, 9);
 
-    // RFC: 14 celdas (fila en blanco top=303.8 bot=313.8)
-    const rfcCells = [52.6, 66.5, 81.1, 95.8, 110.1, 124.3, 138.9, 153.0, 167.3, 181.6, 195.9, 210.2, 227.7, 245.3];
+    // RFC CALIBRADO: fila en blanco top=303.8 bot=313.8
+    // Ajuste de X (+6) y Y (subir a 310)
+    const rfcCells = [58.6, 72.5, 87.1, 101.8, 116.1, 130.3, 144.9, 159.0, 173.3, 187.6, 201.9, 216.2, 233.7, 251.3];
     const rfcChars = (rfc || '').toUpperCase().split('');
     rfcChars.forEach((ch, i) => {
-      if (i < rfcCells.length) draw(ch, rfcCells[i] + 4, 312, 9);
+      if (i < rfcCells.length) draw(ch, rfcCells[i] + 4, 310, 9);
     });
 
     // --- DATOS DEL PROGRAMA DE CAPACITACIÓN ---
     draw(nombreCurso, 30, 364, 10);
     draw(String(duracionHoras || ''), 30, 389, 9);
 
-    // Periodo de ejecución: celdas individuales por dígito (renglón top=383.8-393.9)
-    const fechaIniCells = [260.1, 275.9, 292.2, 308.3, 326.7, 348.2, 369.5, 390.7]; // Año(4) Mes(2) Día(2)
-    const fechaFinCells = [432.8, 452.4, 471.9, 491.5, 511.8, 532.8, 554.1, 575.6];
+    // Periodo de ejecución calibrado (X +4, Y 391)
+    const fechaIniCells = [264.1, 279.9, 296.2, 312.3, 330.7, 352.2, 373.5, 394.7];
+    const fechaFinCells = [436.8, 456.4, 475.9, 495.5, 515.8, 536.8, 558.1, 579.6];
     const ini = formatFecha(fechaInicio);
     const fin = formatFecha(fechaFin);
     const iniDigits = `${ini.anio}${ini.mes}${ini.dia}`.split('');
     const finDigits = `${fin.anio}${fin.mes}${fin.dia}`.split('');
-    iniDigits.forEach((ch, i) => { if (i < fechaIniCells.length) draw(ch, fechaIniCells[i] + 3, 392, 9); });
-    finDigits.forEach((ch, i) => { if (i < fechaFinCells.length) draw(ch, fechaFinCells[i] + 3, 392, 9); });
+    iniDigits.forEach((ch, i) => { if (i < fechaIniCells.length) draw(ch, fechaIniCells[i] + 3, 391, 9); });
+    finDigits.forEach((ch, i) => { if (i < fechaFinCells.length) draw(ch, fechaFinCells[i] + 3, 391, 9); });
 
     draw(getAreaTematica(categoria), 30, 416, 9);
 

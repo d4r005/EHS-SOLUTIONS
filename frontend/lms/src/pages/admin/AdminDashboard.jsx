@@ -14,13 +14,13 @@ export const AdminDashboard = () => {
 
   // Estado para el Laboratorio DC-3 (pruebas)
   const [testForm, setTestForm] = useState({
-    nombre: 'JUAN PÉREZ GARCÍA',
-    curp: 'ABCJ800101HDFRRN01',
-    ocupacion: 'OPERADOR DE MONTACARGAS',
-    puesto: 'CHOFER C',
-    empresa: 'EMPRESA EJEMPLO S.A. DE C.V.',
-    rfc: 'EEJ900101ABC',
-    curso: 'SEGURIDAD EN TRABAJOS EN ALTURAS',
+    nombre: 'ROBLES TRUJILLO JESUS DARIO',
+    curp: 'ROTJ920320HNLBRS04',
+    ocupacion: '04.6 Procesos industriales',
+    puesto: 'COORDINADOR EHS',
+    empresa: 'SHELSER S. DE R.L. DE C.V.',
+    rfc: 'CGU101126SA2',
+    curso: 'Formación de Supervisores de Seguridad y Salud Ocupacional',
     horas: 8,
     categoria: 'SEGURIDAD'
   });
@@ -311,7 +311,7 @@ export const AdminDashboard = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 mb-1">Nombre Completo</label>
+                    <label className="block text-xs font-bold text-gray-500 mb-1">Nombre (Paterno Materno Nombres)</label>
                     <input type="text" value={testForm.nombre} onChange={(e) => setTestForm({...testForm, nombre: e.target.value})} className="w-full border border-gray-300 rounded p-2 text-sm" />
                   </div>
                   <div>
