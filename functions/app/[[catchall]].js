@@ -9,7 +9,7 @@ const REACT_HTML = `<!doctype html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="EHS Solutions - Plataforma de Capacitación en Seguridad, Salud y Medio Ambiente" />
     <title>EHS Solutions | Plataforma LMS</title>
-    <script type="module" crossorigin src="/app/assets/app-B6bF7-c5.js"></script>
+    <script type="module" crossorigin src="/app/assets/app-C33dlFIm.js"></script>
     <link rel="stylesheet" crossorigin href="/app/assets/asset-C9B8tHN4.css">
   </head>
   <body>

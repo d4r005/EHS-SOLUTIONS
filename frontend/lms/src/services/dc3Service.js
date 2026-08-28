@@ -89,9 +89,9 @@ export const dc3Service = {
     draw(nombreCurso, 30, 364, 10);
     draw(String(duracionHoras || ''), 30, 389, 9);
 
-    // Periodo de ejecución RE-CALIBRADO: Iniciar en primer cuadro y centrar
-    const fechaIniCells = [238.1, 253.9, 270.2, 286.3, 304.7, 326.2, 347.5, 368.7];
-    const fechaFinCells = [411.8, 431.4, 450.9, 470.5, 490.8, 511.8, 533.1, 554.6];
+    // Periodo de ejecución RE-CALIBRADO: Desplazado un espacio a la derecha
+    const fechaIniCells = [254.1, 269.9, 286.2, 302.3, 320.7, 342.2, 363.5, 384.7];
+    const fechaFinCells = [427.8, 447.4, 466.9, 486.5, 506.8, 527.8, 549.1, 570.6];
     const ini = formatFecha(fechaInicio);
     const fin = formatFecha(fechaFin);
     const iniDigits = `${ini.anio}${ini.mes}${ini.dia}`.split('');
