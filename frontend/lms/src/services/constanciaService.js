@@ -135,7 +135,7 @@ export const constanciaService = {
     // --- QR Y FOLIO DE VALIDACIÓN ---
     if (folio) {
       try {
-        const qrUrl = `https://ehs-solutions.pages.dev/app/verify?f=${folio}`;
+        const qrUrl = `${window.location.origin}/app/verify?f=${folio}`;
         const qrDataUrl = await QRCode.toDataURL(qrUrl, { margin: 1, width: 200, color: { dark: '#002855' } });
         const qrImage = await pdfDoc.embedPng(qrDataUrl);
 
@@ -147,7 +147,9 @@ export const constanciaService = {
           height: 90,
         });
 
-        page.drawText(`Folio de validación: ${folio}`, {
+        // Insertar CON en el folio mostrado
+        const displayFolio = folio.replace('EHS-', 'EHS-CON-');
+        page.drawText(`Folio de validación: ${displayFolio}`, {
           x: PAGE_W - 250,
           y: 45,
           size: 9,

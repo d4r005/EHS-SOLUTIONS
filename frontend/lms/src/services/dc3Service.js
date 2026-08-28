@@ -104,7 +104,7 @@ export const dc3Service = {
     // --- QR Y FOLIO DE VALIDACIÓN (Esquina Inferior Izquierda) ---
     if (folio) {
       try {
-        const qrUrl = `https://ehs-solutions.pages.dev/app/verify?f=${folio}`;
+        const qrUrl = `${window.location.origin}/app/verify?f=${folio}`;
         const qrDataUrl = await QRCode.toDataURL(qrUrl, { margin: 1, width: 200 });
         const qrImage = await pdfDoc.embedPng(qrDataUrl);
 
@@ -116,7 +116,9 @@ export const dc3Service = {
           height: 50,
         });
 
-        page.drawText(`Folio de validación: ${folio}`, {
+        // Insertar DC3 en el folio mostrado
+        const displayFolio = folio.replace('EHS-', 'EHS-DC3-');
+        page.drawText(`Folio de validación: ${displayFolio}`, {
           x: 30,
           y: 35,
           size: 7,

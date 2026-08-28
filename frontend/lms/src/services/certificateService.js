@@ -1,10 +1,8 @@
 import { jsPDF } from 'jspdf';
 import { rest } from './api';
 
-function generateCertificateNumber(studentId, courseId) {
-  const year = new Date().getFullYear();
-  const rand = Math.random().toString(36).substring(2, 7).toUpperCase();
-  return `EHS-${year}-${courseId}-${studentId}-${rand}`;
+function formatFolioNumber(id) {
+  return String(id).padStart(4, '0');
 }
 
 export const certificateService = {
@@ -25,15 +23,27 @@ export const certificateService = {
       throw { message: 'Debes completar el 100% del curso para obtener el certificado' };
     }
 
+    // 1) Crear el registro con un folio temporal
     const payload = {
       student_id: userId,
       course_id: parseInt(courseId),
-      certificate_number: generateCertificateNumber(userId, courseId),
+      certificate_number: 'TEMP-' + Date.now(),
       issued_date: new Date().toISOString(),
       is_valid: true,
     };
-    const { data } = await rest.post('/certificates', payload);
-    return data[0];
+    const { data: inserted } = await rest.post('/certificates', payload);
+    if (!inserted?.[0]) throw { message: 'No se pudo crear el registro del certificado' };
+
+    const certId = inserted[0].id;
+    const year = new Date().getFullYear();
+    const finalFolio = `EHS-${year}-${formatFolioNumber(certId)}`;
+
+    // 2) Actualizar con el folio definitivo basado en el ID correlativo
+    const { data: updated } = await rest.patch(`/certificates?id=eq.${certId}`, {
+      certificate_number: finalFolio
+    });
+
+    return { ...inserted[0], certificate_number: finalFolio };
   },
 
   // Certificados del alumno actual con datos de curso

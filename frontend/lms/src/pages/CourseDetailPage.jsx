@@ -119,6 +119,8 @@ export const CourseDetailPage = () => {
     try {
       setDownloadingCert(true);
       const cert = await certificateService.getOrCreateCertificate(id);
+      if (!cert) throw new Error('No se pudo obtener el certificado');
+
       await constanciaService.generateAndDownload({
         nombreAlumno: `${user.first_name} ${user.last_name}`.trim(),
         nombreCurso: course.title,
@@ -128,6 +130,7 @@ export const CourseDetailPage = () => {
         folio: cert.certificate_number,
       });
     } catch (err) {
+      console.error(err);
       setError(err.message || 'No se pudo generar la constancia');
     } finally {
       setDownloadingCert(false);
@@ -138,6 +141,8 @@ export const CourseDetailPage = () => {
     try {
       setDownloadingDC3(true);
       const cert = await certificateService.getOrCreateCertificate(id);
+      if (!cert) throw new Error('No se pudo obtener el certificado');
+
       await dc3Service.generateAndDownload({
         nombreTrabajador: `${user.last_name} ${user.first_name}`.trim().toUpperCase(),
         curp: profileData?.curp,
@@ -153,6 +158,7 @@ export const CourseDetailPage = () => {
         folio: cert.certificate_number,
       });
     } catch (err) {
+      console.error(err);
       setError(err.message || 'No se pudo generar el DC-3. Verifique su perfil.');
     } finally {
       setDownloadingDC3(false);
