@@ -65,23 +65,21 @@ export const dc3Service = {
     // Nombre: Apellido Paterno, Materno y Nombres
     draw(nombreTrabajador, 30, 171, 10);
 
-    // CURP CALIBRADO: Fila en blanco top=191.2 bot=201.2
-    // Ajuste de X (+5) y Y (subir a 198)
-    const curpCells = [35.8, 52.8, 68.5, 83.4, 96.9, 114.9, 130.3, 145.0, 160.3, 176.4, 189.1, 206.8, 221.8, 234.6, 252.9, 268.6, 283.6, 296.6];
+    // CURP RE-CALIBRADO: Iniciar en el PRIMER CUADRO (X=25)
+    const curpCells = [25.8, 41.1, 56.5, 71.9, 87.2, 102.6, 118.0, 133.2, 148.8, 164.0, 179.4, 194.9, 210.3, 225.6, 241.0, 256.4, 271.7, 287.1];
     const curpChars = (curp || '').toUpperCase().split('');
     curpChars.forEach((ch, i) => {
-      if (i < curpCells.length) draw(ch, curpCells[i] + 4, 198, 9);
+      if (i < curpCells.length) draw(ch, curpCells[i] + 3.8, 198, 9);
     });
 
     draw(ocupacion, 306, 198, 8);
-    draw(puesto, 65, 221.5, 9); // Subido de 223.5 a 221.5
+    draw(puesto, 65, 221.5, 9);
 
     // --- DATOS DE LA EMPRESA ---
     draw(empresa || 'Independiente / Persona física', 30, 286, 9);
 
-    // RFC CALIBRADO: fila en blanco top=303.8 bot=313.8
-    // Ajuste de X (+6) y Y (subir a 310)
-    const rfcCells = [58.6, 72.5, 87.1, 101.8, 116.1, 130.3, 144.9, 159.0, 173.3, 187.6, 201.9, 216.2, 233.7, 251.3];
+    // RFC RE-CALIBRADO: Iniciar en el PRIMER CUADRO (X=42)
+    const rfcCells = [42.6, 56.5, 71.1, 85.8, 100.1, 114.3, 128.9, 143.0, 157.3, 171.6, 185.9, 200.2, 217.7, 235.3];
     const rfcChars = (rfc || '').toUpperCase().split('');
     rfcChars.forEach((ch, i) => {
       if (i < rfcCells.length) draw(ch, rfcCells[i] + 4, 310, 9);
@@ -91,37 +89,39 @@ export const dc3Service = {
     draw(nombreCurso, 30, 364, 10);
     draw(String(duracionHoras || ''), 30, 389, 9);
 
-    // Periodo de ejecución calibrado (X +4, Y 391)
-    const fechaIniCells = [264.1, 279.9, 296.2, 312.3, 330.7, 352.2, 373.5, 394.7];
-    const fechaFinCells = [436.8, 456.4, 475.9, 495.5, 515.8, 536.8, 558.1, 579.6];
+    // Periodo de ejecución RE-CALIBRADO: Iniciar en el PRIMER CUADRO
+    const fechaIniCells = [248.1, 263.9, 280.2, 296.3, 314.7, 336.2, 357.5, 378.7];
+    const fechaFinCells = [420.8, 440.4, 459.9, 479.5, 499.8, 520.8, 542.1, 563.6];
     const ini = formatFecha(fechaInicio);
     const fin = formatFecha(fechaFin);
     const iniDigits = `${ini.anio}${ini.mes}${ini.dia}`.split('');
     const finDigits = `${fin.anio}${fin.mes}${fin.dia}`.split('');
-    iniDigits.forEach((ch, i) => { if (i < fechaIniCells.length) draw(ch, fechaIniCells[i] + 3, 391, 9); });
-    finDigits.forEach((ch, i) => { if (i < fechaFinCells.length) draw(ch, fechaFinCells[i] + 3, 391, 9); });
+    iniDigits.forEach((ch, i) => { if (i < fechaIniCells.length) draw(ch, fechaIniCells[i] + 3.5, 391, 9); });
+    finDigits.forEach((ch, i) => { if (i < fechaFinCells.length) draw(ch, fechaFinCells[i] + 3.5, 391, 9); });
 
     draw(getAreaTematica(categoria), 30, 416, 9);
 
-    // --- QR DE VALIDACIÓN ---
+    // --- QR Y FOLIO DE VALIDACIÓN (Esquina Inferior Izquierda) ---
     if (folio) {
       try {
         const qrUrl = `https://ehs-solutions.pages.dev/app/verify?f=${folio}`;
         const qrDataUrl = await QRCode.toDataURL(qrUrl, { margin: 1, width: 200 });
         const qrImage = await pdfDoc.embedPng(qrDataUrl);
+
+        // Posicionamiento abajo a la izquierda
         page.drawImage(qrImage, {
-          x: 480,
-          y: pageHeight - 75,
+          x: 30,
+          y: 60,
           width: 55,
           height: 55,
         });
 
-        page.drawText(`Folio: ${folio}`, {
+        page.drawText(`Folio de validación: ${folio}`, {
           x: 30,
-          y: pageHeight - 452,
+          y: 50,
           size: 7,
           font,
-          color: rgb(0.3, 0.3, 0.3),
+          color: rgb(0, 0, 0),
         });
       } catch (e) {
         console.error('Error QR:', e);
