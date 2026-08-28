@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { courseService } from '../services/courseService';
 import { certificateService } from '../services/certificateService';
 import { dc3Service } from '../services/dc3Service';
+import { constanciaService } from '../services/constanciaService';
 import { rest, authApi, SUPABASE_URL, SUPABASE_KEY } from '../services/api';
 
 export const ProfilePage = () => {
@@ -105,7 +106,30 @@ export const ProfilePage = () => {
     }
   };
 
-  const handleDownloadCertificate = async (cert) => {
+  const handleDownloadConstancia = async (cert) => {
+    const enrollment = enrollments.find((e) => e.course_id === cert.course_id);
+    try {
+      await constanciaService.generateAndDownload({
+        nombreAlumno: `${form.first_name} ${form.last_name}`.trim(),
+        nombreCurso: cert.course?.title || 'Curso',
+        duracionHoras: cert.course?.duration_hours,
+        fechaInicio: enrollment?.enrollment_date,
+        fechaFin: cert.issued_date,
+        folio: cert.certificate_number,
+      });
+    } catch (err) {
+      console.error('Error al generar Constancia:', err);
+      // Fallback: certificado simple si algo falla con la plantilla oficial
+      certificateService.downloadCertificatePDF(
+        cert,
+        `${form.first_name} ${form.last_name}`,
+        cert.course?.title || 'Curso',
+        cert.course?.duration_hours
+      );
+    }
+  };
+
+  const handleDownloadDC3 = async (cert) => {
     const enrollment = enrollments.find((e) => e.course_id === cert.course_id);
     try {
       await dc3Service.generateAndDownload({
@@ -124,13 +148,7 @@ export const ProfilePage = () => {
       });
     } catch (err) {
       console.error('Error al generar DC-3:', err);
-      // Fallback: certificado simple si algo falla con la plantilla oficial
-      certificateService.downloadCertificatePDF(
-        cert,
-        `${form.first_name} ${form.last_name}`,
-        cert.course?.title || 'Curso',
-        cert.course?.duration_hours
-      );
+      alert('No se pudo generar el DC-3. Verifica que tu CURP y RFC de empresa estén completos en tu perfil.');
     }
   };
 
@@ -265,9 +283,14 @@ export const ProfilePage = () => {
                     <p className="font-semibold text-navy">{cert.course?.title}</p>
                     <p className="text-xs text-gray-500">Folio: {cert.certificate_number}</p>
                   </div>
-                  <button onClick={() => handleDownloadCertificate(cert)} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-semibold transition">
-                    Descargar PDF
-                  </button>
+                  <div className="flex gap-2">
+                    <button onClick={() => handleDownloadConstancia(cert)} className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-semibold transition">
+                      Constancia
+                    </button>
+                    <button onClick={() => handleDownloadDC3(cert)} className="px-3 py-2 border-2 border-navy text-navy rounded-lg hover:bg-navy hover:text-white text-sm font-semibold transition">
+                      DC-3
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
