@@ -31,6 +31,14 @@ export const adminService = {
     await rest.delete(`/courses?id=eq.${id}`);
   },
 
+  // --- Certificados (Administración) ---
+  getAllCertificates: async () => {
+    const { data } = await rest.get(
+      '/certificates?select=*,student:users!student_id(first_name,last_name,curp,ocupacion,puesto,company_name,company_rfc),course:courses(id,title,duration_hours,category)&order=issued_date.desc'
+    );
+    return data;
+  },
+
   // --- Reportes básicos ---
   getReports: async () => {
     const [{ data: users }, { data: courses }, { data: enrollments }, { data: certificates }] = await Promise.all([
