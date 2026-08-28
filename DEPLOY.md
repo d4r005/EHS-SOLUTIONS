@@ -142,3 +142,4 @@ EHS-SOLUTIONS/
 ```
 
 <!-- redeploy trigger 2026-08-27T16:31:47Z -->
+-- forzando nuevo deploy --
