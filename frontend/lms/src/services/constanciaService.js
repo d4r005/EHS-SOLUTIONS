@@ -132,7 +132,7 @@ export const constanciaService = {
     if (duracionTexto) {
       page.drawText(duracionTexto, {
         x: 636,
-        y: PAGE_H - 524,
+        y: PAGE_H - 517,
         size: 11,
         font: fontRegular,
         color: NAVY,
@@ -144,7 +144,7 @@ export const constanciaService = {
     if (periodoTexto) {
       page.drawText(periodoTexto, {
         x: 545,
-        y: PAGE_H - 548,
+        y: PAGE_H - 541,
         size: 11,
         font: fontRegular,
         color: NAVY,
