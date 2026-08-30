@@ -31,10 +31,10 @@ export const AuthProvider = ({ children }) => {
       const authRes = await authApi.get('/user');
 
       // Petición a nuestra tabla pública de perfiles
-      let profileRes = await rest.get(`/users?auth_id=eq.${authRes.data.id}&select=id,first_name,last_name,email,role`);
+      let profileRes = await rest.get(`/users?auth_id=eq.${authRes.data.id}&select=id,first_name,last_name,email,role,curp,ocupacion,company_rfc`);
 
       if (!profileRes.data.length) {
-        profileRes = await rest.get(`/users?email=eq.${authRes.data.email}&select=id,first_name,last_name,email,role`);
+        profileRes = await rest.get(`/users?email=eq.${authRes.data.email}&select=id,first_name,last_name,email,role,curp,ocupacion,company_rfc`);
 
         if (profileRes.data.length) {
           await rest.patch(`/users?id=eq.${profileRes.data[0].id}`, { auth_id: authRes.data.id });
@@ -49,6 +49,9 @@ export const AuthProvider = ({ children }) => {
           last_name: profile.last_name,
           email: profile.email,
           role: profile.role,
+          curp: profile.curp,
+          ocupacion: profile.ocupacion,
+          company_rfc: profile.company_rfc,
         });
         localStorage.setItem('userId', profile.id);
       } else {

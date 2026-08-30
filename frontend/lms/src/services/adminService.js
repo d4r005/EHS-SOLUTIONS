@@ -31,6 +31,26 @@ export const adminService = {
     await rest.delete(`/courses?id=eq.${id}`);
   },
 
+  // --- Inscripciones (Administración) ---
+  getEnrollments: async () => {
+    const { data } = await rest.get(
+      '/enrollments?select=*,student:users!student_id(first_name,last_name,email),course:courses(id,title)&order=enrolled_date.desc'
+    );
+    return data;
+  },
+  enrollUser: async (userId, courseId) => {
+    const { data } = await rest.post('/enrollments', {
+      student_id: userId,
+      course_id: courseId,
+      status: 'active',
+      progress_percentage: 0,
+    });
+    return data;
+  },
+  unenrollUser: async (enrollmentId) => {
+    await rest.delete(`/enrollments?id=eq.${enrollmentId}`);
+  },
+
   // --- Certificados (Administración) ---
   getAllCertificates: async () => {
     const { data } = await rest.get(

@@ -14,6 +14,9 @@ export const DashboardPage = () => {
     hoursLearned: 0,
   });
 
+  // Verificar si el perfil está incompleto
+  const isProfileIncomplete = !user?.curp || !user?.ocupacion || !user?.company_rfc;
+
   useEffect(() => {
     if (isAuthenticated && user) {
       fetchMyCourses();
@@ -46,6 +49,26 @@ export const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
+        {/* Banner de Perfil Incompleto */}
+        {isProfileIncomplete && (
+          <div className="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg shadow-sm animate-pulse">
+            <div className="flex items-center">
+              <div className="flex-shrink-0 text-2xl">⚠️</div>
+              <div className="ml-3">
+                <p className="text-sm text-yellow-700 font-bold">
+                  Perfil Incompleto
+                </p>
+                <p className="text-xs text-yellow-600">
+                  Para emitir tus constancias DC-3 correctamente, es necesario que completes tu <b>CURP, Ocupación y RFC</b> en la sección de perfil.
+                </p>
+                <Link to="/profile" className="text-xs font-bold text-yellow-700 underline mt-1 inline-block">
+                  Completar mis datos ahora &rarr;
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-navy mb-2">

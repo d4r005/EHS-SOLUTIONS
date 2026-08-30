@@ -8,9 +8,14 @@ export const AdminDashboard = () => {
   const [tab, setTab] = useState('reports');
   const [users, setUsers] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [enrollments, setEnrollments] = useState([]);
   const [certificates, setCertificates] = useState([]);
   const [reports, setReports] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Estados para búsqueda y asignación
+  const [searchEnrollment, setSearchEnrollment] = useState('');
+  const [assignForm, setAssignForm] = useState({ userId: '', courseId: '' });
 
   // Estado para el Laboratorio DC-3 (pruebas)
   const [testForm, setTestForm] = useState({
@@ -33,16 +38,18 @@ export const AdminDashboard = () => {
   const fetchAll = async () => {
     try {
       setLoading(true);
-      const [u, c, r, certs] = await Promise.all([
+      const [u, c, r, certs, enrs] = await Promise.all([
         adminService.getUsers(),
         adminService.getAllCourses(),
         adminService.getReports(),
         adminService.getAllCertificates(),
+        adminService.getEnrollments(),
       ]);
       setUsers(u);
       setCourses(c);
       setReports(r);
       setCertificates(certs);
+      setEnrollments(enrs);
     } catch (err) {
       console.error(err);
     } finally {
@@ -137,10 +144,35 @@ export const AdminDashboard = () => {
     setCourses(courses.filter((x) => x.id !== c.id));
   };
 
+  const handleEnroll = async (e) => {
+    e.preventDefault();
+    if (!assignForm.userId || !assignForm.courseId) return alert('Selecciona usuario y curso');
+    try {
+      await adminService.enrollUser(assignForm.userId, assignForm.courseId);
+      alert('Usuario inscrito con éxito');
+      setAssignForm({ userId: '', courseId: '' });
+      const updated = await adminService.getEnrollments();
+      setEnrollments(updated);
+    } catch (err) {
+      alert('Error al inscribir: ' + (err.message || 'El usuario ya podría estar inscrito'));
+    }
+  };
+
+  const handleUnenroll = async (id) => {
+    if (!window.confirm('¿Eliminar esta inscripción? El progreso se perderá.')) return;
+    try {
+      await adminService.unenrollUser(id);
+      setEnrollments(enrollments.filter(e => e.id !== id));
+    } catch (err) {
+      alert('Error al eliminar inscripción');
+    }
+  };
+
   const tabs = [
     { id: 'reports', label: 'Reportes' },
     { id: 'users', label: 'Usuarios' },
     { id: 'courses', label: 'Cursos' },
+    { id: 'enrollments', label: 'Inscripciones' },
     { id: 'certificates', label: 'Certificados' },
     { id: 'lab', label: '🧪 Laboratorio' },
   ];
@@ -258,6 +290,106 @@ export const AdminDashboard = () => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+
+            {tab === 'enrollments' && (
+              <div className="space-y-6">
+                {/* Formulario de Asignación Manual */}
+                <div className="bg-white rounded-xl shadow-md p-6">
+                  <h2 className="text-lg font-bold text-navy mb-4">Inscribir Alumno Manualmente (Cursos de regalo)</h2>
+                  <form onSubmit={handleEnroll} className="flex flex-col md:flex-row gap-4 items-end">
+                    <div className="flex-1">
+                      <label className="block text-xs font-bold text-gray-500 mb-1">Seleccionar Usuario</label>
+                      <select
+                        value={assignForm.userId}
+                        onChange={(e) => setAssignForm({ ...assignForm, userId: e.target.value })}
+                        className="w-full border border-gray-300 rounded-lg p-2 text-sm bg-white"
+                      >
+                        <option value="">-- Selecciona un usuario --</option>
+                        {users.filter(u => u.role === 'student').map(u => (
+                          <option key={u.id} value={u.id}>{u.first_name} {u.last_name} ({u.email})</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-xs font-bold text-gray-500 mb-1">Seleccionar Curso</label>
+                      <select
+                        value={assignForm.courseId}
+                        onChange={(e) => setAssignForm({ ...assignForm, courseId: e.target.value })}
+                        className="w-full border border-gray-300 rounded-lg p-2 text-sm bg-white"
+                      >
+                        <option value="">-- Selecciona un curso --</option>
+                        {courses.map(c => (
+                          <option key={c.id} value={c.id}>{c.title}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <button type="submit" className="bg-green-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-700 transition">
+                      Inscribir
+                    </button>
+                  </form>
+                </div>
+
+                {/* Listado de Inscripciones */}
+                <div className="bg-white rounded-xl shadow-md overflow-hidden">
+                  <div className="p-4 border-b border-gray-100">
+                    <input
+                      type="text"
+                      placeholder="Buscar por alumno o curso..."
+                      className="w-full md:w-80 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-navy focus:border-transparent outline-none"
+                      value={searchEnrollment}
+                      onChange={(e) => setSearchEnrollment(e.target.value)}
+                    />
+                  </div>
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50 text-left text-gray-500">
+                      <tr>
+                        <th className="px-4 py-3">Estudiante</th>
+                        <th className="px-4 py-3">Curso</th>
+                        <th className="px-4 py-3">Progreso</th>
+                        <th className="px-4 py-3">Estado</th>
+                        <th className="px-4 py-3">Fecha</th>
+                        <th className="px-4 py-3">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {enrollments
+                        .filter(e =>
+                          e.student?.first_name?.toLowerCase().includes(searchEnrollment.toLowerCase()) ||
+                          e.student?.last_name?.toLowerCase().includes(searchEnrollment.toLowerCase()) ||
+                          e.course?.title?.toLowerCase().includes(searchEnrollment.toLowerCase())
+                        )
+                        .map((e) => (
+                          <tr key={e.id}>
+                            <td className="px-4 py-3">
+                              <div className="font-semibold text-navy">{e.student?.first_name} {e.student?.last_name}</div>
+                              <div className="text-xs text-gray-500">{e.student?.email}</div>
+                            </td>
+                            <td className="px-4 py-3 text-gray-600">{e.course?.title}</td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-2">
+                                <div className="w-16 bg-gray-200 rounded-full h-1.5">
+                                  <div className="bg-green-600 h-1.5 rounded-full" style={{ width: `${e.progress_percentage}%` }}></div>
+                                </div>
+                                <span>{e.progress_percentage}%</span>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3 capitalize">{e.status}</td>
+                            <td className="px-4 py-3 text-gray-500">{new Date(e.enrolled_date).toLocaleDateString()}</td>
+                            <td className="px-4 py-3">
+                              <button
+                                onClick={() => handleUnenroll(e.id)}
+                                className="text-red-600 hover:underline font-semibold"
+                              >
+                                Eliminar
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
 

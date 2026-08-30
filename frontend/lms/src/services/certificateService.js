@@ -35,7 +35,7 @@ export const certificateService = {
     if (!inserted?.[0]) throw { message: 'No se pudo crear el registro del certificado' };
 
     const certId = inserted[0].id;
-    const year = new Date().getFullYear();
+    const year = 2026;
     const finalFolio = `EHS-${year}-${formatFolioNumber(certId)}`;
 
     // 2) Actualizar con el folio definitivo basado en el ID correlativo

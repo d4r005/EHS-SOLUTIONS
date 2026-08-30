@@ -1,12 +1,22 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export const LoginPage = () => {
+  const [searchParams] = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login, loading, error } = useAuth();
   const navigate = useNavigate();
+  const [successMessage, setSuccessMessage] = useState(null);
+
+  useEffect(() => {
+    // Detectar si el usuario viene de confirmar su correo
+    // Supabase suele enviar un fragmento o podemos configurar que envíe un param
+    if (searchParams.get('verified') === 'true' || window.location.hash.includes('access_token')) {
+      setSuccessMessage('¡Cuenta confirmada con éxito! Ya puedes iniciar sesión.');
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,6 +42,13 @@ export const LoginPage = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Success Message */}
+            {successMessage && (
+              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm font-semibold">
+                {successMessage}
+              </div>
+            )}
+
             {/* Email */}
             <div>
               <label className="block text-sm font-semibold text-navy mb-2">
