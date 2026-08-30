@@ -52,7 +52,7 @@ export const CoursesPage = () => {
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-navy mb-2">Catálogo de Cursos</h1>
+          <h1 className="text-4xl font-bold text-navy mb-2">Catálogo de Cursos (Mejorado v2)</h1>
           <p className="text-gray-600">Explora nuestros cursos de capacitación EHS</p>
         </div>
 
