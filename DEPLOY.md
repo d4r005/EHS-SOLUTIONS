@@ -141,5 +141,5 @@ EHS-SOLUTIONS/
 └── DEPLOY.md
 ```
 
-<!-- redeploy trigger 2026-08-27T16:31:47Z -->
+<!-- redeploy trigger 2026-08-29T20:05:28Z -->
 -- forzando nuevo deploy --
