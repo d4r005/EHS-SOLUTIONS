@@ -19,7 +19,7 @@ function formatFechaLarga(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return '';
-  return `el día ${d.getDate()} de ${MESES[d.getMonth()]} del ${d.getFullYear()}`;
+  return `El ${d.getDate()} de ${MESES[d.getMonth()]} del ${d.getFullYear()}`;
 }
 
 function formatPeriodo(fechaInicio, fechaFin) {
@@ -38,8 +38,8 @@ function formatPeriodo(fechaInicio, fechaFin) {
       return `del ${ini.getDate()} al ${fin.getDate()} de ${MESES[fin.getMonth()]} del ${fin.getFullYear()}`;
     }
     // Diferente mes o año
-    const f1 = formatFechaLarga(fechaInicio).replace('el día ', '');
-    const f2 = formatFechaLarga(fechaFin).replace('el día ', '');
+    const f1 = formatFechaLarga(fechaInicio).replace('El ', '');
+    const f2 = formatFechaLarga(fechaFin).replace('El ', '');
     return `del ${f1} al ${f2}`;
   }
   return formatFechaLarga(fechaFin || fechaInicio);
