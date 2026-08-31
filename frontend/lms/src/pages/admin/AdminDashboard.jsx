@@ -110,13 +110,15 @@ export const AdminDashboard = () => {
 
   const handleDownloadDC3 = async (cert) => {
     try {
+      const s = cert.student || {};
+      const nombreSTPS = `${s.apellido_paterno || s.last_name || ''} ${s.apellido_materno || ''} ${s.nombres || s.first_name || ''}`.replace(/\s+/g, ' ').trim().toUpperCase();
       await dc3Service.generateAndDownload({
-        nombreTrabajador: `${cert.student?.last_name || ''} ${cert.student?.first_name || ''}`.trim().toUpperCase(),
-        curp: cert.student?.curp,
-        ocupacion: cert.student?.ocupacion,
-        puesto: cert.student?.puesto,
-        empresa: cert.student?.company_name,
-        rfc: cert.student?.company_rfc,
+        nombreTrabajador: nombreSTPS,
+        curp: s.curp,
+        ocupacion: s.ocupacion,
+        puesto: s.puesto,
+        empresa: s.company_name,
+        rfc: s.company_rfc,
         nombreCurso: cert.course?.title,
         duracionHoras: cert.course?.duration_hours,
         fechaInicio: cert.issued_date,
@@ -132,8 +134,10 @@ export const AdminDashboard = () => {
 
   const handleDownloadConstancia = async (cert) => {
     try {
+      const s = cert.student || {};
+      const nombreCompleto = `${s.nombres || s.first_name || ''} ${s.apellido_paterno || s.last_name || ''} ${s.apellido_materno || ''}`.replace(/\s+/g, ' ').trim();
       await constanciaService.generateAndDownload({
-        nombreAlumno: `${cert.student?.first_name || ''} ${cert.student?.last_name || ''}`.trim(),
+        nombreAlumno: nombreCompleto,
         nombreCurso: cert.course?.title,
         duracionHoras: cert.course?.duration_hours,
         fechaInicio: cert.issued_date,
@@ -258,7 +262,12 @@ export const AdminDashboard = () => {
                   <tbody className="divide-y divide-gray-100">
                     {users.map((u) => (
                       <tr key={u.id}>
-                        <td className="px-4 py-3 font-semibold text-navy">{u.first_name} {u.last_name}</td>
+                        <td className="px-4 py-3">
+                          <div className="font-semibold text-navy">
+                            {u.nombres || u.first_name} {u.apellido_paterno || u.last_name} {u.apellido_materno || ''}
+                          </div>
+                          <div className="text-xs text-gray-400">{u.id}</div>
+                        </td>
                         <td className="px-4 py-3 text-gray-600">{u.email}</td>
                         <td className="px-4 py-3">
                           <select value={u.role} onChange={(e) => handleRoleChange(u.id, e.target.value)}
@@ -385,8 +394,11 @@ export const AdminDashboard = () => {
                     <tbody className="divide-y divide-gray-100">
                       {enrollments.map((enr) => (
                         <tr key={enr.id}>
-                          <td className="px-4 py-3 font-semibold text-navy">
-                            {enr.student?.first_name} {enr.student?.last_name}
+                          <td className="px-4 py-3">
+                            <div className="font-semibold text-navy">
+                              {enr.student?.nombres || enr.student?.first_name} {enr.student?.apellido_paterno || enr.student?.last_name}
+                            </div>
+                            <div className="text-xs text-gray-400">{enr.student?.email}</div>
                           </td>
                           <td className="px-4 py-3 text-gray-600">{enr.course?.title}</td>
                           <td className="px-4 py-3 text-gray-600">{Math.round(enr.progress_percentage || 0)}%</td>
@@ -464,7 +476,9 @@ export const AdminDashboard = () => {
                     {certificates.map((cert) => (
                       <tr key={cert.id}>
                         <td className="px-4 py-3">
-                          <div className="font-semibold text-navy">{cert.student?.first_name} {cert.student?.last_name}</div>
+                          <div className="font-semibold text-navy">
+                            {cert.student?.nombres || cert.student?.first_name} {cert.student?.apellido_paterno || cert.student?.last_name} {cert.student?.apellido_materno || ''}
+                          </div>
                           <div className="text-xs text-gray-500">{cert.student?.curp || 'Sin CURP'}</div>
                         </td>
                         <td className="px-4 py-3 text-gray-600">{cert.course?.title}</td>

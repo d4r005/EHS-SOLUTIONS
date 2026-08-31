@@ -5,8 +5,9 @@ import { emailService } from '../services/emailService';
 
 export const RegisterPage = () => {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    nombres: '',
+    apellidoPaterno: '',
+    apellidoMaterno: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -28,8 +29,8 @@ export const RegisterPage = () => {
     setRegistrationSuccess(false);
 
     // Validaciones
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
-      setFormError('Todos los campos son requeridos');
+    if (!formData.nombres || !formData.apellidoPaterno || !formData.email || !formData.password) {
+      setFormError('Todos los campos son requeridos (excepto Apellido Materno)');
       return;
     }
 
@@ -44,14 +45,15 @@ export const RegisterPage = () => {
     }
 
     const success = await register(
-      formData.firstName,
-      formData.lastName,
+      formData.nombres,
+      formData.apellidoPaterno,
+      formData.apellidoMaterno,
       formData.email,
       formData.password
     );
 
     if (success) {
-      emailService.sendWelcomeEmail(formData.email, formData.firstName);
+      emailService.sendWelcomeEmail(formData.email, formData.nombres);
       navigate('/dashboard');
     } else {
       // Si register devuelve false pero el mensaje de error indica éxito (confirmación por email),
@@ -106,32 +108,47 @@ export const RegisterPage = () => {
           {!registrationSuccess && (
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Name Fields */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-navy mb-1">
-                    Nombre
+                    Nombre(s)
                   </label>
                   <input
                     type="text"
-                    name="firstName"
-                    value={formData.firstName}
+                    name="nombres"
+                    value={formData.nombres}
                     onChange={handleChange}
                     placeholder="Juan"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100 transition text-sm"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-semibold text-navy mb-1">
-                    Apellido
-                  </label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    placeholder="Pérez"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100 transition text-sm"
-                  />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-semibold text-navy mb-1">
+                      Apellido Paterno
+                    </label>
+                    <input
+                      type="text"
+                      name="apellidoPaterno"
+                      value={formData.apellidoPaterno}
+                      onChange={handleChange}
+                      placeholder="Pérez"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100 transition text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-navy mb-1">
+                      Apellido Materno
+                    </label>
+                    <input
+                      type="text"
+                      name="apellidoMaterno"
+                      value={formData.apellidoMaterno}
+                      onChange={handleChange}
+                      placeholder="García"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100 transition text-sm"
+                    />
+                  </div>
                 </div>
               </div>
 

@@ -33,26 +33,38 @@ export const AuthProvider = ({ children }) => {
       const last_name = authRes.data.user_metadata?.last_name || '';
       const jwtRole = authRes.data.user_metadata?.role || 'student';
 
-      // 2) Obtener ID y role reales de la BD via RPC (bypassa RLS)
+      // 2) Obtener ID, role y nombres reales de la BD via RPC o tabla
       let dbId = 0;
       let dbRole = jwtRole;
+      let dbNombres = first_name;
+      let dbPaterno = last_name;
+      let dbMaterno = '';
+
       try {
         const idRes = await rest.post('/rpc/current_user_id', {});
         dbId = idRes.data || 0;
+
+        // Cargar datos extra del perfil
+        if (dbId) {
+          const { data: userData } = await rest.get(`/users?id=eq.${dbId}&select=nombres,apellido_paterno,apellido_materno,role`);
+          if (userData?.[0]) {
+            dbNombres = userData[0].nombres || dbNombres;
+            dbPaterno = userData[0].apellido_paterno || dbPaterno;
+            dbMaterno = userData[0].apellido_materno || '';
+            dbRole = userData[0].role || dbRole;
+          }
+        }
       } catch (e) {
-        console.warn('No se pudo obtener ID via RPC, usando 0', e);
-      }
-      try {
-        const roleRes = await rest.post('/rpc/current_user_role', {});
-        dbRole = roleRes.data || jwtRole;
-      } catch (e) {
-        console.warn('No se pudo obtener role via RPC, usando JWT', e);
+        console.warn('No se pudo obtener datos completos de la BD, usando JWT', e);
       }
 
       setUser({
         id: dbId,
-        first_name,
-        last_name,
+        first_name: dbNombres, // Mantenemos compatible por ahora
+        last_name: `${dbPaterno} ${dbMaterno}`.trim(),
+        nombres: dbNombres,
+        apellido_paterno: dbPaterno,
+        apellido_materno: dbMaterno,
         email,
         role: dbRole,
       });
@@ -68,7 +80,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (firstName, lastName, email, password) => {
+  const register = async (nombres, apellidoPaterno, apellidoMaterno, email, password) => {
     setLoading(true);
     setError(null);
     try {
@@ -78,7 +90,14 @@ export const AuthProvider = ({ children }) => {
       const signupRes = await authApi.post('/signup', {
         email,
         password,
-        data: { first_name: firstName, last_name: lastName, role: 'student' }
+        data: {
+          first_name: nombres,
+          last_name: `${apellidoPaterno} ${apellidoMaterno}`.trim(),
+          nombres: nombres,
+          apellido_paterno: apellidoPaterno,
+          apellido_materno: apellidoMaterno,
+          role: 'student'
+        }
       });
 
       if (!signupRes.data.access_token) {

@@ -12,7 +12,18 @@ export const ProfilePage = () => {
   const [enrollments, setEnrollments] = useState([]);
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ first_name: '', last_name: '', phone: '', bio: '', curp: '', ocupacion: '', puesto: '', company_name: '', company_rfc: '' });
+  const [form, setForm] = useState({
+    nombres: '',
+    apellido_paterno: '',
+    apellido_materno: '',
+    phone: '',
+    bio: '',
+    curp: '',
+    ocupacion: '',
+    puesto: '',
+    company_name: '',
+    company_rfc: ''
+  });
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState(null);
   const [pwForm, setPwForm] = useState({ password: '', confirm: '' });
@@ -22,8 +33,9 @@ export const ProfilePage = () => {
     if (user) {
       setForm((f) => ({
         ...f,
-        first_name: user.first_name || '',
-        last_name: user.last_name || '',
+        nombres: user.nombres || user.first_name || '',
+        apellido_paterno: user.apellido_paterno || '',
+        apellido_materno: user.apellido_materno || '',
         phone: user.phone || '',
         bio: user.bio || '',
       }));
@@ -35,11 +47,14 @@ export const ProfilePage = () => {
   const fetchExtraProfile = async () => {
     try {
       const { data } = await rest.get(
-        `/users?id=eq.${user.id}&select=curp,ocupacion,puesto,company_name,company_rfc`
+        `/users?id=eq.${user.id}&select=curp,ocupacion,puesto,company_name,company_rfc,nombres,apellido_paterno,apellido_materno`
       );
       if (data?.[0]) {
         setForm((f) => ({
           ...f,
+          nombres: data[0].nombres || f.nombres,
+          apellido_paterno: data[0].apellido_paterno || f.apellido_paterno,
+          apellido_materno: data[0].apellido_materno || '',
           curp: data[0].curp || '',
           ocupacion: data[0].ocupacion || '',
           puesto: data[0].puesto || '',
@@ -48,7 +63,7 @@ export const ProfilePage = () => {
         }));
       }
     } catch (err) {
-      console.error('Error al cargar datos DC-3:', err);
+      console.error('Error al cargar datos adicionales:', err);
     }
   };
 
@@ -75,11 +90,22 @@ export const ProfilePage = () => {
     try {
       await rest.patch(
         `/users?id=eq.${user.id}`,
-        { first_name: form.first_name, last_name: form.last_name, phone: form.phone, bio: form.bio,
-          curp: form.curp, ocupacion: form.ocupacion, puesto: form.puesto,
-          company_name: form.company_name, company_rfc: form.company_rfc }
+        {
+          first_name: form.nombres,
+          last_name: `${form.apellido_paterno} ${form.apellido_materno}`.trim(),
+          nombres: form.nombres,
+          apellido_paterno: form.apellido_paterno,
+          apellido_materno: form.apellido_materno,
+          phone: form.phone,
+          bio: form.bio,
+          curp: form.curp,
+          ocupacion: form.ocupacion,
+          puesto: form.puesto,
+          company_name: form.company_name,
+          company_rfc: form.company_rfc
+        }
       );
-      setMessage({ type: 'success', text: 'Perfil actualizado. Los cambios se reflejarán al volver a iniciar sesión.' });
+      setMessage({ type: 'success', text: 'Perfil actualizado. Los cambios se reflejarán completamente al volver a iniciar sesión.' });
     } catch (err) {
       setMessage({ type: 'error', text: 'No se pudo actualizar el perfil' });
     } finally {
@@ -109,9 +135,10 @@ export const ProfilePage = () => {
 
   const handleDownloadConstancia = async (cert) => {
     const enrollment = enrollments.find((e) => e.course_id === cert.course_id);
+    const nombreCompleto = `${form.nombres} ${form.apellido_paterno} ${form.apellido_materno}`.replace(/\s+/g, ' ').trim();
     try {
       await constanciaService.generateAndDownload({
-        nombreAlumno: `${form.first_name} ${form.last_name}`.trim(),
+        nombreAlumno: nombreCompleto,
         nombreCurso: cert.course?.title || 'Curso',
         duracionHoras: cert.course?.duration_hours,
         fechaInicio: enrollment?.enrollment_date,
@@ -120,10 +147,9 @@ export const ProfilePage = () => {
       });
     } catch (err) {
       console.error('Error al generar Constancia:', err);
-      // Fallback: certificado simple si algo falla con la plantilla oficial
       certificateService.downloadCertificatePDF(
         cert,
-        `${form.first_name} ${form.last_name}`,
+        nombreCompleto,
         cert.course?.title || 'Curso',
         cert.course?.duration_hours
       );
@@ -132,9 +158,10 @@ export const ProfilePage = () => {
 
   const handleDownloadDC3 = async (cert) => {
     const enrollment = enrollments.find((e) => e.course_id === cert.course_id);
+    const nombreSTPS = `${form.apellido_paterno} ${form.apellido_materno} ${form.nombres}`.replace(/\s+/g, ' ').trim().toUpperCase();
     try {
       await dc3Service.generateAndDownload({
-        nombreTrabajador: `${form.last_name} ${form.first_name}`.trim().toUpperCase(),
+        nombreTrabajador: nombreSTPS,
         curp: form.curp,
         ocupacion: form.ocupacion,
         puesto: form.puesto,
@@ -149,7 +176,7 @@ export const ProfilePage = () => {
       });
     } catch (err) {
       console.error('Error al generar DC-3:', err);
-      alert('No se pudo generar el DC-3. Verifica que tu CURP y RFC de empresa estén completos en tu perfil.');
+      alert('No se pudo generar el DC-3. Verifica que tu CURP y Ocupación estén completos en tu perfil.');
     }
   };
 
@@ -161,15 +188,20 @@ export const ProfilePage = () => {
         {/* Datos personales */}
         <div className="bg-white rounded-xl shadow-md p-6">
           <h2 className="text-xl font-bold text-navy mb-4">Datos personales</h2>
-          <form onSubmit={handleSaveProfile} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form onSubmit={handleSaveProfile} className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-navy mb-1">Nombre</label>
-              <input value={form.first_name} onChange={(e) => setForm({ ...form, first_name: e.target.value })}
+              <label className="block text-sm font-semibold text-navy mb-1">Nombre(s)</label>
+              <input value={form.nombres} onChange={(e) => setForm({ ...form, nombres: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600" />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-navy mb-1">Apellido</label>
-              <input value={form.last_name} onChange={(e) => setForm({ ...form, last_name: e.target.value })}
+              <label className="block text-sm font-semibold text-navy mb-1">Apellido Paterno</label>
+              <input value={form.apellido_paterno} onChange={(e) => setForm({ ...form, apellido_paterno: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-navy mb-1">Apellido Materno</label>
+              <input value={form.apellido_materno} onChange={(e) => setForm({ ...form, apellido_materno: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600" />
             </div>
             <div>
@@ -181,13 +213,16 @@ export const ProfilePage = () => {
               <label className="block text-sm font-semibold text-navy mb-1">Email</label>
               <input value={user?.email} disabled className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-100 text-gray-500" />
             </div>
-            <div className="md:col-span-2">
+            <div className="md:col-span-1">
+              {/* Espacio vacío para alineación si es necesario o bio */}
+            </div>
+            <div className="md:col-span-3">
               <label className="block text-sm font-semibold text-navy mb-1">Bio</label>
               <textarea value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={3}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600" />
             </div>
 
-            <div className="md:col-span-2 pt-2 mt-2 border-t border-gray-100">
+            <div className="md:col-span-3 pt-2 mt-2 border-t border-gray-100">
               <p className="text-sm text-gray-500 mb-3">Datos para tu constancia DC-3 (opcional, pero recomendado para tramitarla ante la STPS)</p>
             </div>
             <div>
@@ -222,11 +257,11 @@ export const ProfilePage = () => {
             </div>
 
             {message && (
-              <div className={`md:col-span-2 px-4 py-2 rounded-lg text-sm ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+              <div className={`md:col-span-3 px-4 py-2 rounded-lg text-sm ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
                 {message.text}
               </div>
             )}
-            <div className="md:col-span-2">
+            <div className="md:col-span-3">
               <button type="submit" disabled={saving} className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition disabled:opacity-50">
                 {saving ? 'Guardando...' : 'Guardar cambios'}
               </button>

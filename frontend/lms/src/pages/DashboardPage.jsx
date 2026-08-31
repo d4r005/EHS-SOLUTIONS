@@ -34,7 +34,8 @@ export const DashboardPage = () => {
         const p = data[0];
         setProfileData(p);
         // Mostrar banner si falta algún dato clave para la Constancia/DC-3
-        const missingFields = !p.curp || !p.ocupacion || !p.puesto || !p.company_name || !p.company_rfc;
+        // Empresa y RFC son opcionales según nueva solicitud
+        const missingFields = !p.curp || !p.ocupacion || !p.puesto;
         setShowProfileBanner(missingFields);
       } else {
         setShowProfileBanner(true);
