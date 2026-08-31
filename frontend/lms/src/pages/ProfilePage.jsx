@@ -47,7 +47,7 @@ export const ProfilePage = () => {
   const fetchExtraProfile = async () => {
     try {
       const { data } = await rest.get(
-        `/users?id=eq.${user.id}&select=curp,ocupacion,puesto,company_name,company_rfc,nombres,apellido_paterno,apellido_materno`
+        `/users?id=eq.${user.id}&select=curp,ocupacion,puesto,company_name,company_rfc,nombres,apellido_paterno,apellido_materno,phone,bio`
       );
       if (data?.[0]) {
         setForm((f) => ({
@@ -55,6 +55,8 @@ export const ProfilePage = () => {
           nombres: data[0].nombres || f.nombres,
           apellido_paterno: data[0].apellido_paterno || f.apellido_paterno,
           apellido_materno: data[0].apellido_materno || '',
+          phone: data[0].phone || '',
+          bio: data[0].bio || '',
           curp: data[0].curp || '',
           ocupacion: data[0].ocupacion || '',
           puesto: data[0].puesto || '',

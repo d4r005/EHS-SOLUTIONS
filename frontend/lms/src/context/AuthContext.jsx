@@ -44,14 +44,31 @@ export const AuthProvider = ({ children }) => {
         const idRes = await rest.post('/rpc/current_user_id', {});
         dbId = idRes.data || 0;
 
-        // Cargar datos extra del perfil
+        // Cargar datos extra del perfil (Incluyendo teléfono y bio)
         if (dbId) {
-          const { data: userData } = await rest.get(`/users?id=eq.${dbId}&select=nombres,apellido_paterno,apellido_materno,role`);
+          const { data: userData } = await rest.get(`/users?id=eq.${dbId}&select=nombres,apellido_paterno,apellido_materno,role,phone,bio`);
           if (userData?.[0]) {
             dbNombres = userData[0].nombres || dbNombres;
             dbPaterno = userData[0].apellido_paterno || dbPaterno;
             dbMaterno = userData[0].apellido_materno || '';
             dbRole = userData[0].role || dbRole;
+            // Guardar teléfono y bio en el estado global
+            setUser({
+              id: dbId,
+              first_name: dbNombres,
+              last_name: `${dbPaterno} ${dbMaterno}`.trim(),
+              nombres: dbNombres,
+              apellido_paterno: dbPaterno,
+              apellido_materno: dbMaterno,
+              phone: userData[0].phone || '',
+              bio: userData[0].bio || '',
+              email,
+              role: dbRole,
+            });
+            localStorage.setItem('userId', String(dbId));
+            setError(null);
+            setLoading(false);
+            return; // Salir aquí ya que actualizamos todo
           }
         }
       } catch (e) {
