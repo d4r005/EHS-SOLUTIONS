@@ -25,12 +25,12 @@ FROM auth.users a
 WHERE a.email = u.email AND u.auth_id IS NULL;
 
 CREATE OR REPLACE FUNCTION public.current_user_id()
-RETURNS integer LANGUAGE sql STABLE SECURITY DEFINER AS $$
+RETURNS integer LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
   SELECT id FROM public.users WHERE auth_id = auth.uid()
 $$;
 
 CREATE OR REPLACE FUNCTION public.current_user_role()
-RETURNS text LANGUAGE sql STABLE SECURITY DEFINER AS $$
+RETURNS text LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
   SELECT role FROM public.users WHERE auth_id = auth.uid()
 $$;
 
@@ -188,6 +188,10 @@ CREATE TRIGGER trg_set_auth_id BEFORE INSERT ON public.users
   FOR EACH ROW EXECUTE FUNCTION public.set_auth_id_on_insert();
 
 -- 9.2) Activar RLS y quitar los permisos amplios por defecto
+ALTER FUNCTION public.current_user_id() OWNER TO postgres;
+ALTER FUNCTION public.current_user_role() OWNER TO postgres;
+ALTER FUNCTION public.is_admin() OWNER TO postgres;
+
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.users FROM anon, authenticated;
 
@@ -211,9 +215,18 @@ GRANT SELECT (
 ) ON public.users TO authenticated;
 
 DROP POLICY IF EXISTS "self or staff select user" ON public.users;
-CREATE POLICY "self or staff select user" ON public.users
+DROP POLICY IF EXISTS "self select user" ON public.users;
+DROP POLICY IF EXISTS "staff select user" ON public.users;
+
+-- Self-access: auth.uid() directo, SIN función (evita recursión infinita)
+CREATE POLICY "self select user" ON public.users
   FOR SELECT TO authenticated
-  USING (auth_id = auth.uid() OR public.current_user_role() IN ('admin', 'instructor'));
+  USING (auth_id = auth.uid());
+
+-- Admin/instructor: la función Security Definer bypassa RLS
+CREATE POLICY "staff select user" ON public.users
+  FOR SELECT TO authenticated
+  USING (public.current_user_role() IN ('admin', 'instructor'));
 
 -- 9.5) authenticated puede insertar su propio perfil al registrarse
 GRANT INSERT ON public.users TO authenticated;
@@ -347,7 +360,7 @@ GRANT INSERT, UPDATE, DELETE ON public.courses TO authenticated;
 -- ============================================================
 
 CREATE OR REPLACE FUNCTION public.is_admin()
-RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER AS $$
+RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
   SELECT public.current_user_role() = 'admin';
 $$;
 
