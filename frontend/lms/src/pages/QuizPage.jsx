@@ -47,12 +47,15 @@ export const QuizPage = () => {
       setQuestions(qs);
 
       if (existing) {
+        const fullQuestions = await quizService.getQuestionsWithAnswers(quizId);
         setResult({
           score: existing.score,
           total: existing.total_questions,
           correct: existing.correct_answers,
           passed: existing.score >= (quizData.passing_score || 70),
           alreadyTaken: true,
+          questions: fullQuestions,
+          gradedAnswers: existing.answers || {},
         });
       }
     } catch (err) {
@@ -163,7 +166,44 @@ export const QuizPage = () => {
               </button>
             </div>
           </div>
-        ) : (
+        ) : null}
+
+        {result && result.questions && result.gradedAnswers && result.correct < result.total && (
+          <div className="bg-white rounded-xl shadow-md p-6 mt-6 text-left">
+            <h3 className="font-bold text-navy mb-4">
+              Preguntas en las que te equivocaste ({result.total - result.correct}):
+            </h3>
+            <div className="space-y-4">
+              {result.questions
+                .filter((q) => {
+                  const ga = result.gradedAnswers[q.id] ?? result.gradedAnswers[String(q.id)];
+                  return ga && !ga.is_correct;
+                })
+                .map((q) => {
+                  const ga = result.gradedAnswers[q.id] ?? result.gradedAnswers[String(q.id)];
+                  return (
+                    <div key={q.id} className="border border-red-200 bg-red-50 rounded-lg p-4">
+                      <p className="font-semibold text-navy mb-2">{q.question_text}</p>
+                      <p className="text-sm text-red-700 mb-1">
+                        Tu respuesta:{' '}
+                        <span className="font-bold uppercase">{ga.given || '(sin responder)'}</span>
+                        {ga.given ? ` — ${q[`option_${ga.given}`] || ''}` : ''}
+                      </p>
+                      <p className="text-sm text-green-700">
+                        Respuesta correcta: <span className="font-bold uppercase">{ga.correct}</span> —{' '}
+                        {q[`option_${ga.correct}`] || ''}
+                      </p>
+                      {q.explanation && (
+                        <p className="text-xs text-gray-600 mt-2 italic">{q.explanation}</p>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+        )}
+
+        {!result && (
           <div className="space-y-5">
             {questions.map((q, idx) => (
               <div key={q.id} className="bg-white rounded-xl shadow-md p-6">
