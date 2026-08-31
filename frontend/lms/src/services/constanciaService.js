@@ -19,7 +19,7 @@ function formatFechaLarga(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return '';
-  return `El ${d.getDate()} de ${MESES[d.getMonth()]} del ${d.getFullYear()}`;
+  return `${d.getDate()} de ${MESES[d.getMonth()]} del ${d.getFullYear()}`;
 }
 
 function formatPeriodo(fechaInicio, fechaFin) {
@@ -166,7 +166,7 @@ export const constanciaService = {
           y: 45,
           size: 9,
           font: fontRegular,
-          color: rgb(0.5, 0.5, 0.5),
+          color: rgb(0, 0, 0),
         });
       } catch (e) {
         console.error('Error QR Constancia:', e);
