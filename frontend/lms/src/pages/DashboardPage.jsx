@@ -2,11 +2,15 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { courseService } from '../services/courseService';
+import { rest } from '../services/api';
 
 export const DashboardPage = () => {
   const { user, isAuthenticated } = useAuth();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [profileData, setProfileData] = useState(null);
+  const [showProfileBanner, setShowProfileBanner] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
   const [stats, setStats] = useState({
     totalCourses: 0,
     completedCourses: 0,
@@ -17,8 +21,28 @@ export const DashboardPage = () => {
   useEffect(() => {
     if (isAuthenticated && user) {
       fetchMyCourses();
+      fetchProfileStatus();
     }
   }, [isAuthenticated, user]);
+
+  const fetchProfileStatus = async () => {
+    try {
+      const { data } = await rest.get(
+        `/users?id=eq.${user.id}&select=curp,ocupacion,puesto,company_name,company_rfc,phone,bio`
+      );
+      if (data?.[0]) {
+        const p = data[0];
+        setProfileData(p);
+        // Mostrar banner si falta algún dato clave para la Constancia/DC-3
+        const missingFields = !p.curp || !p.ocupacion || !p.puesto || !p.company_name || !p.company_rfc;
+        setShowProfileBanner(missingFields);
+      } else {
+        setShowProfileBanner(true);
+      }
+    } catch (err) {
+      console.error('Error al verificar perfil:', err);
+    }
+  };
 
   const fetchMyCourses = async () => {
     try {
@@ -53,6 +77,33 @@ export const DashboardPage = () => {
           </h1>
           <p className="text-gray-600">Aquí está tu progreso de aprendizaje</p>
         </div>
+
+        {/* Profile completion banner */}
+        {showProfileBanner && !bannerDismissed && (
+          <div className="mb-6 bg-amber-50 border border-amber-300 rounded-xl p-5 flex items-start gap-4">
+            <div className="text-3xl flex-shrink-0">📋</div>
+            <div className="flex-grow">
+              <h3 className="font-bold text-amber-800 mb-1">Completa tus datos personales</h3>
+              <p className="text-amber-700 text-sm leading-relaxed">
+                Para generar tu Constancia y DC-3 necesitamos algunos datos adicionales como tu CURP, ocupación, puesto y datos de empresa.
+                Toma menos de 2 minutos y solo se hace una vez.
+              </p>
+              <Link
+                to="/profile"
+                className="inline-block mt-3 px-5 py-2 bg-amber-600 text-white text-sm font-bold rounded-lg hover:bg-amber-700 transition"
+              >
+                Completar mi perfil
+              </Link>
+            </div>
+            <button
+              onClick={() => setBannerDismissed(true)}
+              className="text-amber-500 hover:text-amber-700 text-xl flex-shrink-0 leading-none"
+              aria-label="Cerrar"
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">

@@ -5,6 +5,7 @@ import { certificateService } from '../services/certificateService';
 import { dc3Service } from '../services/dc3Service';
 import { constanciaService } from '../services/constanciaService';
 import { rest, authApi, SUPABASE_URL, SUPABASE_KEY } from '../services/api';
+import { OCUPACIONES_STPS } from '../data/ocupaciones';
 
 export const ProfilePage = () => {
   const { user } = useAuth();
@@ -196,8 +197,13 @@ export const ProfilePage = () => {
             </div>
             <div>
               <label className="block text-sm font-semibold text-navy mb-1">Ocupación específica</label>
-              <input value={form.ocupacion} onChange={(e) => setForm({ ...form, ocupacion: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600" />
+              <select value={form.ocupacion} onChange={(e) => setForm({ ...form, ocupacion: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 bg-white">
+                <option value="">Selecciona una ocupación...</option>
+                {OCUPACIONES_STPS.map((occ) => (
+                  <option key={occ} value={occ}>{occ}</option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-sm font-semibold text-navy mb-1">Puesto</label>
