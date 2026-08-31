@@ -12,6 +12,9 @@ export const adminService = {
   toggleUserActive: async (id, isActive) => {
     await rest.patch(`/users?id=eq.${id}`, { is_active: isActive });
   },
+  deleteUser: async (id) => {
+    await rest.delete(`/users?id=eq.${id}`);
+  },
 
   // --- Cursos (todos, no solo publicados) ---
   getAllCourses: async () => {

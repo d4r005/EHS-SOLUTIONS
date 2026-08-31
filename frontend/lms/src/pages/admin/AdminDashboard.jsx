@@ -188,6 +188,16 @@ export const AdminDashboard = () => {
     setUsers(users.map((x) => (x.id === u.id ? { ...x, is_active: !u.is_active } : x)));
   };
 
+  const handleDeleteUser = async (u) => {
+    if (!window.confirm(`¿BORRAR DEFINITIVAMENTE al usuario "${u.first_name || ''} ${u.last_name || ''}" (${u.email})?\n\nEsta acción no se puede deshacer y borrará todo su historial.`)) return;
+    try {
+      await adminService.deleteUser(u.id);
+      setUsers(users.filter((x) => x.id !== u.id));
+    } catch (err) {
+      alert(err.message || 'No se pudo eliminar al usuario. Es posible que tenga registros vinculados (inscripciones, certificados) que impidan su borrado.');
+    }
+  };
+
   const handleTogglePublish = async (c) => {
     await adminService.togglePublish(c.id, !c.is_published);
     setCourses(courses.map((x) => (x.id === c.id ? { ...x, is_published: !c.is_published } : x)));
@@ -283,9 +293,14 @@ export const AdminDashboard = () => {
                           </span>
                         </td>
                         <td className="px-4 py-3">
-                          <button onClick={() => handleToggleActive(u)} className="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 text-xs font-semibold">
-                            {u.is_active ? 'Desactivar' : 'Activar'}
-                          </button>
+                          <div className="flex gap-2">
+                            <button onClick={() => handleToggleActive(u)} className="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 text-xs font-semibold">
+                              {u.is_active ? 'Desactivar' : 'Activar'}
+                            </button>
+                            <button onClick={() => handleDeleteUser(u)} className="px-3 py-1 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 text-xs font-semibold">
+                              Eliminar
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
