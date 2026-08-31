@@ -25,13 +25,27 @@ FROM auth.users a
 WHERE a.email = u.email AND u.auth_id IS NULL;
 
 CREATE OR REPLACE FUNCTION public.current_user_id()
-RETURNS integer LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
-  SELECT id FROM public.users WHERE auth_id = auth.uid()
+RETURNS integer
+LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = public
+AS $$
+DECLARE
+  result integer;
+BEGIN
+  SELECT id INTO result FROM public.users WHERE auth_id = auth.uid();
+  RETURN result;
+END;
 $$;
 
 CREATE OR REPLACE FUNCTION public.current_user_role()
-RETURNS text LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
-  SELECT role FROM public.users WHERE auth_id = auth.uid()
+RETURNS text
+LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = public
+AS $$
+DECLARE
+  result text;
+BEGIN
+  SELECT role INTO result FROM public.users WHERE auth_id = auth.uid();
+  RETURN result;
+END;
 $$;
 
 -- ============================================================
@@ -360,8 +374,12 @@ GRANT INSERT, UPDATE, DELETE ON public.courses TO authenticated;
 -- ============================================================
 
 CREATE OR REPLACE FUNCTION public.is_admin()
-RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
-  SELECT public.current_user_role() = 'admin';
+RETURNS boolean
+LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = public
+AS $$
+BEGIN
+  RETURN public.current_user_role() = 'admin';
+END;
 $$;
 
 CREATE OR REPLACE FUNCTION public.prevent_privilege_escalation()
