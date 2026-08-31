@@ -5,6 +5,25 @@
 -- ============================================================
 
 -- ============================================================
+-- 0) PRE-REQUISITO: crear/asegurar funciones helper de las que
+--    depende todo lo demás (por si fix_foundation_v2.sql o
+--    fix_rls_policies_v3.sql no se ejecutaron antes en este proyecto).
+-- ============================================================
+
+-- Asegurar columna auth_id en users (necesaria para las funciones helper)
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS auth_id UUID REFERENCES auth.users(id);
+
+CREATE OR REPLACE FUNCTION public.current_user_id()
+RETURNS integer LANGUAGE sql STABLE SECURITY DEFINER AS $$
+  SELECT id FROM public.users WHERE auth_id = auth.uid();
+$$;
+
+CREATE OR REPLACE FUNCTION public.current_user_role()
+RETURNS text LANGUAGE sql STABLE SECURITY DEFINER AS $$
+  SELECT role FROM public.users WHERE auth_id = auth.uid();
+$$;
+
+-- ============================================================
 -- 1) CRÍTICO: Cerrar fuga de certificados vía verificación pública
 --    Antes: anon podía leer TODOS los certificados válidos.
 --    Ahora: anon solo puede verificar por folio vía función.
