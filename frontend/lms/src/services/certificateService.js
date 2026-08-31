@@ -23,27 +23,22 @@ export const certificateService = {
       throw { message: 'Debes completar el 100% del curso para obtener el certificado' };
     }
 
-    // 1) Crear el registro con un folio temporal
+    // 1) Crear el registro. El folio se genera automáticamente vía Trigger en la BD.
+    // Usamos Prefer: return=representation para obtener el objeto insertado con su nuevo ID y Folio.
     const payload = {
       student_id: userId,
       course_id: parseInt(courseId),
-      certificate_number: 'TEMP-' + Date.now(),
       issued_date: new Date().toISOString(),
       is_valid: true,
     };
-    const { data: inserted } = await rest.post('/certificates', payload);
-    if (!inserted?.[0]) throw { message: 'No se pudo crear el registro del certificado' };
 
-    const certId = inserted[0].id;
-    const year = new Date().getFullYear();
-    const finalFolio = `EHS-${year}-${formatFolioNumber(certId)}`;
-
-    // 2) Actualizar con el folio definitivo basado en el ID correlativo
-    const { data: updated } = await rest.patch(`/certificates?id=eq.${certId}`, {
-      certificate_number: finalFolio
+    const { data: inserted } = await rest.post('/certificates', payload, {
+      headers: { 'Prefer': 'return=representation' }
     });
 
-    return { ...inserted[0], certificate_number: finalFolio };
+    if (!inserted?.[0]) throw { message: 'No se pudo crear el registro del certificado' };
+
+    return inserted[0];
   },
 
   // Certificados del alumno actual con datos de curso
