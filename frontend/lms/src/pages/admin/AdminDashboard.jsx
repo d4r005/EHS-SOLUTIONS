@@ -12,6 +12,13 @@ export const AdminDashboard = () => {
   const [reports, setReports] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Estado para gestión de inscripciones
+  const [enrollments, setEnrollments] = useState([]);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [studentEnrollments, setStudentEnrollments] = useState([]);
+  const [grantCourseId, setGrantCourseId] = useState('');
+  const [enrollmentMsg, setEnrollmentMsg] = useState(null);
+
   // Estado para el Laboratorio DC-3 (pruebas)
   const [testForm, setTestForm] = useState({
     nombres: 'JESUS DARIO',
@@ -33,20 +40,71 @@ export const AdminDashboard = () => {
   const fetchAll = async () => {
     try {
       setLoading(true);
-      const [u, c, r, certs] = await Promise.all([
+      const [u, c, r, certs, enr] = await Promise.all([
         adminService.getUsers(),
         adminService.getAllCourses(),
         adminService.getReports(),
         adminService.getAllCertificates(),
+        adminService.getAllEnrollments(),
       ]);
       setUsers(u);
       setCourses(c);
       setReports(r);
       setCertificates(certs);
+      setEnrollments(enr);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // --- Handlers de inscripciones ---
+  const handleSelectStudent = async (studentId) => {
+    setSelectedStudent(studentId);
+    setEnrollmentMsg(null);
+    if (studentId) {
+      try {
+        const data = await adminService.getStudentEnrollments(studentId);
+        setStudentEnrollments(data);
+      } catch (err) {
+        console.error('Error al cargar inscripciones del estudiante:', err);
+        setStudentEnrollments([]);
+      }
+    } else {
+      setStudentEnrollments([]);
+    }
+  };
+
+  const handleGrantCourse = async () => {
+    if (!selectedStudent || !grantCourseId) return;
+    setEnrollmentMsg(null);
+    try {
+      await adminService.grantCourse(selectedStudent, parseInt(grantCourseId));
+      const data = await adminService.getStudentEnrollments(selectedStudent);
+      setStudentEnrollments(data);
+      setGrantCourseId('');
+      setEnrollmentMsg({ type: 'success', text: 'Curso asignado correctamente al estudiante.' });
+      // Actualizar lista global
+      const allEnr = await adminService.getAllEnrollments();
+      setEnrollments(allEnr);
+    } catch (err) {
+      setEnrollmentMsg({ type: 'error', text: err.message || 'No se pudo asignar el curso.' });
+    }
+  };
+
+  const handleRevokeCourse = async (enrollmentId, courseTitle) => {
+    if (!window.confirm(`¿Quitar el curso "${courseTitle}" de este estudiante?`)) return;
+    setEnrollmentMsg(null);
+    try {
+      await adminService.revokeCourse(enrollmentId);
+      const data = await adminService.getStudentEnrollments(selectedStudent);
+      setStudentEnrollments(data);
+      setEnrollmentMsg({ type: 'success', text: 'Curso removido del estudiante.' });
+      const allEnr = await adminService.getAllEnrollments();
+      setEnrollments(allEnr);
+    } catch (err) {
+      setEnrollmentMsg({ type: 'error', text: err.message || 'No se pudo remover el curso.' });
     }
   };
 
@@ -61,7 +119,7 @@ export const AdminDashboard = () => {
         rfc: cert.student?.company_rfc,
         nombreCurso: cert.course?.title,
         duracionHoras: cert.course?.duration_hours,
-        fechaInicio: cert.issued_date, // En producción deberíamos buscar la enrollment_date, pero aquí usamos issued como referencia
+        fechaInicio: cert.issued_date,
         fechaFin: cert.issued_date,
         categoria: cert.course?.category,
         folio: cert.certificate_number,
@@ -140,10 +198,14 @@ export const AdminDashboard = () => {
   const tabs = [
     { id: 'reports', label: 'Reportes' },
     { id: 'users', label: 'Usuarios' },
+    { id: 'enrollments', label: 'Inscripciones' },
     { id: 'courses', label: 'Cursos' },
     { id: 'certificates', label: 'Certificados' },
     { id: 'lab', label: '🧪 Laboratorio' },
   ];
+
+  const students = users.filter((u) => u.role === 'student');
+  const selectedStudentData = users.find((u) => u.id === parseInt(selectedStudent));
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -220,6 +282,131 @@ export const AdminDashboard = () => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+
+            {tab === 'enrollments' && (
+              <div className="space-y-6">
+                {/* Selector de estudiante + otorgar curso */}
+                <div className="bg-white rounded-xl shadow-md p-6">
+                  <h2 className="text-xl font-bold text-navy mb-4">Gestionar cursos del estudiante</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 mb-1">Estudiante</label>
+                      <select
+                        value={selectedStudent || ''}
+                        onChange={(e) => handleSelectStudent(e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
+                      >
+                        <option value="">Selecciona un estudiante...</option>
+                        {students.map((s) => (
+                          <option key={s.id} value={s.id}>{s.first_name} {s.last_name} — {s.email}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 mb-1">Curso a asignar</label>
+                      <select
+                        value={grantCourseId}
+                        onChange={(e) => setGrantCourseId(e.target.value)}
+                        disabled={!selectedStudent}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white disabled:opacity-50"
+                      >
+                        <option value="">Selecciona un curso...</option>
+                        {courses.map((c) => (
+                          <option key={c.id} value={c.id}>{c.title}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <button
+                        onClick={handleGrantCourse}
+                        disabled={!selectedStudent || !grantCourseId}
+                        className="w-full px-4 py-2 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                      >
+                        Otorgar curso
+                      </button>
+                    </div>
+                  </div>
+
+                  {enrollmentMsg && (
+                    <div className={`mt-4 px-4 py-2 rounded-lg text-sm ${enrollmentMsg.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+                      {enrollmentMsg.text}
+                    </div>
+                  )}
+                </div>
+
+                {/* Cursos actuales del estudiante seleccionado */}
+                {selectedStudent && (
+                  <div className="bg-white rounded-xl shadow-md p-6">
+                    <h3 className="text-lg font-bold text-navy mb-4">
+                      Cursos de {selectedStudentData?.first_name} {selectedStudentData?.last_name}
+                    </h3>
+                    {studentEnrollments.length > 0 ? (
+                      <div className="space-y-3">
+                        {studentEnrollments.map((enr) => (
+                          <div key={enr.id} className="flex items-center justify-between border border-gray-200 rounded-lg p-4">
+                            <div>
+                              <p className="font-semibold text-navy">{enr.course?.title}</p>
+                              <p className="text-xs text-gray-500">
+                                {enr.course?.category} · {Math.round(enr.progress_percentage || 0)}% ·{' '}
+                                <span className={enr.status === 'completed' ? 'text-green-600' : 'text-gray-400'}>
+                                  {enr.status === 'completed' ? 'Completado' : 'En progreso'}
+                                </span>
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => handleRevokeCourse(enr.id, enr.course?.title)}
+                              className="px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 text-xs font-semibold transition"
+                            >
+                              Quitar curso
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500 text-sm italic">Este estudiante no tiene cursos asignados.</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Vista general de todas las inscripciones */}
+                <div className="bg-white rounded-xl shadow-md overflow-hidden">
+                  <h3 className="text-lg font-bold text-navy p-4 pb-2">Todas las inscripciones</h3>
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50 text-left text-gray-500">
+                      <tr>
+                        <th className="px-4 py-3">Estudiante</th>
+                        <th className="px-4 py-3">Curso</th>
+                        <th className="px-4 py-3">Progreso</th>
+                        <th className="px-4 py-3">Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {enrollments.map((enr) => (
+                        <tr key={enr.id}>
+                          <td className="px-4 py-3 font-semibold text-navy">
+                            {enr.student?.first_name} {enr.student?.last_name}
+                          </td>
+                          <td className="px-4 py-3 text-gray-600">{enr.course?.title}</td>
+                          <td className="px-4 py-3 text-gray-600">{Math.round(enr.progress_percentage || 0)}%</td>
+                          <td className="px-4 py-3">
+                            <span className={enr.status === 'completed' ? 'text-green-600' : 'text-gray-400'}>
+                              {enr.status === 'completed' ? '✅ Completado' : '🔄 En progreso'}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                      {!enrollments.length && (
+                        <tr>
+                          <td colSpan="4" className="px-4 py-8 text-center text-gray-500 italic">
+                            No hay inscripciones registradas.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
 

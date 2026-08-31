@@ -31,6 +31,46 @@ export const adminService = {
     await rest.delete(`/courses?id=eq.${id}`);
   },
 
+  // --- Inscripciones (gestión admin) ---
+  // Obtener todas las inscripciones con datos de estudiante y curso
+  getAllEnrollments: async () => {
+    const { data } = await rest.get(
+      '/enrollments?select=*,student:users!student_id(id,first_name,last_name,email),course:courses(id,title,category,duration_hours,is_published)&order=enrollment_date.desc'
+    );
+    return data;
+  },
+
+  // Inscripciones de un estudiante específico
+  getStudentEnrollments: async (studentId) => {
+    const { data } = await rest.get(
+      `/enrollments?student_id=eq.${studentId}&select=*,course:courses(id,title,category,duration_hours,is_published)&order=enrollment_date.desc`
+    );
+    return data;
+  },
+
+  // Otorgar/inscribir un curso a un estudiante (admin)
+  grantCourse: async (studentId, courseId) => {
+    // Verificar si ya existe
+    const { data: existing } = await rest.get(
+      `/enrollments?student_id=eq.${studentId}&course_id=eq.${courseId}&select=id`
+    );
+    if (existing.length) {
+      throw { message: 'El estudiante ya está inscrito en este curso' };
+    }
+    const { data } = await rest.post('/enrollments', {
+      student_id: studentId,
+      course_id: courseId,
+      status: 'enrolled',
+      progress_percentage: 0,
+    });
+    return data[0];
+  },
+
+  // Quitar/desinscribir un curso de un estudiante (admin)
+  revokeCourse: async (enrollmentId) => {
+    await rest.delete(`/enrollments?id=eq.${enrollmentId}`);
+  },
+
   // --- Certificados (Administración) ---
   getAllCertificates: async () => {
     const { data } = await rest.get(
