@@ -10,6 +10,12 @@ export const InstructorDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [newTitle, setNewTitle] = useState('');
+  const [stats, setStats] = useState({
+    totalStudents: 0,
+    totalCourses: 0,
+    totalCertificates: 0,
+    avgProgress: 0
+  });
 
   useEffect(() => {
     fetchCourses();
@@ -20,10 +26,35 @@ export const InstructorDashboard = () => {
       setLoading(true);
       const isAdmin = user.role === 'admin';
       const query = isAdmin
-        ? '/courses?select=*,enrollments(id,progress_percentage)&order=created_at.desc'
-        : `/courses?instructor_id=eq.${user.id}&select=*,enrollments(id,progress_percentage)&order=created_at.desc`;
+        ? '/courses?select=*,enrollments(id,progress_percentage,status)&order=created_at.desc'
+        : `/courses?instructor_id=eq.${user.id}&select=*,enrollments(id,progress_percentage,status)&order=created_at.desc`;
       const { data } = await rest.get(query);
       setCourses(data);
+
+      // Calcular KPIs para el instructor
+      let studentsSet = new Set();
+      let totalCerts = 0;
+      let totalProgress = 0;
+      let enrollmentCount = 0;
+
+      data.forEach(course => {
+        (course.enrollments || []).forEach(enr => {
+          // Nota: La consulta anterior no trae el user_id de la inscripción directamente,
+          // pero podemos aproximar o ajustar la query si es necesario.
+          // Por ahora usemos los datos disponibles.
+          if (enr.status === 'completed') totalCerts++;
+          totalProgress += (enr.progress_percentage || 0);
+          enrollmentCount++;
+        });
+      });
+
+      setStats({
+        totalStudents: enrollmentCount, // Aproximación por ahora
+        totalCourses: data.length,
+        totalCertificates: totalCerts,
+        avgProgress: enrollmentCount ? Math.round(totalProgress / enrollmentCount) : 0
+      });
+
     } catch (err) {
       console.error(err);
     } finally {
@@ -67,6 +98,26 @@ export const InstructorDashboard = () => {
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
           <h1 className="text-3xl font-bold text-navy">Panel de Instructor</h1>
+        </div>
+
+        {/* KPIs del Instructor */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-white rounded-xl shadow-md p-5 border-l-4 border-blue-500">
+            <p className="text-sm text-gray-500 font-bold uppercase">Cursos</p>
+            <p className="text-2xl font-black text-navy">{stats.totalCourses}</p>
+          </div>
+          <div className="bg-white rounded-xl shadow-md p-5 border-l-4 border-green-500">
+            <p className="text-sm text-gray-500 font-bold uppercase">Inscritos</p>
+            <p className="text-2xl font-black text-navy">{stats.totalStudents}</p>
+          </div>
+          <div className="bg-white rounded-xl shadow-md p-5 border-l-4 border-purple-500">
+            <p className="text-sm text-gray-500 font-bold uppercase">Diplomas</p>
+            <p className="text-2xl font-black text-navy">{stats.totalCertificates}</p>
+          </div>
+          <div className="bg-white rounded-xl shadow-md p-5 border-l-4 border-orange-500">
+            <p className="text-sm text-gray-500 font-bold uppercase">Eficiencia</p>
+            <p className="text-2xl font-black text-navy">{stats.avgProgress}%</p>
+          </div>
         </div>
 
         {/* Crear curso */}

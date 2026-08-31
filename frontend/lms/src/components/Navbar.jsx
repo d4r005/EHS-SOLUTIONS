@@ -11,7 +11,7 @@ export const Navbar = () => {
           <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold">EHS</span>
           </div>
-          <span className="font-bold text-navy">EHS Solutions</span>
+          <span className="font-bold text-navy">Solutions</span>
         </Link>
 
         <div className="flex items-center gap-6">

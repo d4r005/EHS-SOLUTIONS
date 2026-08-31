@@ -55,11 +55,20 @@ export const DashboardPage = () => {
       const completed = data.enrollments?.filter(c => c.progress_percentage === 100).length || 0;
       const inProgress = data.enrollments?.filter(c => c.progress_percentage < 100).length || 0;
 
+      // Obtener horas reales estudiadas desde lesson_progress
+      let totalMinutes = 0;
+      try {
+        const { data: progressData } = await rest.get(`/lesson_progress?student_id=eq.${user.id}&select=time_spent_minutes`);
+        totalMinutes = progressData?.reduce((acc, curr) => acc + (curr.time_spent_minutes || 0), 0) || 0;
+      } catch (err) {
+        console.warn('Error fetching study hours:', err);
+      }
+
       setStats({
         totalCourses: data.enrollments?.length || 0,
         completedCourses: completed,
         inProgressCourses: inProgress,
-        hoursLearned: Math.floor(Math.random() * 50) + 10, // Demo
+        hoursLearned: Math.round((totalMinutes / 60) * 10) / 10, // Horas con 1 decimal
       });
     } catch (error) {
       console.error('Error fetching courses:', error);
