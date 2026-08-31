@@ -4,9 +4,8 @@ import { rest, authApi, SUPABASE_URL, SUPABASE_KEY, clearSessionAndRedirect } fr
 
 const AuthContext = createContext();
 
-// Debug: Verificar si las llaves están cargadas
 if (!SUPABASE_KEY) {
-  console.error('⚠️ ERROR: VITE_SUPABASE_KEY no encontrada. Asegúrate de haber creado el archivo .env y reiniciado el servidor (npm run dev).');
+  console.error('⚠️ ERROR: VITE_SUPABASE_KEY no encontrada.');
 }
 
 export const AuthProvider = ({ children }) => {
@@ -27,46 +26,40 @@ export const AuthProvider = ({ children }) => {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      // Petición a Supabase Auth usando authApi (protegido por interceptor)
+      // 1) Obtener datos del JWT (funciona sin tocar tabla users)
       const authRes = await authApi.get('/user');
+      const email = authRes.data.email;
+      const first_name = authRes.data.user_metadata?.first_name || '';
+      const last_name = authRes.data.user_metadata?.last_name || '';
+      const jwtRole = authRes.data.user_metadata?.role || 'student';
 
-      // Petición a nuestra tabla pública de perfiles
-      let profileRes = await rest.get(`/users?auth_id=eq.${authRes.data.id}&select=id,first_name,last_name,email,role`);
-
-      if (!profileRes.data.length) {
-        profileRes = await rest.get(`/users?email=eq.${authRes.data.email}&select=id,first_name,last_name,email,role`);
-
-        if (profileRes.data.length) {
-          await rest.patch(`/users?id=eq.${profileRes.data[0].id}`, { auth_id: authRes.data.id });
-        }
+      // 2) Obtener ID y role reales de la BD via RPC (bypassa RLS)
+      let dbId = 0;
+      let dbRole = jwtRole;
+      try {
+        const idRes = await rest.post('/rpc/current_user_id', {});
+        dbId = idRes.data || 0;
+      } catch (e) {
+        console.warn('No se pudo obtener ID via RPC, usando 0', e);
+      }
+      try {
+        const roleRes = await rest.post('/rpc/current_user_role', {});
+        dbRole = roleRes.data || jwtRole;
+      } catch (e) {
+        console.warn('No se pudo obtener role via RPC, usando JWT', e);
       }
 
-      if (profileRes.data.length) {
-        const profile = profileRes.data[0];
-        setUser({
-          id: profile.id,
-          first_name: profile.first_name,
-          last_name: profile.last_name,
-          email: profile.email,
-          role: profile.role,
-        });
-        localStorage.setItem('userId', profile.id);
-      } else {
-        // Usuario autenticado en Supabase Auth pero sin fila en tabla 'users'
-        setUser({
-          id: 0,
-          first_name: authRes.data.user_metadata?.first_name || '',
-          last_name: authRes.data.user_metadata?.last_name || '',
-          email: authRes.data.email,
-          role: authRes.data.user_metadata?.role || 'student',
-        });
-        localStorage.setItem('userId', '0');
-      }
+      setUser({
+        id: dbId,
+        first_name,
+        last_name,
+        email,
+        role: dbRole,
+      });
+      localStorage.setItem('userId', String(dbId));
       setError(null);
     } catch (err) {
       console.error('Error al cargar perfil:', err);
-      // Si el error es 401, el interceptor de api.js ya llamó a clearSessionAndRedirect
-      // En cualquier otro error grave, limpiamos estado local
       if (err.response?.status !== 401) {
         logout();
       }
@@ -79,7 +72,6 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      // Limpiar rastro de sesión previa
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
 
@@ -95,14 +87,9 @@ export const AuthProvider = ({ children }) => {
         return false;
       }
 
-      const accessToken = signupRes.data.access_token;
-      const refreshToken = signupRes.data.refresh_token;
-      const authId = signupRes.data.user.id;
-
-      localStorage.setItem('token', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-      setToken(accessToken); // Esto disparará useEffect -> fetchProfile
-
+      localStorage.setItem('token', signupRes.data.access_token);
+      localStorage.setItem('refreshToken', signupRes.data.refresh_token);
+      setToken(signupRes.data.access_token);
       return true;
     } catch (err) {
       console.error('Error en registro:', err);
@@ -117,19 +104,14 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      // Limpiar rastro de sesión previa antes de intentar login nuevo
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
 
       const loginRes = await authApi.post('/token?grant_type=password', { email, password });
 
-      const accessToken = loginRes.data.access_token;
-      const refreshToken = loginRes.data.refresh_token;
-
-      localStorage.setItem('token', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-      setToken(accessToken); // Esto disparará useEffect -> fetchProfile
-
+      localStorage.setItem('token', loginRes.data.access_token);
+      localStorage.setItem('refreshToken', loginRes.data.refresh_token);
+      setToken(loginRes.data.access_token);
       return true;
     } catch (err) {
       console.error('Error en login:', err);
