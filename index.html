@@ -295,17 +295,14 @@
             pointer-events: none;
         }
 
-        /* Posiciones aproximadas sobre la imagen real del DC-3 */
-        .blur-curp { top: 22.5%; left: 6%; width: 30%; height: 4%; }
-        .blur-empresa { top: 34%; left: 6%; width: 50%; height: 4%; }
-        .blur-rfc { top: 41%; left: 6%; width: 25%; height: 4%; }
-        .blur-firma-1 { bottom: 12%; left: 10%; width: 20%; height: 8%; }
-        .blur-firma-2 { bottom: 12%; left: 40%; width: 20%; height: 8%; }
-        .blur-firma-3 { bottom: 12%; left: 70%; width: 20%; height: 8%; }
+        /* Posiciones ajustadas sobre las imágenes reales */
+        /* DC-3: Solo Instructor y Firmas */
+        .blur-instructor-dc3-text { top: 76.5%; left: 6%; width: 88%; height: 3.5%; }
+        .blur-instructor-firma-box { bottom: 10.5%; left: 6%; width: 28%; height: 11%; }
 
-        /* Blur para Diploma */
-        .blur-folio-diploma { bottom: 4%; right: 4%; width: 15%; height: 3%; }
-        .blur-firma-diploma { bottom: 12%; left: 40%; width: 20%; height: 10%; }
+        /* Diploma: Solo Nombre y Firma */
+        .blur-nombre-diploma { top: 53.5%; left: 15%; width: 70%; height: 6%; }
+        .blur-firma-diploma { bottom: 8%; left: 35%; width: 30%; height: 14%; }
 
         /* ===== Course Catalog (Empire Style Cards) ===== */
         .courses { background: var(--gray-50); }
@@ -515,8 +512,8 @@
                 <div class="doc-preview-card">
                     <img src="https://tsqlpjliqslgzookdqvg.supabase.co/storage/v1/object/public/thumbnails/ejemplo_diploma.jpg" alt="Ejemplo de Diploma EHS" class="doc-real-img">
                     <!-- Capas de Privacidad -->
+                    <div class="blur-layer blur-nombre-diploma"></div>
                     <div class="blur-layer blur-firma-diploma"></div>
-                    <div class="blur-layer blur-folio-diploma"></div>
                     <div style="text-align: center; padding: 15px; background: white; border-top: 1px solid #eee;">
                         <span class="badge" style="background: var(--navy); color: white; padding: 5px 15px; border-radius: 50px; font-size: 0.8rem; font-weight: 800;">Vista Previa de Diploma</span>
                     </div>
@@ -526,13 +523,9 @@
                 <div class="doc-preview-card">
                     <img src="https://tsqlpjliqslgzookdqvg.supabase.co/storage/v1/object/public/thumbnails/ejemplo_dc3.jpg" alt="Ejemplo de Formato DC-3 STPS" class="doc-real-img">
 
-                    <!-- Capas de Seguridad y Privacidad (Blur) -->
-                    <div class="blur-layer blur-curp"></div>
-                    <div class="blur-layer blur-empresa"></div>
-                    <div class="blur-layer blur-rfc"></div>
-                    <div class="blur-layer blur-firma-1"></div>
-                    <div class="blur-layer blur-firma-2"></div>
-                    <div class="blur-layer blur-firma-3"></div>
+                    <!-- Capas de Seguridad y Privacidad (Solo Instructor y Firma) -->
+                    <div class="blur-layer blur-instructor-dc3-text"></div>
+                    <div class="blur-layer blur-instructor-firma-box"></div>
 
                     <!-- Elementos Dinámicos Superpuestos -->
                     <div class="dc3-overlay-qr"></div>
