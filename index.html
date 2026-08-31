@@ -723,10 +723,64 @@
     </a>
 
     <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://tsqlpjliqslgzookdqvg.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzcWxwamxpcXNsZ3pvb2tkcXZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwMjQ3NDEsImV4cCI6MjEwMTYwMDc0MX0.9Alxd3YXVFaPm8MO4LEECmIz6Ofe6IQCbJ56iSoBgbc';
+        const SUPABASE_HEADERS = {
+            'apikey': SUPABASE_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_KEY,
+            'Content-Type': 'application/json'
+        };
+
         window.addEventListener('scroll', () => {
             const header = document.getElementById('header');
             header.classList.toggle('scrolled', window.scrollY > 50);
         });
+
+        // Cargar cursos dinámicos desde Supabase
+        async function loadCourses() {
+            try {
+                const res = await fetch(
+                    SUPABASE_URL + '/rest/v1/courses?select=*&is_published=eq.true&order=id.asc',
+                    { headers: SUPABASE_HEADERS }
+                );
+                const courses = await res.json();
+                if (courses && courses.length > 0) {
+                    const grid = document.querySelector('.courses-grid');
+                    grid.innerHTML = ''; // Limpiar estáticos
+                    courses.forEach(c => {
+                        const card = document.createElement('div');
+                        card.className = 'course-card';
+
+                        const difficulty = c.difficulty_level === 'beginner' ? 'Principiante' :
+                                           c.difficulty_level === 'intermediate' ? 'Intermedio' : 'Avanzado';
+
+                        card.innerHTML = `
+                            <div class="course-thumb">
+                                <span class="course-badge">${difficulty}</span>
+                                <img src="${c.thumbnail_url || 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&q=80&w=800'}" alt="${c.title}">
+                            </div>
+                            <div class="course-content">
+                                <h3>${c.title}</h3>
+                                <div class="course-meta">
+                                    <span><i class="far fa-clock"></i> ${c.duration_hours} Horas</span>
+                                    <span><i class="fas fa-certificate"></i> DC-3 Incluida</span>
+                                </div>
+                                <div class="course-footer">
+                                    <div class="course-price">$${Math.round(c.price)} <span>MXN</span></div>
+                                    <a href="/app/register" class="btn-course">Inscribirme</a>
+                                </div>
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                    });
+                }
+            } catch (err) {
+                console.error('Error al cargar cursos dinámicos:', err);
+            }
+        }
+
+        loadCourses();
     </script>
 </body>
 </html>
