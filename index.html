@@ -230,7 +230,7 @@
         .cat-card h3 { font-size: 1.4rem; color: var(--navy); margin-bottom: 12px; }
         .cat-card p { font-size: 0.9rem; color: var(--text-muted); }
 
-        /* ===== Certificaciones (Real Samples) ===== */
+        /* ===== Certificaciones (Real Samples Integration) ===== */
         .certifications { background: var(--gray-50); padding: 100px 0; }
 
         .docs-container {
@@ -257,52 +257,48 @@
             display: block;
         }
 
-        /* Overlays para el DC-3 */
-        .dc3-overlay-qr {
-            position: absolute;
-            bottom: 4%;
-            left: 5%;
-            width: 12%;
-            aspect-ratio: 1;
-            background: #000;
-            padding: 2px;
-        }
-        .dc3-overlay-qr::after {
-            content: '';
-            display: block;
-            width: 100%; height: 100%;
-            background: white;
-            border: 2px solid #000;
-        }
-
-        .dc3-overlay-folio {
-            position: absolute;
-            bottom: 2%;
-            left: 5%;
-            font-family: monospace;
-            font-size: 0.6rem;
-            font-weight: bold;
-            color: #000;
-            line-height: 1;
-        }
-
-        /* Capas de Blur para Datos Sensibles */
+        /* Capas de Blur para Privacidad Quirúrgica */
         .blur-layer {
             position: absolute;
             background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             pointer-events: none;
+            z-index: 5;
         }
 
-        /* Posiciones ajustadas sobre las imágenes reales */
-        /* DC-3: Solo Instructor y Firmas */
-        .blur-instructor-dc3-text { top: 76.5%; left: 6%; width: 88%; height: 3.5%; }
+        /* DC-3: Solo Instructor y Firma */
+        .blur-instructor-dc3-text { top: 76.5%; left: 4%; width: 55%; height: 3.5%; }
         .blur-instructor-firma-box { bottom: 10.5%; left: 6%; width: 28%; height: 11%; }
 
-        /* Diploma: Solo Nombre y Firma */
-        .blur-nombre-diploma { top: 53.5%; left: 15%; width: 70%; height: 6%; }
-        .blur-firma-diploma { bottom: 8%; left: 35%; width: 30%; height: 14%; }
+        /* Diploma: Solo Nombre del Alumno y Firma */
+        .blur-nombre-diploma { top: 54%; left: 20%; width: 60%; height: 6%; }
+        .blur-firma-diploma { bottom: 10%; left: 35%; width: 30%; height: 12%; }
+
+        /* Overlays para el DC-3 (QR y Folio) */
+        .dc3-qr-overlay {
+            position: absolute;
+            bottom: 6%;
+            left: 6%;
+            width: 10%;
+            aspect-ratio: 1;
+            background: #000;
+            padding: 2px;
+            z-index: 10;
+        }
+        .dc3-qr-overlay::after { content: ''; display: block; width: 100%; height: 100%; background: #fff; border: 2px solid #000; }
+
+        .dc3-folio-overlay {
+            position: absolute;
+            bottom: 3.5%;
+            left: 6%;
+            font-family: monospace;
+            font-size: 0.55rem;
+            font-weight: bold;
+            color: #000;
+            line-height: 1;
+            z-index: 10;
+        }
 
         /* ===== Course Catalog (Empire Style Cards) ===== */
         .courses { background: var(--gray-50); }
@@ -413,8 +409,8 @@
         @media (max-width: 768px) {
             .nav-links { display: none; }
             .hero h1 { font-size: 2.2rem; }
-            .stps-inner { justify-content: center; text-align: center; }
             .footer-grid { grid-template-columns: 1fr 1fr; }
+            .docs-container { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -528,8 +524,8 @@
                     <div class="blur-layer blur-instructor-firma-box"></div>
 
                     <!-- Elementos Dinámicos Superpuestos -->
-                    <div class="dc3-overlay-qr"></div>
-                    <div class="dc3-overlay-folio">Folio: EHS-DC3-2026-0001</div>
+                    <div class="dc3-qr-overlay"></div>
+                    <div class="dc3-folio-overlay">Folio: EHS-DC3-2026-0001</div>
 
                     <div style="text-align: center; padding: 15px; background: white; border-top: 1px solid #eee;">
                         <span class="badge" style="background: var(--green); color: white; padding: 5px 15px; border-radius: 50px; font-size: 0.8rem; font-weight: 800;">Vista Previa de DC-3</span>
@@ -547,132 +543,7 @@
                 <p>Programas de alta especialización técnica con validez oficial.</p>
             </div>
             <div class="courses-grid">
-                <!-- Curso 1 -->
-                <div class="course-card">
-                    <div class="course-thumb">
-                        <span class="course-badge">Intermedio</span>
-                        <img src="https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&q=80&w=800" alt="Alturas">
-                    </div>
-                    <div class="course-content">
-                        <h3>Seguridad en Trabajos en Alturas</h3>
-                        <div class="course-meta">
-                            <span><i class="far fa-clock"></i> 8 Horas</span>
-                            <span><i class="fas fa-certificate"></i> DC-3 Incluida</span>
-                        </div>
-                        <div class="course-footer">
-                            <div class="course-price">$350 <span>MXN</span></div>
-                            <a href="/app/register" class="btn-course">Inscribirme</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Curso 2 -->
-                <div class="course-card">
-                    <div class="course-thumb">
-                        <span class="course-badge">Intermedio</span>
-                        <img src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&q=80&w=800" alt="Soldadura">
-                    </div>
-                    <div class="course-content">
-                        <h3>Seguridad en Trabajos de Soldadura y Oxicorte</h3>
-                        <div class="course-meta">
-                            <span><i class="far fa-clock"></i> 6 Horas</span>
-                            <span><i class="fas fa-certificate"></i> DC-3 Incluida</span>
-                        </div>
-                        <div class="course-footer">
-                            <div class="course-price">$350 <span>MXN</span></div>
-                            <a href="/app/register" class="btn-course">Inscribirme</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Curso 3 -->
-                <div class="course-card">
-                    <div class="course-thumb">
-                        <span class="course-badge">Intermedio</span>
-                        <img src="https://images.unsplash.com/photo-1599700403969-f77b3aa74837?auto=format&fit=crop&q=80&w=800" alt="Brigadas">
-                    </div>
-                    <div class="course-content">
-                        <h3>Formación de Brigadas de Emergencia (Evacuación, Búsqueda y Rescate, Contra Incendios, Primeros Auxilios)</h3>
-                        <div class="course-meta">
-                            <span><i class="far fa-clock"></i> 8 Horas</span>
-                            <span><i class="fas fa-certificate"></i> DC-3 Incluida</span>
-                        </div>
-                        <div class="course-footer">
-                            <div class="course-price">$350 <span>MXN</span></div>
-                            <a href="/app/register" class="btn-course">Inscribirme</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Curso 4 -->
-                <div class="course-card">
-                    <div class="course-thumb">
-                        <span class="course-badge">Avanzado</span>
-                        <img src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&q=80&w=800" alt="Confinados">
-                    </div>
-                    <div class="course-content">
-                        <h3>Seguridad en Espacios Confinados</h3>
-                        <div class="course-meta">
-                            <span><i class="far fa-clock"></i> 6 Horas</span>
-                            <span><i class="fas fa-certificate"></i> DC-3 Incluida</span>
-                        </div>
-                        <div class="course-footer">
-                            <div class="course-price">$350 <span>MXN</span></div>
-                            <a href="/app/register" class="btn-course">Inscribirme</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Curso 5 -->
-                <div class="course-card">
-                    <div class="course-thumb">
-                        <span class="course-badge">Intermedio</span>
-                        <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=800" alt="LOTO">
-                    </div>
-                    <div class="course-content">
-                        <h3>Aseguramiento de Energía (LOTO)</h3>
-                        <div class="course-meta">
-                            <span><i class="far fa-clock"></i> 4 Horas</span>
-                            <span><i class="fas fa-certificate"></i> DC-3 Incluida</span>
-                        </div>
-                        <div class="course-footer">
-                            <div class="course-price">$350 <span>MXN</span></div>
-                            <a href="/app/register" class="btn-course">Inscribirme</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Curso 6 -->
-                <div class="course-card">
-                    <div class="course-thumb">
-                        <span class="course-badge">Avanzado</span>
-                        <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=80&w=800" alt="Instructores">
-                    </div>
-                    <div class="course-content">
-                        <h3>Formación de Instructores</h3>
-                        <div class="course-meta">
-                            <span><i class="far fa-clock"></i> 8 Horas</span>
-                            <span><i class="fas fa-certificate"></i> DC-3 Incluida</span>
-                        </div>
-                        <div class="course-footer">
-                            <div class="course-price">$350 <span>MXN</span></div>
-                            <a href="/app/register" class="btn-course">Inscribirme</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Curso 7 -->
-                <div class="course-card">
-                    <div class="course-thumb">
-                        <span class="course-badge">Avanzado</span>
-                        <img src="https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?auto=format&fit=crop&q=80&w=800" alt="Supervisores">
-                    </div>
-                    <div class="course-content">
-                        <h3>Formación de Supervisores de Seguridad y Salud Ocupacional</h3>
-                        <div class="course-meta">
-                            <span><i class="far fa-clock"></i> 10 Horas</span>
-                            <span><i class="fas fa-certificate"></i> DC-3 Incluida</span>
-                        </div>
-                        <div class="course-footer">
-                            <div class="course-price">$350 <span>MXN</span></div>
-                            <a href="/app/register" class="btn-course">Inscribirme</a>
-                        </div>
-                    </div>
-                </div>
+                <!-- Los cursos se cargan dinámicamente aquí -->
             </div>
         </div>
     </section>
