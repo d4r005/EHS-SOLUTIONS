@@ -230,13 +230,74 @@
         .cat-card h3 { font-size: 1.4rem; color: var(--navy); margin-bottom: 12px; }
         .cat-card p { font-size: 0.9rem; color: var(--text-muted); }
 
-        /* ===== STPS / DC-3 Banner ===== */
-        .stps-banner { background: var(--navy); padding: 60px 0; color: white; border-top: 5px solid var(--green); }
-        .stps-inner { display: flex; align-items: center; gap: 50px; flex-wrap: wrap; }
-        .stps-logo { background: white; padding: 20px; border-radius: 12px; max-width: 200px; }
-        .stps-content { flex: 1; min-width: 300px; }
-        .stps-content h3 { font-size: 1.8rem; margin-bottom: 10px; color: var(--green); }
-        .stps-content p { color: var(--gray-300); }
+        /* ===== Certificaciones (Diploma & DC-3 Samples) ===== */
+        .certifications { background: var(--white); padding: 100px 0; }
+
+        .docs-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: flex-start;
+            margin-top: 50px;
+        }
+
+        .doc-preview-card {
+            background: #fdfdfd;
+            padding: 30px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--gray-200);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        .doc-preview-card:hover { transform: scale(1.02); }
+
+        /* Mockup Diploma */
+        .mockup-diploma {
+            aspect-ratio: 1.414/1;
+            background: white;
+            border: 15px solid var(--navy);
+            padding: 40px;
+            position: relative;
+            text-align: center;
+            color: var(--navy);
+        }
+        .mockup-header { font-weight: 800; font-size: 1.2rem; margin-bottom: 30px; }
+        .mockup-title { font-size: 2.2rem; font-weight: 900; color: var(--green); margin-bottom: 20px; }
+        .mockup-name { font-family: 'Georgia', serif; font-size: 2.5rem; font-style: italic; border-bottom: 2px solid var(--navy); display: inline-block; padding: 0 40px; margin-bottom: 20px; }
+        .mockup-footer { margin-top: 40px; display: flex; justify-content: space-around; align-items: flex-end; }
+
+        /* Mockup DC-3 */
+        .mockup-dc3 {
+            aspect-ratio: 1/1.3;
+            background: white;
+            padding: 20px;
+            font-size: 0.6rem;
+            color: black;
+            border: 1px solid #ccc;
+        }
+        .dc3-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .dc3-table th, .dc3-table td { border: 1px solid black; padding: 4px; text-align: left; }
+        .dc3-header-box { background: #000; color: white; text-align: center; font-weight: bold; padding: 4px; font-size: 0.7rem; }
+
+        /* Privacy Blur */
+        .blur-data {
+            filter: blur(5px);
+            opacity: 0.6;
+            user-select: none;
+        }
+
+        .stamp-gold {
+            width: 80px; height: 80px;
+            background: radial-gradient(circle, #ffd700, #b8860b);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: bold; font-size: 0.6rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            position: absolute; bottom: 40px; right: 40px;
+            transform: rotate(-15deg);
+        }
 
         /* ===== Course Catalog (Empire Style Cards) ===== */
         .courses { background: var(--gray-50); }
@@ -433,18 +494,104 @@
         </div>
     </section>
 
-    <!-- ===== STPS Banner ===== -->
-    <div class="stps-banner">
-        <div class="container stps-inner">
-            <div class="stps-logo">
-                <img src="https://www.gob.mx/cms/uploads/action_program/main_image/26942/stps.png" alt="STPS" style="width: 100%; border-radius: 8px;">
+    <!-- ===== Certificaciones Section ===== -->
+    <section class="certifications" id="certificaciones">
+        <div class="container">
+            <div class="section-header">
+                <h2>Certificado y DC-3 Oficial</h2>
+                <p>Recibe documentos con validez ante la STPS al finalizar satisfactoriamente cada programa. Consulta nuestro registro como Agente Capacitador Externo.</p>
             </div>
-            <div class="stps-content">
-                <h3>Agente Capacitador Externo</h3>
-                <p>Todos nuestros programas están registrados ante la STPS. Al aprobar el examen final de cada curso, recibirás automáticamente tu **Diploma de Academia** y tu **Formato DC-3** oficial para validar tus competencias laborales.</p>
+
+            <div class="docs-container">
+                <!-- Muestra Diploma -->
+                <div class="doc-preview-card">
+                    <div class="mockup-diploma">
+                        <div class="mockup-header">EHS SOLUTIONS ACADEMY</div>
+                        <p>OTORGA EL PRESENTE</p>
+                        <div class="mockup-title">DIPLOMA</div>
+                        <p>A:</p>
+                        <div class="mockup-name">JUAN PÉREZ LÓPEZ</div>
+                        <p>Por haber completado satisfactoriamente el curso técnico de:</p>
+                        <p><strong>SEGURIDAD EN TRABAJOS EN ALTURAS</strong></p>
+
+                        <div class="mockup-footer">
+                            <div class="signature">
+                                <div class="blur-data" style="width: 100px; height: 40px; background: #eee; margin: 0 auto;"></div>
+                                <div style="border-top: 1px solid #000; padding-top: 5px; font-size: 0.7rem;">Dirección de Capacitación</div>
+                            </div>
+                            <div class="qr-code">
+                                <div style="width: 60px; height: 60px; background: #333; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.5rem;">QR VALIDACIÓN</div>
+                            </div>
+                        </div>
+                        <div class="stamp-gold">EHS ACADEMY</div>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <span class="badge" style="background: var(--navy); color: white; padding: 5px 15px; border-radius: 50px; font-size: 0.8rem;">Ejemplo de Diploma</span>
+                    </div>
+                </div>
+
+                <!-- Muestra DC-3 -->
+                <div class="doc-preview-card">
+                    <div class="mockup-dc3">
+                        <div style="text-align: center; font-weight: 800; font-size: 0.8rem; margin-bottom: 10px;">FORMATO DC-3<br>CONSTANCIA DE COMPETENCIAS O DE HABILIDADES LABORALES</div>
+
+                        <div class="dc3-header-box">DATOS DEL TRABAJADOR</div>
+                        <table class="dc3-table">
+                            <tr>
+                                <td colspan="2">Nombre: <span style="font-family: monospace;">JUAN PÉREZ LÓPEZ</span></td>
+                            </tr>
+                            <tr>
+                                <td>CURP: <span class="blur-data">XXXX000000XXXXX00</span></td>
+                                <td>Ocupación: <span style="font-family: monospace;">OPERARIO ESPECIALIZADO</span></td>
+                            </tr>
+                        </table>
+
+                        <div class="dc3-header-box" style="margin-top: 10px;">DATOS DE LA EMPRESA</div>
+                        <table class="dc3-table">
+                            <tr>
+                                <td>Nombre o Razón Social: <span class="blur-data">SOLUCIONES INDUSTRIALES S.A. DE C.V.</span></td>
+                            </tr>
+                            <tr>
+                                <td>RFC: <span class="blur-data">ABC000000XYZ</span></td>
+                            </tr>
+                        </table>
+
+                        <div class="dc3-header-box" style="margin-top: 10px;">DATOS DEL PROGRAMA DE CAPACITACIÓN</div>
+                        <table class="dc3-table">
+                            <tr>
+                                <td colspan="2">Nombre del curso: <span style="font-family: monospace;">SEGURIDAD EN TRABAJOS EN ALTURAS</span></td>
+                            </tr>
+                            <tr>
+                                <td>Duración: 8 Horas</td>
+                                <td>Área temática: 6000 SEGURIDAD</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Nombre del agente capacitador: <span style="font-family: monospace;">JESUS DARIO ROBLES TRUJILLO</span></td>
+                            </tr>
+                        </table>
+
+                        <div style="display: flex; justify-content: space-between; margin-top: 20px; text-align: center; font-size: 0.5rem;">
+                            <div style="width: 30%;">
+                                <div class="blur-data">FIRMA BORROSA</div>
+                                <div style="border-top: 1px solid #000;">Instructor</div>
+                            </div>
+                            <div style="width: 30%;">
+                                <div class="blur-data">FIRMA BORROSA</div>
+                                <div style="border-top: 1px solid #000;">Patrón o Representante</div>
+                            </div>
+                            <div style="width: 30%;">
+                                <div class="blur-data">FIRMA BORROSA</div>
+                                <div style="border-top: 1px solid #000;">Representante de Trabajadores</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <span class="badge" style="background: var(--green); color: white; padding: 5px 15px; border-radius: 50px; font-size: 0.8rem;">Ejemplo de Formato DC-3</span>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- ===== Cursos ===== -->
     <section class="courses" id="cursos">
