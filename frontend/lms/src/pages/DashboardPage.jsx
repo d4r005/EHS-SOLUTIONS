@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { courseService } from '../services/courseService';
+import { adminService } from '../services/adminService';
 import { rest } from '../services/api';
 
 export const DashboardPage = () => {
@@ -48,28 +49,39 @@ export const DashboardPage = () => {
   const fetchMyCourses = async () => {
     try {
       setLoading(true);
-      const data = await courseService.getMyCourses();
-      setCourses(data.enrollments || []);
 
-      // Calcular estadísticas
-      const completed = data.enrollments?.filter(c => c.progress_percentage === 100).length || 0;
-      const inProgress = data.enrollments?.filter(c => c.progress_percentage < 100).length || 0;
+      if (user.role === 'admin') {
+        // Cargar métricas globales para el administrador
+        const globalStats = await adminService.getReports();
+        setStats({
+          totalCourses: globalStats.totalCourses,
+          completedCourses: globalStats.totalStudents, // Alumnos totales
+          inProgressCourses: globalStats.totalCertificates, // Diplomas emitidos
+          hoursLearned: globalStats.totalEnrollments, // Inscripciones totales
+        });
+      } else {
+        // Cargar métricas personales para estudiante/instructor
+        const data = await courseService.getMyCourses();
+        setCourses(data.enrollments || []);
 
-      // Obtener horas reales estudiadas desde lesson_progress
-      let totalMinutes = 0;
-      try {
-        const { data: progressData } = await rest.get(`/lesson_progress?student_id=eq.${user.id}&select=time_spent_minutes`);
-        totalMinutes = progressData?.reduce((acc, curr) => acc + (curr.time_spent_minutes || 0), 0) || 0;
-      } catch (err) {
-        console.warn('Error fetching study hours:', err);
+        const completed = data.enrollments?.filter(c => c.progress_percentage === 100).length || 0;
+        const inProgress = data.enrollments?.filter(c => c.progress_percentage < 100).length || 0;
+
+        let totalMinutes = 0;
+        try {
+          const { data: progressData } = await rest.get(`/lesson_progress?student_id=eq.${user.id}&select=time_spent_minutes`);
+          totalMinutes = progressData?.reduce((acc, curr) => acc + (curr.time_spent_minutes || 0), 0) || 0;
+        } catch (err) {
+          console.warn('Error fetching study hours:', err);
+        }
+
+        setStats({
+          totalCourses: data.enrollments?.length || 0,
+          completedCourses: completed,
+          inProgressCourses: inProgress,
+          hoursLearned: Math.round((totalMinutes / 60) * 10) / 10,
+        });
       }
-
-      setStats({
-        totalCourses: data.enrollments?.length || 0,
-        completedCourses: completed,
-        inProgressCourses: inProgress,
-        hoursLearned: Math.round((totalMinutes / 60) * 10) / 10, // Horas con 1 decimal
-      });
     } catch (error) {
       console.error('Error fetching courses:', error);
     } finally {
@@ -119,57 +131,72 @@ export const DashboardPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <StatCard
             icon="📚"
-            label="Cursos Totales"
+            label={user.role === 'admin' ? "Cursos Plataforma" : "Cursos Totales"}
             value={stats.totalCourses}
             color="blue"
           />
           <StatCard
-            icon="✅"
-            label="Completados"
+            icon="🎓"
+            label={user.role === 'admin' ? "Alumnos Registrados" : "Completados"}
             value={stats.completedCourses}
             color="green"
           />
           <StatCard
-            icon="🔄"
-            label="En Progreso"
+            icon={user.role === 'admin' ? "🏆" : "🔄"}
+            label={user.role === 'admin' ? "Diplomas Emitidos" : "En Progreso"}
             value={stats.inProgressCourses}
             color="yellow"
           />
           <StatCard
-            icon="⏱️"
-            label="Horas Estudiadas"
+            icon={user.role === 'admin' ? "📝" : "⏱️"}
+            label={user.role === 'admin' ? "Inscripciones Totales" : "Horas Estudiadas"}
             value={stats.hoursLearned}
             color="purple"
           />
         </div>
 
         {/* Courses Section */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-          <h2 className="text-2xl font-bold text-navy mb-6">Mis Cursos</h2>
+        {user.role !== 'admin' ? (
+          <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+            <h2 className="text-2xl font-bold text-navy mb-6">Mis Cursos</h2>
 
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin text-4xl">⏳</div>
-              <p className="text-gray-600 mt-2">Cargando cursos...</p>
-            </div>
-          ) : courses.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses.map((enrollment) => (
-                <CourseCard key={enrollment.id} enrollment={enrollment} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-600 mb-4">No estás inscrito en ningún curso todavía</p>
-              <Link
-                to="/courses"
-                className="inline-block px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-              >
-                Explorar Cursos
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin text-4xl">⏳</div>
+                <p className="text-gray-600 mt-2">Cargando cursos...</p>
+              </div>
+            ) : courses.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {courses.map((enrollment) => (
+                  <CourseCard key={enrollment.id} enrollment={enrollment} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-600 mb-4">No estás inscrito en ningún curso todavía</p>
+                <Link
+                  to="/courses"
+                  className="inline-block px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                >
+                  Explorar Cursos
+                </Link>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl shadow-md p-8 text-center mb-8 border-2 border-dashed border-gray-200">
+            <h2 className="text-2xl font-bold text-navy mb-3">Panel de Gestión Global</h2>
+            <p className="text-gray-600 mb-6">Estás visualizando las métricas globales de la plataforma EHS Solutions.</p>
+            <div className="flex justify-center gap-4">
+              <Link to="/admin" className="px-8 py-3 bg-navy text-white rounded-lg font-bold hover:bg-navy-light transition shadow-lg">
+                Ir al Panel de Administración
+              </Link>
+              <Link to="/instructor" className="px-8 py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition shadow-lg">
+                Gestionar Cursos
               </Link>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -149,18 +149,18 @@ export const InstructorDashboard = () => {
                   ? Math.round(c.enrollments.reduce((s, e) => s + (e.progress_percentage || 0), 0) / enrolled)
                   : 0;
                 return (
-                  <div key={c.id} className="border border-gray-200 rounded-lg p-4 flex items-center justify-between flex-wrap gap-3">
-                    <div>
-                      <p className="font-bold text-navy">{c.title}</p>
+                  <div key={c.id} className="border border-gray-200 rounded-lg p-4 flex items-center justify-between flex-nowrap gap-3 hover:bg-gray-50 transition-colors">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-navy truncate" title={c.title}>{c.title}</p>
                       <p className="text-sm text-gray-500">
                         {c.is_published ? '🟢 Publicado' : '⚪ Borrador'} · {enrolled} inscritos · {avgProgress}% progreso promedio · ${c.price || 0}
                       </p>
                     </div>
-                    <div className="flex gap-2 flex-wrap">
+                    <div className="flex gap-2 flex-shrink-0 ml-auto">
                       <button onClick={() => navigate(`/instructor/courses/${c.id}`)} className="px-4 py-2 bg-navy text-white rounded-lg hover:bg-navy-light text-sm font-semibold transition">
                         Editar
                       </button>
-                      <button onClick={() => handleTogglePublish(c)} className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-semibold transition">
+                      <button onClick={() => handleTogglePublish(c)} className="px-4 py-2 border border-gray-300 bg-white rounded-lg hover:bg-gray-100 text-sm font-semibold transition">
                         {c.is_published ? 'Despublicar' : 'Publicar'}
                       </button>
                       <button onClick={() => handleDelete(c)} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-semibold transition">
