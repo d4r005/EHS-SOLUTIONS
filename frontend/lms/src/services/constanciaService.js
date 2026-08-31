@@ -19,19 +19,28 @@ function formatFechaLarga(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return '';
-  return `${d.getDate()} de ${MESES[d.getMonth()]} de ${d.getFullYear()}`;
+  return `el día ${d.getDate()} de ${MESES[d.getMonth()]} del ${d.getFullYear()}`;
 }
 
 function formatPeriodo(fechaInicio, fechaFin) {
   const ini = fechaInicio ? new Date(fechaInicio) : null;
   const fin = fechaFin ? new Date(fechaFin) : null;
   if (!ini && !fin) return '';
+
+  // Caso: Mismo día exacto
+  if (ini && fin && ini.toDateString() === fin.toDateString()) {
+    return formatFechaLarga(fechaFin);
+  }
+
   if (ini && fin) {
     const mismoMes = ini.getMonth() === fin.getMonth() && ini.getFullYear() === fin.getFullYear();
     if (mismoMes) {
-      return `${ini.getDate()} al ${fin.getDate()} de ${MESES[fin.getMonth()]} de ${fin.getFullYear()}`;
+      return `del ${ini.getDate()} al ${fin.getDate()} de ${MESES[fin.getMonth()]} del ${fin.getFullYear()}`;
     }
-    return `${formatFechaLarga(fechaInicio)} al ${formatFechaLarga(fechaFin)}`;
+    // Diferente mes o año
+    const f1 = formatFechaLarga(fechaInicio).replace('el día ', '');
+    const f2 = formatFechaLarga(fechaFin).replace('el día ', '');
+    return `del ${f1} al ${f2}`;
   }
   return formatFechaLarga(fechaFin || fechaInicio);
 }
