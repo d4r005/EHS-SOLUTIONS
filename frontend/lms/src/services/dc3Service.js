@@ -116,10 +116,13 @@ export const dc3Service = {
           height: 50,
         });
 
-        // Insertar DC3 en el folio mostrado
+        // Folio centrado debajo del QR
         const displayFolio = folio.replace('EHS-', 'EHS-DC3-');
-        page.drawText(`Folio de validación: ${displayFolio}`, {
-          x: 30,
+        const folioText = `Folio: ${displayFolio}`;
+        const folioWidth = font.widthOfTextAtSize(folioText, 7);
+        const qrCenterX = 30 + 25; // x del QR + mitad de su ancho (50)
+        page.drawText(folioText, {
+          x: qrCenterX - (folioWidth / 2),
           y: 35,
           size: 7,
           font,

@@ -147,10 +147,13 @@ export const constanciaService = {
           height: 90,
         });
 
-        // Insertar CON en el folio mostrado
+        // Folio centrado debajo del QR
         const displayFolio = folio.replace('EHS-', 'EHS-CON-');
-        page.drawText(`Folio de validación: ${displayFolio}`, {
-          x: PAGE_W - 250,
+        const folioText = `Folio: ${displayFolio}`;
+        const folioWidth = fontRegular.widthOfTextAtSize(folioText, 9);
+        const qrCenterX = (PAGE_W - 160) + 45; // x del QR + mitad de su ancho (90)
+        page.drawText(folioText, {
+          x: qrCenterX - (folioWidth / 2),
           y: 45,
           size: 9,
           font: fontRegular,
