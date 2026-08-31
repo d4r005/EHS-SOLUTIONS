@@ -254,9 +254,16 @@
         }
         .course-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-xl); border-color: var(--green); }
 
-        .course-thumb { height: 200px; background: var(--navy); position: relative; overflow: hidden; }
-        .course-thumb img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .course-card:hover .course-thumb img { transform: scale(1.1); }
+        .course-thumb {
+            height: 240px;
+            background: var(--navy-deep);
+            position: relative;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .course-thumb img { display: none; } /* Ocultamos el tag img para usar el background del div */
 
         .course-badge {
             position: absolute; top: 15px; left: 15px;
@@ -755,10 +762,11 @@
                         const difficulty = c.difficulty_level === 'beginner' ? 'Principiante' :
                                            c.difficulty_level === 'intermediate' ? 'Intermedio' : 'Avanzado';
 
+                        const thumbUrl = c.thumbnail_url || 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&q=80&w=800';
+
                         card.innerHTML = `
-                            <div class="course-thumb">
+                            <div class="course-thumb" style="background-image: url('${thumbUrl}')">
                                 <span class="course-badge">${difficulty}</span>
-                                <img src="${c.thumbnail_url || 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&q=80&w=800'}" alt="${c.title}">
                             </div>
                             <div class="course-content">
                                 <h3>${c.title}</h3>
