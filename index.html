@@ -230,12 +230,12 @@
         .cat-card h3 { font-size: 1.4rem; color: var(--navy); margin-bottom: 12px; }
         .cat-card p { font-size: 0.9rem; color: var(--text-muted); }
 
-        /* ===== Certificaciones (Alta Fidelidad) ===== */
+        /* ===== Certificaciones (Real Samples) ===== */
         .certifications { background: var(--gray-50); padding: 100px 0; }
 
         .docs-container {
             display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
+            grid-template-columns: 1fr 1fr;
             gap: 40px;
             align-items: flex-start;
             margin-top: 50px;
@@ -247,118 +247,65 @@
             box-shadow: var(--shadow-xl);
             position: relative;
             overflow: hidden;
-            transition: var(--transition);
             border: 1px solid var(--gray-200);
+            line-height: 0;
         }
-        .doc-preview-card:hover { transform: translateY(-5px); }
 
-        /* Mockup Diploma EHS Pro */
-        .mockup-diploma {
-            aspect-ratio: 1.414/1;
+        .doc-real-img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Overlays para el DC-3 */
+        .dc3-overlay-qr {
+            position: absolute;
+            bottom: 4%;
+            left: 5%;
+            width: 12%;
+            aspect-ratio: 1;
+            background: #000;
+            padding: 2px;
+        }
+        .dc3-overlay-qr::after {
+            content: '';
+            display: block;
+            width: 100%; height: 100%;
             background: white;
-            display: grid;
-            grid-template-columns: 100px 1fr;
-            color: var(--navy);
-            position: relative;
-            box-sizing: border-box;
-            border: 1px solid #ddd;
+            border: 2px solid #000;
         }
 
-        .diploma-sidebar {
-            background: var(--navy-deep);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 50px;
-            padding: 20px 0;
-            color: white;
-        }
-        .sidebar-icon-group { text-align: center; }
-        .sidebar-icon-group i { font-size: 1.4rem; margin-bottom: 8px; color: var(--green); display: block; }
-        .sidebar-icon-group span { font-size: 0.5rem; text-transform: uppercase; font-weight: 700; writing-mode: vertical-rl; transform: rotate(180deg); opacity: 0.8; }
-
-        .diploma-main {
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            background: radial-gradient(circle at center, #fff 0%, #fefefe 100%);
-        }
-
-        .diploma-logo { height: 70px; margin-bottom: 25px; }
-        .diploma-type { font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .diploma-constancia {
-            font-size: 4rem;
-            font-family: 'Times New Roman', serif;
-            font-weight: 500;
-            color: #222;
-            margin-bottom: 20px;
-            letter-spacing: 2px;
+        .dc3-overlay-folio {
+            position: absolute;
+            bottom: 2%;
+            left: 5%;
+            font-family: monospace;
+            font-size: 0.6rem;
+            font-weight: bold;
+            color: #000;
             line-height: 1;
         }
-        .diploma-recipient {
-            font-size: 2rem;
-            font-weight: 900;
-            color: var(--navy);
-            border-bottom: 3px solid var(--navy);
-            padding: 5px 30px;
-            margin: 15px 0;
-            text-transform: uppercase;
-            font-family: 'Segoe UI', sans-serif;
+
+        /* Capas de Blur para Datos Sensibles */
+        .blur-layer {
+            position: absolute;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            pointer-events: none;
         }
-        .diploma-course { font-size: 1.1rem; color: var(--navy-light); font-weight: 800; margin: 15px 0; max-width: 80%; }
 
-        .diploma-footer {
-            margin-top: auto;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            font-size: 0.7rem;
-            padding-top: 30px;
-        }
-        .signature-box { text-align: center; width: 180px; }
-        .signature-img { height: 45px; border-bottom: 2px solid #000; margin-bottom: 8px; filter: blur(4px); opacity: 0.6; }
-        .folio-box { font-family: monospace; font-size: 0.65rem; color: #000; font-weight: bold; }
+        /* Posiciones aproximadas sobre la imagen real del DC-3 */
+        .blur-curp { top: 22.5%; left: 6%; width: 30%; height: 4%; }
+        .blur-empresa { top: 34%; left: 6%; width: 50%; height: 4%; }
+        .blur-rfc { top: 41%; left: 6%; width: 25%; height: 4%; }
+        .blur-firma-1 { bottom: 12%; left: 10%; width: 20%; height: 8%; }
+        .blur-firma-2 { bottom: 12%; left: 40%; width: 20%; height: 8%; }
+        .blur-firma-3 { bottom: 12%; left: 70%; width: 20%; height: 8%; }
 
-        /* Mockup DC-3 Pro */
-        .mockup-dc3 {
-            aspect-ratio: 1/1.3;
-            background: white;
-            padding: 20px;
-            font-size: 0.55rem;
-            color: black;
-            border: 1px solid #000;
-            box-sizing: border-box;
-        }
-        .dc3-logo-top { text-align: center; margin-bottom: 12px; }
-        .dc3-logo-top img { height: 40px; }
-        .dc3-main-title { font-weight: 900; text-align: center; font-size: 0.75rem; margin-bottom: 12px; border-top: 2px solid #000; padding-top: 8px; }
-
-        .dc3-section-title { background: #000; color: white; padding: 4px; font-weight: bold; font-size: 0.65rem; margin-top: 10px; }
-        .dc3-field-row { display: flex; border: 1px solid #000; border-top: none; }
-        .dc3-field { padding: 5px; border-right: 1px solid #000; flex: 1; }
-        .dc3-field:last-child { border-right: none; }
-        .dc3-label { font-weight: bold; display: block; font-size: 0.5rem; margin-bottom: 3px; }
-        .dc3-value { font-family: 'Courier New', Courier, monospace; font-size: 0.65rem; text-transform: uppercase; font-weight: 900; }
-
-        .blur-data { filter: blur(5px); opacity: 0.6; }
-
-        .stamp-gold-pro {
-            width: 90px; height: 90px;
-            background: radial-gradient(circle, #ffd700, #b8860b);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: #554400; font-weight: 900; font-size: 0.6rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            position: absolute; bottom: 60px; left: 130px;
-            transform: rotate(-15deg);
-            border: 2px dashed #b8860b;
-            text-align: center;
-            line-height: 1.1;
-        }
+        /* Blur para Diploma */
+        .blur-folio-diploma { bottom: 4%; right: 4%; width: 15%; height: 3%; }
+        .blur-firma-diploma { bottom: 12%; left: 40%; width: 20%; height: 10%; }
 
         /* ===== Course Catalog (Empire Style Cards) ===== */
         .courses { background: var(--gray-50); }
@@ -555,156 +502,44 @@
         </div>
     </section>
 
-    <!-- ===== Certificaciones Section (Rediseño Alta Fidelidad) ===== -->
+    <!-- ===== Certificaciones Section (Imágenes Reales con Capas de Seguridad) ===== -->
     <section class="certifications" id="certificaciones">
         <div class="container">
             <div class="section-header">
                 <h2>Certificado y DC-3 Oficial</h2>
-                <p>Nuestros programas cumplen con los estándares más altos de calidad. Al finalizar, obtén documentos que avalan tus competencias ante cualquier autoridad.</p>
+                <p>Nuestros programas cumplen con los estándares más altos de calidad. Al finalizar, obtén documentos oficiales que avalan tus competencias ante la STPS.</p>
             </div>
 
             <div class="docs-container">
-                <!-- Muestra Diploma -->
+                <!-- Muestra Diploma Real -->
                 <div class="doc-preview-card">
-                    <div class="mockup-diploma">
-                        <div class="diploma-sidebar">
-                            <div class="sidebar-icon-group">
-                                <i class="fas fa-hard-hat"></i>
-                                <span>SEGURIDAD</span>
-                            </div>
-                            <div class="sidebar-icon-group">
-                                <i class="fas fa-heartbeat"></i>
-                                <span>SALUD</span>
-                            </div>
-                            <div class="sidebar-icon-group">
-                                <i class="fas fa-leaf"></i>
-                                <span>MEDIO AMBIENTE</span>
-                            </div>
-                        </div>
-                        <div class="diploma-main">
-                            <img src="logo.png" alt="EHS" class="diploma-logo">
-                            <div class="diploma-type">Otorga la presente</div>
-                            <div class="diploma-constancia">Constancia</div>
-                            <div style="color: var(--green); font-size: 1.5rem; margin-bottom: 5px;">● ● ●</div>
-                            <div style="font-weight: 800; font-size: 0.9rem; margin-bottom: 10px;">A</div>
-                            <div class="diploma-recipient">JUAN PÉREZ LÓPEZ</div>
-                            <p style="font-size: 0.7rem; margin-top: 15px;">Por haber concluido satisfactoriamente el curso de:</p>
-                            <div class="diploma-course">Aseguramiento de Energía (LOTO)</div>
-                            <p style="font-size: 0.7rem;">Con duración de <strong>8 horas</strong></p>
-                            <p style="font-size: 0.75rem; margin-top: 5px;">31 de agosto del 2026</p>
-
-                            <div class="diploma-footer">
-                                <div class="stamp-gold-pro">EHS<br>SOLUTIONS<br><span style="font-size: 0.4rem;">TRAINING EXCELLENCE</span></div>
-                                <div class="signature-box">
-                                    <div class="signature-img"></div>
-                                    <div style="font-weight: 800; font-size: 0.55rem;">JESUS DARIO ROBLES TRUJILLO</div>
-                                    <div style="font-size: 0.45rem; color: #555;">REGISTRO STPS-ROTJ920320-IP4-0005</div>
-                                </div>
-                                <div class="qr-box" style="text-align: right;">
-                                    <div style="width: 55px; height: 55px; background: #000; display: inline-block; padding: 2px;">
-                                        <div style="width: 100%; height: 100%; background: #fff; border: 4px solid #000; position: relative;">
-                                            <div style="position: absolute; top: 25%; left: 25%; width: 50%; height: 50%; background: #000;"></div>
-                                        </div>
-                                    </div>
-                                    <div class="folio-box">Folio: EHS-CON-2026-0002</div>
-                                </div>
-                            </div>
-                            <p style="font-style: italic; font-weight: 800; font-size: 0.7rem; margin-top: 15px; color: var(--navy);">"Capacitamos hoy, protegemos el mañana"</p>
-                        </div>
+                    <img src="https://tsqlpjliqslgzookdqvg.supabase.co/storage/v1/object/public/thumbnails/ejemplo_diploma.jpg" alt="Ejemplo de Diploma EHS" class="doc-real-img">
+                    <!-- Capas de Privacidad -->
+                    <div class="blur-layer blur-firma-diploma"></div>
+                    <div class="blur-layer blur-folio-diploma"></div>
+                    <div style="text-align: center; padding: 15px; background: white; border-top: 1px solid #eee;">
+                        <span class="badge" style="background: var(--navy); color: white; padding: 5px 15px; border-radius: 50px; font-size: 0.8rem; font-weight: 800;">Vista Previa de Diploma</span>
                     </div>
                 </div>
 
-                <!-- Muestra DC-3 -->
+                <!-- Muestra DC-3 Real -->
                 <div class="doc-preview-card">
-                    <div class="mockup-dc3">
-                        <div class="dc3-logo-top">
-                            <img src="logo.png" alt="Logo">
-                        </div>
-                        <div style="text-align: center; font-weight: 800; font-size: 0.65rem;">FORMATO DC-3<br>CONSTANCIA DE COMPETENCIAS O DE HABILIDADES LABORALES</div>
+                    <img src="https://tsqlpjliqslgzookdqvg.supabase.co/storage/v1/object/public/thumbnails/ejemplo_dc3.jpg" alt="Ejemplo de Formato DC-3 STPS" class="doc-real-img">
 
-                        <div class="dc3-section-title">DATOS DEL TRABAJADOR</div>
-                        <div class="dc3-field-row">
-                            <div class="dc3-field" style="flex: 3;">
-                                <span class="dc3-label">Nombre (Anotar apellido paterno, apellido materno y nombre(s))</span>
-                                <span class="dc3-value">JUAN PÉREZ LÓPEZ</span>
-                            </div>
-                        </div>
-                        <div class="dc3-field-row">
-                            <div class="dc3-field">
-                                <span class="dc3-label">Clave Única de Registro de Población (CURP)</span>
-                                <span class="dc3-value blur-data">XXXX000000XXXXX00</span>
-                            </div>
-                            <div class="dc3-field">
-                                <span class="dc3-label">Ocupación específica (Catálogo Nacional de Ocupaciones)</span>
-                                <span class="dc3-value">04.6 Procesos industriales</span>
-                            </div>
-                        </div>
-                        <div class="dc3-field-row">
-                            <div class="dc3-field">
-                                <span class="dc3-label">Puesto</span>
-                                <span class="dc3-value">OPERARIO ESPECIALIZADO</span>
-                            </div>
-                        </div>
+                    <!-- Capas de Seguridad y Privacidad (Blur) -->
+                    <div class="blur-layer blur-curp"></div>
+                    <div class="blur-layer blur-empresa"></div>
+                    <div class="blur-layer blur-rfc"></div>
+                    <div class="blur-layer blur-firma-1"></div>
+                    <div class="blur-layer blur-firma-2"></div>
+                    <div class="blur-layer blur-firma-3"></div>
 
-                        <div class="dc3-section-title">DATOS DE LA EMPRESA</div>
-                        <div class="dc3-field-row">
-                            <div class="dc3-field">
-                                <span class="dc3-label">Nombre o razón social (En caso de persona física, anotar apellido paterno, materno y nombre)</span>
-                                <span class="dc3-value blur-data">SOLUCIONES INDUSTRIALES S.A. DE C.V.</span>
-                            </div>
-                        </div>
-                        <div class="dc3-field-row">
-                            <div class="dc3-field">
-                                <span class="dc3-label">Registro Federal de Contribuyentes con homoclave (SHCP)</span>
-                                <span class="dc3-value blur-data">ABC000000XYZ</span>
-                            </div>
-                        </div>
+                    <!-- Elementos Dinámicos Superpuestos -->
+                    <div class="dc3-overlay-qr"></div>
+                    <div class="dc3-overlay-folio">Folio: EHS-DC3-2026-0001</div>
 
-                        <div class="dc3-section-title">DATOS DEL PROGRAMA DE CAPACITACIÓN</div>
-                        <div class="dc3-field-row">
-                            <div class="dc3-field">
-                                <span class="dc3-label">Nombre del curso</span>
-                                <span class="dc3-value">ASEGURAMIENTO DE ENERGÍA (LOTO)</span>
-                            </div>
-                        </div>
-                        <div class="dc3-field-row">
-                            <div class="dc3-field" style="flex: 0.5;">
-                                <span class="dc3-label">Duración en horas</span>
-                                <span class="dc3-value">8</span>
-                            </div>
-                            <div class="dc3-field">
-                                <span class="dc3-label">Periodo de ejecución: De Aaaa/Mm/Dd a Aaaa/Mm/Dd</span>
-                                <span class="dc3-value">2026/08/31 a 2026/08/31</span>
-                            </div>
-                        </div>
-                        <div class="dc3-field-row">
-                            <div class="dc3-field">
-                                <span class="dc3-label">Área temática del curso</span>
-                                <span class="dc3-value">6000 SEGURIDAD</span>
-                            </div>
-                        </div>
-                        <div class="dc3-field-row">
-                            <div class="dc3-field">
-                                <span class="dc3-label">Nombre del agente capacitador o STPS</span>
-                                <span class="dc3-value">JESUS DARIO ROBLES TRUJILLO STPS-ROTJ920320-IP4-0005</span>
-                            </div>
-                        </div>
-
-                        <div style="display: flex; justify-content: space-between; margin-top: 15px; text-align: center; font-size: 0.45rem;">
-                            <div style="width: 30%;">
-                                <div class="blur-data">FIRMA</div>
-                                <div style="border-top: 1px solid #000; padding-top: 3px;">Instructor o tutor</div>
-                            </div>
-                            <div style="width: 30%;">
-                                <div class="blur-data">FIRMA</div>
-                                <div style="border-top: 1px solid #000; padding-top: 3px;">Patrón o representante legal</div>
-                            </div>
-                            <div style="width: 30%;">
-                                <div class="blur-data">FIRMA</div>
-                                <div style="border-top: 1px solid #000; padding-top: 3px;">Representante de los trabajadores</div>
-                            </div>
-                        </div>
-                        <div style="font-size: 0.4rem; color: #000; margin-top: 10px; font-weight: bold; text-align: left;">Folio: EHS-DC3-2026-0002</div>
+                    <div style="text-align: center; padding: 15px; background: white; border-top: 1px solid #eee;">
+                        <span class="badge" style="background: var(--green); color: white; padding: 5px 15px; border-radius: 50px; font-size: 0.8rem; font-weight: 800;">Vista Previa de DC-3</span>
                     </div>
                 </div>
             </div>
