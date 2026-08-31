@@ -3,19 +3,24 @@
 -- Ejecutar en Supabase → SQL Editor
 -- ============================================
 
--- 1. Agregar nuevas columnas a public.users
+-- 1. Agregar las nuevas columnas de nombres divididos
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS nombres VARCHAR(100);
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS apellido_paterno VARCHAR(100);
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS apellido_materno VARCHAR(100);
 
--- 2. Migrar datos existentes (best-effort)
+-- 2. Dar permisos de lectura y escritura a estas nuevas columnas
+-- Sin esto, la página web no puede guardar los cambios aunque la columna exista.
+GRANT SELECT (nombres, apellido_paterno, apellido_materno) ON public.users TO authenticated, anon;
+GRANT UPDATE (nombres, apellido_paterno, apellido_materno) ON public.users TO authenticated;
+
+-- 3. Migrar los nombres actuales a las nuevas columnas
 UPDATE public.users
 SET
   nombres = first_name,
   apellido_paterno = last_name
-WHERE nombres IS NULL;
+WHERE nombres IS NULL OR nombres = '';
 
--- 3. Actualizar al instructor principal
+-- 4. Actualizar al Instructor Principal (Jesus Dario Robles Trujillo)
 UPDATE public.users
 SET
   nombres = 'JESUS DARIO',
@@ -25,18 +30,18 @@ SET
   last_name = 'ROBLES TRUJILLO'
 WHERE email = 'instructor@ehs-solutions.com';
 
--- 4. Actualizar administrador
+-- 5. Actualizar tu usuario Administrador
 UPDATE public.users
 SET
-  nombres = 'DARIO',
+  nombres = 'JESUS DARIO',
   apellido_paterno = 'ROBLES',
-  apellido_materno = '',
-  first_name = 'Dario',
-  last_name = 'Robles'
+  apellido_materno = 'TRUJILLO',
+  first_name = 'JESUS DARIO',
+  last_name = 'ROBLES TRUJILLO'
 WHERE role = 'admin' AND email = 'd4r005@gmail.com';
 
--- 5. Actualizar la función de trigger para nuevos usuarios
--- Esto asegura que los registros nuevos también llenen los campos divididos
+-- 6. Corregir el sistema de registro automático
+-- Esto asegura que los registros nuevos también llenen los campos divididos correctamente
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN
@@ -66,7 +71,9 @@ BEGIN
     auth_id = EXCLUDED.auth_id,
     nombres = EXCLUDED.nombres,
     apellido_paterno = EXCLUDED.apellido_paterno,
-    apellido_materno = EXCLUDED.apellido_materno;
+    apellido_materno = EXCLUDED.apellido_materno,
+    first_name = EXCLUDED.first_name,
+    last_name = EXCLUDED.last_name;
   RETURN new;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
