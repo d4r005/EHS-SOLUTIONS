@@ -260,28 +260,26 @@
         /* Overlays para el DC-3 (QR y Folio) */
         .dc3-qr-overlay {
             position: absolute;
-            bottom: 5.5%;
+            bottom: 6%;
             left: 6%;
-            width: 10%;
+            width: 11%;
             aspect-ratio: 1;
-            background: #000;
+            background: #fff;
             padding: 1px;
             z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #000;
         }
-        .dc3-qr-overlay::after {
-            content: '';
-            display: block;
-            width: 100%; height: 100%;
-            background: white;
-            border: 2px solid #000;
-        }
+        .dc3-qr-overlay i { font-size: 1.2rem; color: #000; }
 
         .dc3-folio-overlay {
             position: absolute;
-            bottom: 3%;
+            bottom: 3.5%;
             left: 6%;
             font-family: monospace;
-            font-size: 0.55rem;
+            font-size: 0.65rem;
             font-weight: bold;
             color: #000;
             line-height: 1;
@@ -483,6 +481,35 @@
         </div>
     </section>
 
+    <!-- ===== Sobre Nosotros ===== -->
+    <section id="nosotros" style="background: var(--white);">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="reveal">
+                    <span class="hero-tag" style="background: var(--green-light); color: var(--green-hover);">Nuestra Empresa</span>
+                    <h2 style="font-size: 2.5rem; font-weight: 900; color: var(--navy); margin-bottom: 20px;">Líderes en Capacitación <span class="accent">EHS</span></h2>
+                    <p style="color: var(--text-muted); margin-bottom: 30px;">Somos un equipo de especialistas dedicados a transformar la cultura de seguridad en las organizaciones. Combinamos experiencia técnica con un enfoque pedagógico moderno para entregar resultados reales.</p>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="cat-card" style="padding: 20px; text-align: left; background: var(--gray-50);">
+                            <i class="fas fa-bullseye" style="color: var(--green); font-size: 1.5rem; margin-bottom: 10px;"></i>
+                            <h4 style="color: var(--navy);">Misión</h4>
+                            <p style="font-size: 0.8rem;">Elevar el estándar de seguridad industrial a través de capacitación técnica de alto impacto.</p>
+                        </div>
+                        <div class="cat-card" style="padding: 20px; text-align: left; background: var(--gray-50);">
+                            <i class="fas fa-eye" style="color: var(--green); font-size: 1.5rem; margin-bottom: 10px;"></i>
+                            <h4 style="color: var(--navy);">Visión</h4>
+                            <p style="font-size: 0.8rem;">Ser la academia referente en México para la certificación de competencias laborales.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=800" alt="Nosotros" style="width: 100%; border-radius: var(--radius-lg); box-shadow: var(--shadow-xl);">
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- ===== Certificaciones Section (Imágenes Reales Ya Desenfocadas) ===== -->
     <section class="certifications" id="certificaciones">
         <div class="container">
@@ -505,7 +532,7 @@
                     <img src="https://tsqlpjliqslgzookdqvg.supabase.co/storage/v1/object/public/thumbnails/ejemplo_dc3.jpg" alt="Ejemplo de Formato DC-3 STPS" class="doc-real-img">
 
                     <!-- Elementos Dinámicos Superpuestos (QR y Folio) -->
-                    <div class="dc3-qr-overlay"></div>
+                    <div class="dc3-qr-overlay"><i class="fas fa-qrcode"></i></div>
                     <div class="dc3-folio-overlay">Folio: EHS-DC3-2026-0001</div>
 
                     <div style="text-align: center; padding: 15px; background: white; border-top: 1px solid #eee; line-height: 1.6;">
@@ -658,8 +685,8 @@
                 <div class="footer-links">
                     <h4>Legal</h4>
                     <ul>
-                        <li><a href="#">Aviso de Privacidad</a></li>
-                        <li><a href="#">Términos y Condiciones</a></li>
+                        <li><a href="javascript:void(0)" onclick="openModal('privacidad')">Aviso de Privacidad</a></li>
+                        <li><a href="javascript:void(0)" onclick="openModal('terminos')">Términos y Condiciones</a></li>
                     </ul>
                 </div>
             </div>
@@ -673,6 +700,35 @@
     <a href="https://wa.me/5218130828355" class="wa-float" target="_blank">
         <i class="fab fa-whatsapp"></i>
     </a>
+
+    <!-- ===== Modales Legales ===== -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <style>
+        /* Modales */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: var(--transition); z-index: 2000;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal-card {
+            background: white; width: 90%; max-width: 600px; padding: 40px;
+            border-radius: var(--radius-lg); position: relative;
+            transform: translateY(20px); transition: var(--transition);
+        }
+        .modal-overlay.active .modal-card { transform: translateY(0); }
+        .modal-close {
+            position: absolute; top: 20px; right: 20px; border: none; background: none;
+            font-size: 2rem; cursor: pointer; color: var(--gray-500);
+        }
+    </style>
 
     <script>
         // Configuración de Supabase
@@ -688,6 +744,43 @@
             const header = document.getElementById('header');
             header.classList.toggle('scrolled', window.scrollY > 50);
         });
+
+        // Modal
+        function openModal(tipo) {
+            const overlay = document.getElementById('modalOverlay');
+            const content = document.getElementById('modalContent');
+            if (tipo === 'privacidad') {
+                content.innerHTML = `
+                    <h2 style="font-size: 1.8rem; color: var(--navy); margin-bottom: 20px;">Aviso de Privacidad</h2>
+                    <div style="font-size: 0.9rem; color: #444; line-height: 1.6; max-height: 400px; overflow-y: auto;">
+                        <p><strong>EHS SOLUTIONS</strong>, con domicilio en El Carmen, Nuevo León, México, es responsable del tratamiento de sus datos personales.</p><br>
+                        <p><strong>Datos que recabamos:</strong> Nombre completo, correo electrónico, teléfono, CURP (para fines de certificación STPS) y datos de facturación.</p><br>
+                        <p><strong>Finalidad:</strong> Proveer los servicios de capacitación solicitados, gestionar sus certificaciones oficiales ante la STPS, y enviarle información relevante sobre su formación académica.</p><br>
+                        <p><strong>Seguridad:</strong> Sus datos están protegidos por medidas de seguridad administrativas y técnicas para evitar su pérdida, uso indebido o acceso no autorizado.</p><br>
+                        <p><strong>Derechos ARCO:</strong> Usted puede ejercer sus derechos de acceso, rectificación, cancelación u oposición enviando un correo a <strong>ehssolutions39@gmail.com</strong>.</p>
+                    </div>
+                `;
+            } else {
+                content.innerHTML = `
+                    <h2 style="font-size: 1.8rem; color: var(--navy); margin-bottom: 20px;">Términos y Condiciones</h2>
+                    <div style="font-size: 0.9rem; color: #444; line-height: 1.6; max-height: 400px; overflow-y: auto;">
+                        <p>Bienvenido a la plataforma de EHS Solutions. Al utilizar nuestros servicios, usted acepta los siguientes términos:</p><br>
+                        <p><strong>1. Uso de la Plataforma:</strong> El acceso a los cursos es personal e intransferible. Queda prohibida la reproducción parcial o total de los materiales sin autorización previa.</p><br>
+                        <p><strong>2. Certificaciones:</strong> La emisión del Formato DC-3 y Diplomas está sujeta a la aprobación de las evaluaciones correspondientes con el puntaje mínimo establecido.</p><br>
+                        <p><strong>3. Pagos y Reembolsos:</strong> Una vez activado el curso en el perfil del usuario, no se realizarán reembolsos, salvo causas imputables directamente a la falla de la plataforma.</p><br>
+                        <p><strong>4. Propiedad Intelectual:</strong> Todos los contenidos, videos y logotipos son propiedad de EHS Solutions o sus licenciantes.</p><br>
+                        <p><strong>5. Modificaciones:</strong> Nos reservamos el derecho de actualizar estos términos en cualquier momento.</p>
+                    </div>
+                `;
+            }
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
 
         // Cargar cursos dinámicos desde Supabase
         async function loadCourses() {

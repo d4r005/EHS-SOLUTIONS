@@ -4,24 +4,25 @@ import { verifyService } from '../services/verifyService';
 
 export const VerifyPage = () => {
   const [searchParams] = useSearchParams();
-  const folio = searchParams.get('f');
+  const folioFromUrl = searchParams.get('f');
+  const [folio, setFolio] = useState(folioFromUrl || '');
   const [cert, setCert] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (folio) {
-      fetchCert();
-    } else {
-      setLoading(false);
-      setError('No se proporcionó un folio de validación.');
+    if (folioFromUrl) {
+      handleVerify(folioFromUrl);
     }
-  }, [folio]);
+  }, [folioFromUrl]);
 
-  const fetchCert = async () => {
+  const handleVerify = async (folioToVerify) => {
+    if (!folioToVerify) return;
     try {
       setLoading(true);
-      const data = await verifyService.getCertificateByFolio(folio);
+      setError(null);
+      setCert(null);
+      const data = await verifyService.getCertificateByFolio(folioToVerify);
       if (data) {
         setCert(data);
       } else {
@@ -35,11 +36,18 @@ export const VerifyPage = () => {
     }
   };
 
+  const onManualSubmit = (e) => {
+    e.preventDefault();
+    if (folio.trim()) {
+      handleVerify(folio.trim());
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin text-4xl mb-4">⌛</div>
+          <div className="animate-spin text-4xl mb-4 text-navy">⌛</div>
           <p className="text-gray-600 font-semibold">Verificando autenticidad...</p>
         </div>
       </div>
@@ -56,16 +64,37 @@ export const VerifyPage = () => {
         </div>
 
         <div className="p-8">
-          {error ? (
-            <div className="text-center space-y-4">
-              <div className="text-red-500 text-5xl">⚠️</div>
-              <h2 className="text-xl font-bold text-gray-800">No se pudo validar</h2>
-              <p className="text-gray-600 text-sm leading-relaxed">{error}</p>
-              <div className="pt-4">
-                <Link to="/" className="text-navy font-semibold hover:underline">Ir al inicio</Link>
+          {!cert && (
+            <form onSubmit={onManualSubmit} className="mb-8 space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Ingresar Folio Manualmente</label>
+                <input
+                  type="text"
+                  value={folio}
+                  onChange={(e) => setFolio(e.target.value)}
+                  placeholder="Ej. EHS-DC3-2026-0001"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-navy focus:border-transparent outline-none transition"
+                />
               </div>
+              <button
+                type="submit"
+                disabled={!folio.trim()}
+                className="w-full bg-green text-white font-bold py-3 rounded-xl hover:bg-green-hover transition shadow-lg disabled:opacity-50"
+              >
+                Validar Documento
+              </button>
+            </form>
+          )}
+
+          {error && (
+            <div className="text-center space-y-4 p-4 bg-red-50 rounded-xl border border-red-100">
+              <div className="text-red-500 text-4xl">⚠️</div>
+              <h2 className="text-lg font-bold text-gray-800">No se pudo validar</h2>
+              <p className="text-gray-600 text-xs leading-relaxed">{error}</p>
             </div>
-          ) : (
+          )}
+
+          {cert && (
             <div className="space-y-6">
               <div className="text-center pb-4 border-b border-gray-100">
                 <div className="text-green-600 text-5xl mb-2">✅</div>
