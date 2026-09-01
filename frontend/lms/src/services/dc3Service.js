@@ -105,22 +105,22 @@ export const dc3Service = {
     if (folio) {
       try {
         const qrUrl = `${window.location.origin}/app/verify?f=${folio}`;
-        const qrDataUrl = await QRCode.toDataURL(qrUrl, { margin: 1, width: 200 });
+        const qrDataUrl = await QRCode.toDataURL(qrUrl, { margin: 1, width: 400, errorCorrectionLevel: 'M', color: { dark: '#000000', light: '#FFFFFFFF' } });
         const qrImage = await pdfDoc.embedPng(qrDataUrl);
 
         // Posicionamiento abajo a la izquierda
         page.drawImage(qrImage, {
-          x: 30,
-          y: 45, // Ajustado para que quepa bien abajo
-          width: 50,
-          height: 50,
+          x: 25,
+          y: 40, // Ajustado para que quepa bien abajo
+          width: 60,
+          height: 60,
         });
 
         // Folio centrado debajo del QR
         const displayFolio = folio.replace('EHS-', 'EHS-DC3-');
         const folioText = `Folio: ${displayFolio}`;
         const folioWidth = font.widthOfTextAtSize(folioText, 7);
-        const qrCenterX = 30 + 25; // x del QR + mitad de su ancho (50)
+        const qrCenterX = 25 + 30; // x del QR + mitad de su ancho (60)
         page.drawText(folioText, {
           x: qrCenterX - (folioWidth / 2),
           y: 35,
