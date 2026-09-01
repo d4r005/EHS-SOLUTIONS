@@ -3,10 +3,10 @@ import { useAuth } from './AuthContext';
 
 // allowedRoles: array opcional. Si se pasa, solo esos roles pueden entrar.
 export const ProtectedRoute = ({ children, allowedRoles }) => {
-  const { isAuthenticated, user, loading } = useAuth();
+  const { isAuthenticated, user, initializing } = useAuth();
 
   // Si está cargando el perfil, no redirigir todavía
-  if (loading) {
+  if (initializing) {
     return null; // El AppContent mostrará el spinner
   }
 

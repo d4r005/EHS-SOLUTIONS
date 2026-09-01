@@ -31,9 +31,9 @@ const PublicRoute = ({ children }) => {
 };
 
 function AppContent() {
-  const { loading } = useAuth();
+  const { initializing } = useAuth();
 
-  if (loading) {
+  if (initializing) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">

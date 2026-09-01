@@ -11,21 +11,30 @@ if (!SUPABASE_KEY) {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [loading, setLoading] = useState(!!localStorage.getItem('token'));
+  // `initializing`: controla el spinner de pantalla completa (App.jsx) y el
+  // gate de ProtectedRoute. Se activa SOLO cuando hay un token que cargar
+  // (al abrir la web, o justo después de un login/registro exitoso, vía el
+  // useEffect de abajo) — nunca directamente dentro de register()/login(),
+  // para no desmontar la página actual (y borrar sus mensajes) mientras
+  // esas peticiones están en curso.
+  const [initializing, setInitializing] = useState(!!localStorage.getItem('token'));
+  // `loading`: solo para los botones de los formularios de login/registro
+  // (disabled + texto "Cargando..."). No afecta el render del resto de la app.
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     if (token) {
       localStorage.setItem('token', token);
+      setInitializing(true);
       fetchProfile();
     } else {
-      setLoading(false);
+      setInitializing(false);
     }
   }, [token]);
 
   const fetchProfile = async () => {
     try {
-      setLoading(true);
       // 1) Obtener datos del JWT (funciona sin tocar tabla users)
       const authRes = await authApi.get('/user');
       const email = authRes.data.email;
@@ -67,7 +76,7 @@ export const AuthProvider = ({ children }) => {
             });
             localStorage.setItem('userId', String(dbId));
             setError(null);
-            setLoading(false);
+            setInitializing(false);
             return; // Salir aquí ya que actualizamos todo
           }
         }
@@ -93,7 +102,7 @@ export const AuthProvider = ({ children }) => {
         logout();
       }
     } finally {
-      setLoading(false);
+      setInitializing(false);
     }
   };
 
@@ -127,20 +136,27 @@ export const AuthProvider = ({ children }) => {
         }
       );
 
+      setLoading(false);
+
       if (!signupRes.data.access_token) {
         const msg = 'Registro exitoso. Revisa tu correo para confirmar tu cuenta antes de iniciar sesión.';
         setError(msg);
-        setLoading(false);
         return { success: false, needsConfirmation: true, message: msg };
       }
 
+      // Hay sesión inmediata (confirmación de correo desactivada en Supabase):
+      // esto dispara el useEffect de arriba -> fetchProfile() -> initializing.
       localStorage.setItem('token', signupRes.data.access_token);
       localStorage.setItem('refreshToken', signupRes.data.refresh_token);
       setToken(signupRes.data.access_token);
       return { success: true };
     } catch (err) {
       console.error('Error en registro:', err);
-      const msg = err.response?.data?.msg || err.response?.data?.message || err.message;
+      let msg = err.response?.data?.msg || err.response?.data?.message || err.message;
+      // Mensaje más claro para el caso de rate-limit de emails de Supabase
+      if (err.response?.data?.error_code === 'over_email_send_rate_limit') {
+        msg = 'Se alcanzó el límite de correos de confirmación por ahora. Espera unos minutos e intenta de nuevo.';
+      }
       setError(msg || 'Error al registrarse');
       setLoading(false);
       return { success: false, needsConfirmation: false, message: msg || 'Error al registrarse' };
@@ -156,8 +172,10 @@ export const AuthProvider = ({ children }) => {
 
       const loginRes = await authApi.post('/token?grant_type=password', { email, password });
 
+      setLoading(false);
       localStorage.setItem('token', loginRes.data.access_token);
       localStorage.setItem('refreshToken', loginRes.data.refresh_token);
+      // Dispara el useEffect -> fetchProfile() -> initializing.
       setToken(loginRes.data.access_token);
       return true;
     } catch (err) {
@@ -177,7 +195,7 @@ export const AuthProvider = ({ children }) => {
 
   // Se usa cuando el usuario vuelve del enlace de confirmación de correo de
   // Supabase (ver AuthCallbackPage). Guarda los tokens recibidos en el hash
-  // de la URL y dispara la carga del perfil.
+  // de la URL y dispara la carga del perfil (vía el useEffect de arriba).
   const confirmSession = (accessToken, refreshToken) => {
     localStorage.setItem('token', accessToken);
     if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
@@ -188,6 +206,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     token,
+    initializing,
     loading,
     error,
     register,
