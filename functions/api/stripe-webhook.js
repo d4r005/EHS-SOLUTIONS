@@ -14,8 +14,13 @@
 //   STRIPE_WEBHOOK_SECRET — signing secret del webhook (whsec_...)
 // ============================================
 
-const OK = new Response('ok', { status: 200, headers: { 'Content-Type': 'text/plain' } });
-const ERROR = new Response('error', { status: 500, headers: { 'Content-Type': 'text/plain' } });
+function ok() {
+  return new Response('ok', { status: 200, headers: { 'Content-Type': 'text/plain' } });
+}
+
+function error() {
+  return new Response('error', { status: 500, headers: { 'Content-Type': 'text/plain' } });
+}
 
 /**
  * Verifica la firma del webhook de Stripe usando HMAC-SHA256.
@@ -72,14 +77,14 @@ export async function onRequestPost({ request, env }) {
 
     // Solo nos interesa checkout.session.completed (pago exitoso)
     if (event.type !== 'checkout.session.completed') {
-      return OK;
+      return ok();
     }
 
     const session = event.data?.object;
-    if (!session) return OK;
+    if (!session) return ok();
 
     // Si el pago no fue exitoso, ignorar
-    if (session.payment_status !== 'paid') return OK;
+    if (session.payment_status !== 'paid') return ok();
 
     const courseId = parseInt(session.metadata?.course_id);
     const studentId = parseInt(session.metadata?.student_id);
@@ -89,7 +94,7 @@ export async function onRequestPost({ request, env }) {
 
     if (!courseId || !studentId) {
       console.error('Metadata incompleta en session de Stripe:', session.id);
-      return OK;
+      return ok();
     }
 
     const SUPABASE_URL = env.SUPABASE_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co';
@@ -131,14 +136,14 @@ export async function onRequestPost({ request, env }) {
       });
     }
 
-    return OK;
+    return ok();
   } catch (err) {
     console.error('Stripe webhook error:', err);
-    return ERROR;
+    return error();
   }
 }
 
-// Stripe también envía GET偶尔, respondemos ok para que no falle
+// Stripe también puede enviar GET ocasionalmente
 export async function onRequestGet() {
-  return OK;
+  return ok();
 }
