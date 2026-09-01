@@ -14,12 +14,13 @@
 //   STRIPE_WEBHOOK_SECRET — signing secret del webhook (whsec_...)
 // ============================================
 
-function ok() {
-  return new Response('ok', { status: 200, headers: { 'Content-Type': 'text/plain' } });
+function ok(body = 'ok') {
+  return new Response(body, { status: 200, headers: { 'Content-Type': 'text/plain' } });
 }
 
-function error() {
-  return new Response('error', { status: 500, headers: { 'Content-Type': 'text/plain' } });
+function error(msg = 'error') {
+  console.error('[stripe-webhook] ERROR:', msg);
+  return new Response(msg, { status: 500, headers: { 'Content-Type': 'text/plain' } });
 }
 
 /**
@@ -69,11 +70,15 @@ export async function onRequestPost({ request, env }) {
     if (webhookSecret) {
       const valid = await verifyStripeSignature(request, rawBody, webhookSecret);
       if (!valid) {
+        console.error('[stripe-webhook] Firma invalida');
         return new Response('invalid signature', { status: 403 });
       }
+    } else {
+      console.error('[stripe-webhook] ADVERTENCIA: STRIPE_WEBHOOK_SECRET no configurado, saltando verificacion de firma');
     }
 
     const event = JSON.parse(rawBody);
+    console.log('[stripe-webhook] Evento recibido:', event.type, event.id);
 
     // Solo nos interesa checkout.session.completed (pago exitoso)
     if (event.type !== 'checkout.session.completed') {
@@ -81,10 +86,16 @@ export async function onRequestPost({ request, env }) {
     }
 
     const session = event.data?.object;
-    if (!session) return ok();
+    if (!session) {
+      console.error('[stripe-webhook] Evento sin session object');
+      return ok();
+    }
 
     // Si el pago no fue exitoso, ignorar
-    if (session.payment_status !== 'paid') return ok();
+    if (session.payment_status !== 'paid') {
+      console.log('[stripe-webhook] payment_status no es paid:', session.payment_status);
+      return ok();
+    }
 
     const courseId = parseInt(session.metadata?.course_id);
     const studentId = parseInt(session.metadata?.student_id);
@@ -92,54 +103,73 @@ export async function onRequestPost({ request, env }) {
     const paymentIntent = session.payment_intent || '';
     const amountTotal = session.amount_total ? session.amount_total / 100 : 0;
 
+    console.log('[stripe-webhook] metadata:', JSON.stringify(session.metadata));
+
     if (!courseId || !studentId) {
-      console.error('Metadata incompleta en session de Stripe:', session.id);
-      return ok();
+      console.error('[stripe-webhook] Metadata incompleta en session:', session.id, JSON.stringify(session.metadata));
+      return error('metadata incompleta: course_id o student_id faltante/invalido');
     }
 
     const SUPABASE_URL = env.SUPABASE_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co';
     const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY;
 
-    if (serviceKey) {
-      const headers = {
-        apikey: serviceKey,
-        Authorization: `Bearer ${serviceKey}`,
-        'Content-Type': 'application/json',
-      };
-
-      // Crear inscripción (idempotente por UNIQUE(student_id, course_id))
-      await fetch(`${SUPABASE_URL}/rest/v1/enrollments`, {
-        method: 'POST',
-        headers: { ...headers, Prefer: 'resolution=ignore-duplicates' },
-        body: JSON.stringify({
-          student_id: studentId,
-          course_id: courseId,
-          status: 'enrolled',
-          progress_percentage: 0,
-        }),
-      });
-
-      // Registrar la orden de pago
-      await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
-        method: 'POST',
-        headers: { ...headers, Prefer: 'resolution=ignore-duplicates' },
-        body: JSON.stringify({
-          student_id: studentId,
-          course_id: courseId,
-          stripe_payment_intent: String(paymentIntent),
-          stripe_session_id: String(session.id),
-          amount: amountTotal,
-          currency: 'MXN',
-          status: 'paid',
-          payer_email: studentEmail,
-        }),
-      });
+    if (!serviceKey) {
+      console.error('[stripe-webhook] Falta SUPABASE_SERVICE_ROLE_KEY');
+      return error('falta SUPABASE_SERVICE_ROLE_KEY en el servidor');
     }
+
+    const headers = {
+      apikey: serviceKey,
+      Authorization: `Bearer ${serviceKey}`,
+      'Content-Type': 'application/json',
+    };
+
+    // Crear inscripción (idempotente por UNIQUE(student_id, course_id))
+    const enrollRes = await fetch(`${SUPABASE_URL}/rest/v1/enrollments`, {
+      method: 'POST',
+      headers: { ...headers, Prefer: 'resolution=ignore-duplicates,return=representation' },
+      body: JSON.stringify({
+        student_id: studentId,
+        course_id: courseId,
+        status: 'enrolled',
+        progress_percentage: 0,
+      }),
+    });
+
+    if (!enrollRes.ok) {
+      const errBody = await enrollRes.text().catch(() => 'sin detalles');
+      console.error('[stripe-webhook] Error creando enrollment:', enrollRes.status, errBody);
+      return error(`fallo al crear enrollment (${enrollRes.status}): ${errBody}`);
+    }
+    console.log('[stripe-webhook] Enrollment creado/existente OK');
+
+    // Registrar la orden de pago
+    const orderRes = await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
+      method: 'POST',
+      headers: { ...headers, Prefer: 'resolution=ignore-duplicates,return=representation' },
+      body: JSON.stringify({
+        student_id: studentId,
+        course_id: courseId,
+        stripe_payment_intent: String(paymentIntent),
+        stripe_session_id: String(session.id),
+        amount: amountTotal,
+        currency: 'MXN',
+        status: 'paid',
+        payer_email: studentEmail,
+      }),
+    });
+
+    if (!orderRes.ok) {
+      const errBody = await orderRes.text().catch(() => 'sin detalles');
+      console.error('[stripe-webhook] Error creando order:', orderRes.status, errBody);
+      return error(`fallo al crear order (${orderRes.status}): ${errBody}`);
+    }
+    console.log('[stripe-webhook] Order creada OK');
 
     return ok();
   } catch (err) {
-    console.error('Stripe webhook error:', err);
-    return error();
+    console.error('[stripe-webhook] Excepcion:', err.message, err.stack);
+    return error(err.message || 'error inesperado');
   }
 }
 
