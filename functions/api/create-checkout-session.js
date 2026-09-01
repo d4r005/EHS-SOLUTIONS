@@ -21,14 +21,24 @@ export async function onRequestPost({ request, env }) {
     const SUPABASE_URL = env.SUPABASE_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co';
     const SUPABASE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 
+    if (!SUPABASE_KEY) {
+      return json({ message: 'Configuración incompleta: falta SUPABASE_SERVICE_ROLE_KEY en el servidor' }, 500);
+    }
+
     // Obtener el curso desde Supabase (nunca confiar en un precio enviado por el cliente)
     const courseRes = await fetch(
       `${SUPABASE_URL}/rest/v1/courses?id=eq.${course_id}&is_published=eq.true&select=id,title,price`,
       { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } }
     );
+
+    if (!courseRes.ok) {
+      const errBody = await courseRes.text().catch(() => 'sin detalles');
+      return json({ message: `Error al consultar el curso (${courseRes.status}): ${errBody}` }, 500);
+    }
+
     const courses = await courseRes.json();
     const course = courses[0];
-    if (!course) return json({ message: 'Curso no encontrado' }, 404);
+    if (!course) return json({ message: 'Curso no encontrado o no publicado' }, 404);
     if (!course.price || course.price <= 0) return json({ message: 'Este curso es gratuito, inscríbete directamente' }, 400);
 
     const origin = new URL(request.url).origin;
@@ -74,7 +84,12 @@ export async function onRequestPost({ request, env }) {
 
     const mpData = await mpRes.json();
     if (!mpRes.ok) {
-      return json({ message: mpData.message || 'Error al crear la preferencia de pago' }, 500);
+      // MercadoPago devuelve detalles en cause[] o message
+      const cause = mpData.cause?.map(c => c.description).join('; ') || '';
+      return json({
+        message: mpData.message || 'Error al crear la preferencia de pago',
+        cause: cause || undefined,
+      }, 500);
     }
 
     // Forzar el uso del punto de inicio de sandbox si el token empieza con TEST-
