@@ -123,21 +123,22 @@ export const AuthProvider = ({ children }) => {
       );
 
       if (!signupRes.data.access_token) {
-        setError('Registro exitoso. Revisa tu correo para confirmar tu cuenta antes de iniciar sesión.');
+        const msg = 'Registro exitoso. Revisa tu correo para confirmar tu cuenta antes de iniciar sesión.';
+        setError(msg);
         setLoading(false);
-        return false;
+        return { success: false, needsConfirmation: true, message: msg };
       }
 
       localStorage.setItem('token', signupRes.data.access_token);
       localStorage.setItem('refreshToken', signupRes.data.refresh_token);
       setToken(signupRes.data.access_token);
-      return true;
+      return { success: true };
     } catch (err) {
       console.error('Error en registro:', err);
       const msg = err.response?.data?.msg || err.response?.data?.message || err.message;
       setError(msg || 'Error al registrarse');
       setLoading(false);
-      return false;
+      return { success: false, needsConfirmation: false, message: msg || 'Error al registrarse' };
     }
   };
 

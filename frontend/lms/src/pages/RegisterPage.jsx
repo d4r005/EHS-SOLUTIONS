@@ -15,7 +15,7 @@ export const RegisterPage = () => {
   const [formError, setFormError] = useState('');
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [successEmail, setSuccessEmail] = useState('');
-  const { register, loading, error } = useAuth();
+  const { register, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -44,7 +44,7 @@ export const RegisterPage = () => {
       return;
     }
 
-    const success = await register(
+    const result = await register(
       formData.nombres,
       formData.apellidoPaterno,
       formData.apellidoMaterno,
@@ -52,18 +52,15 @@ export const RegisterPage = () => {
       formData.password
     );
 
-    if (success) {
+    if (result.success) {
       emailService.sendWelcomeEmail(formData.email, formData.nombres);
       navigate('/dashboard');
+    } else if (result.needsConfirmation) {
+      // Cuenta creada pero requiere confirmar el correo antes de iniciar sesión
+      setRegistrationSuccess(true);
+      setSuccessEmail(formData.email);
     } else {
-      // Si register devuelve false pero el mensaje de error indica éxito (confirmación por email),
-      // mostrar como mensaje de éxito verde, no como error rojo
-      if (error && error.includes('Registro exitoso')) {
-        setRegistrationSuccess(true);
-        setSuccessEmail(formData.email);
-      } else if (error) {
-        setFormError(error);
-      }
+      setFormError(result.message || 'Error al registrarse');
     }
   };
 
@@ -198,9 +195,9 @@ export const RegisterPage = () => {
               </div>
 
               {/* Errors */}
-              {(error || formError) && (
+              {formError && (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                  {formError || (error && !error.includes('Registro exitoso') ? error : '')}
+                  {formError}
                 </div>
               )}
 
