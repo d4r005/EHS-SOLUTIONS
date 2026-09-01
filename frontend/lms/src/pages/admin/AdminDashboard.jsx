@@ -14,6 +14,7 @@ export const AdminDashboard = () => {
 
   // Estado para gestión de inscripciones
   const [enrollments, setEnrollments] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [studentEnrollments, setStudentEnrollments] = useState([]);
   const [grantCourseId, setGrantCourseId] = useState('');
@@ -40,18 +41,20 @@ export const AdminDashboard = () => {
   const fetchAll = async () => {
     try {
       setLoading(true);
-      const [u, c, r, certs, enr] = await Promise.all([
+      const [u, c, r, certs, enr, ords] = await Promise.all([
         adminService.getUsers(),
         adminService.getAllCourses(),
         adminService.getReports(),
         adminService.getAllCertificates(),
         adminService.getAllEnrollments(),
+        adminService.getAllOrders(),
       ]);
       setUsers(u);
       setCourses(c);
       setReports(r);
       setCertificates(certs);
       setEnrollments(enr);
+      setOrders(ords);
     } catch (err) {
       console.error(err);
     } finally {
@@ -213,6 +216,7 @@ export const AdminDashboard = () => {
     { id: 'reports', label: 'Reportes' },
     { id: 'users', label: 'Usuarios' },
     { id: 'enrollments', label: 'Inscripciones' },
+    { id: 'orders', label: '💰 Pagos' },
     { id: 'courses', label: 'Cursos' },
     { id: 'certificates', label: 'Certificados' },
     { id: 'lab', label: '🧪 Laboratorio' },
@@ -254,6 +258,8 @@ export const AdminDashboard = () => {
                 <StatBox label="Cursos completados" value={reports.completedEnrollments} icon="✅" />
                 <StatBox label="Certificados emitidos" value={reports.totalCertificates} icon="🏆" />
                 <StatBox label="Cursos de paga" value={reports.paidCourses} icon="💰" />
+                <StatBox label="Órdenes totales" value={reports.totalOrders} icon="🧾" />
+                <StatBox label="Ingresos (MXN)" value={`$${reports.totalRevenue?.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`} icon="💵" />
               </div>
             )}
 
@@ -434,6 +440,51 @@ export const AdminDashboard = () => {
                     </tbody>
                   </table>
                 </div>
+              </div>
+            )}
+
+            {tab === 'orders' && (
+              <div className="bg-white rounded-xl shadow-md overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 text-left text-gray-500">
+                    <tr>
+                      <th className="px-4 py-3">Estudiante</th>
+                      <th className="px-4 py-3">Curso</th>
+                      <th className="px-4 py-3">Monto</th>
+                      <th className="px-4 py-3">Estado</th>
+                      <th className="px-4 py-3">Pago ID</th>
+                      <th className="px-4 py-3">Fecha</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {orders.map((o) => (
+                      <tr key={o.id}>
+                        <td className="px-4 py-3">
+                          <div className="font-semibold text-navy">
+                            {o.student?.nombres || o.student?.first_name} {o.student?.apellido_paterno || o.student?.last_name}
+                          </div>
+                          <div className="text-xs text-gray-400">{o.student?.email}</div>
+                        </td>
+                        <td className="px-4 py-3 text-gray-600">{o.course?.title || `Curso #${o.course_id}`}</td>
+                        <td className="px-4 py-3 font-semibold text-navy">${o.amount?.toLocaleString('es-MX', { minimumFractionDigits: 2 })} {o.currency}</td>
+                        <td className="px-4 py-3">
+                          <span className={o.status === 'paid' ? 'text-green-600 font-semibold' : 'text-yellow-600'}>
+                            {o.status === 'paid' ? '✅ Pagado' : '⏳ ' + o.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-xs font-mono text-gray-500">{o.stripe_payment_id || '—'}</td>
+                        <td className="px-4 py-3 text-gray-600">{new Date(o.created_at).toLocaleDateString('es-MX')}</td>
+                      </tr>
+                    ))}
+                    {!orders.length && (
+                      <tr>
+                        <td colSpan="6" className="px-4 py-8 text-center text-gray-500 italic">
+                          No hay órdenes registradas todavía.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             )}
 

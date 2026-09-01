@@ -82,13 +82,22 @@ export const adminService = {
     return data;
   },
 
+  // --- Órdenes / Pagos ---
+  getAllOrders: async () => {
+    const { data } = await rest.get(
+      '/orders?select=*,student:users!student_id(first_name,last_name,nombres,apellido_paterno,apellido_materno,email),course:courses(id,title)&order=created_at.desc'
+    );
+    return data;
+  },
+
   // --- Reportes básicos ---
   getReports: async () => {
-    const [{ data: users }, { data: courses }, { data: enrollments }, { data: certificates }] = await Promise.all([
+    const [{ data: users }, { data: courses }, { data: enrollments }, { data: certificates }, { data: orders }] = await Promise.all([
       rest.get('/users?select=id,role'),
       rest.get('/courses?select=id,is_published,price'),
       rest.get('/enrollments?select=id,status,progress_percentage'),
       rest.get('/certificates?select=id'),
+      rest.get('/orders?select=id,amount,status'),
     ]);
 
     return {
@@ -100,6 +109,8 @@ export const adminService = {
       completedEnrollments: enrollments.filter((e) => e.status === 'completed').length,
       totalCertificates: certificates.length,
       paidCourses: courses.filter((c) => c.price > 0).length,
+      totalOrders: orders.length,
+      totalRevenue: orders.filter((o) => o.status === 'paid').reduce((s, o) => s + parseFloat(o.amount || 0), 0),
     };
   },
 };
