@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export const LoginPage = () => {
@@ -7,6 +7,8 @@ export const LoginPage = () => {
   const [password, setPassword] = useState('');
   const { login, loading, error } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const emailConfirmed = location.state?.emailConfirmed;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,6 +31,15 @@ export const LoginPage = () => {
             <h1 className="text-3xl font-bold text-navy mb-2">EHS Solutions</h1>
             <p className="text-gray-600">Plataforma de Capacitación en Línea</p>
           </div>
+
+          {/* Email confirmed banner */}
+          {emailConfirmed && (
+            <div className="mb-5 bg-green-50 border border-green-300 rounded-xl p-4 text-center">
+              <div className="text-3xl mb-1">✅</div>
+              <p className="text-green-800 font-bold text-sm">¡Correo confirmado!</p>
+              <p className="text-green-700 text-xs mt-1">Tu cuenta ya está activa. Inicia sesión para continuar.</p>
+            </div>
+          )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">

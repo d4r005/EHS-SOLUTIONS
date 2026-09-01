@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { authApi } from '../services/api';
 
 // Página a la que Supabase redirige tras confirmar el correo (ver
 // AuthContext.register -> redirect_to). Supabase entrega los tokens de
 // sesión en el fragmento (#) de la URL: #access_token=...&type=signup
+// Algunas configs de Supabase solo redirigen sin tokens (confirmación ya
+// procesada en el servidor), en cuyo caso intentamos obtener la sesión.
 export const AuthCallbackPage = () => {
-  const { confirmSession } = useAuth();
+  const { confirmSession, user } = useAuth();
   const navigate = useNavigate();
   const [status, setStatus] = useState('loading'); // loading | success | error
   const ran = useRef(false);
@@ -23,14 +26,16 @@ export const AuthCallbackPage = () => {
     const accessToken = params.get('access_token');
     const refreshToken = params.get('refresh_token');
     const type = params.get('type');
-    const errorDescription = params.get('error_description');
+    const errorDescription = params.get('error_description') || params.get('error');
 
     if (errorDescription) {
+      console.error('Auth callback error:', errorDescription);
       setStatus('error');
       return;
     }
 
-    if (accessToken && (type === 'signup' || type === 'invite' || !type)) {
+    // Caso 1: Supabase entregó tokens en la URL (hash o query)
+    if (accessToken) {
       confirmSession(accessToken, refreshToken);
       setStatus('success');
       const timer = setTimeout(() => {
@@ -39,7 +44,36 @@ export const AuthCallbackPage = () => {
       return () => clearTimeout(timer);
     }
 
-    setStatus('error');
+    // Caso 2: No hay tokens en la URL — Supabase puede haber confirmado
+    // sin devolver sesión (cuando "Confirm email" está activo pero la
+    // redirección no incluye tokens). Intentamos ver si ya hay sesión.
+    const checkExistingSession = async () => {
+      try {
+        const existingToken = localStorage.getItem('token');
+        if (existingToken) {
+          // Ya hay sesión — probablemente ya estaba logueado
+          setStatus('success');
+          const timer = setTimeout(() => {
+            navigate('/dashboard', { replace: true, state: { justConfirmed: true } });
+          }, 1800);
+          return () => clearTimeout(timer);
+        }
+
+        // No hay sesión ni tokens — la confirmación se procesó pero
+        // no se devolvió sesión automática. Mostrar éxito e indicar
+        // que debe iniciar sesión.
+        setStatus('success');
+        const timer = setTimeout(() => {
+          navigate('/login', { replace: true, state: { emailConfirmed: true } });
+        }, 1800);
+        return () => clearTimeout(timer);
+      } catch (e) {
+        console.error('Error checking session in callback:', e);
+        setStatus('error');
+      }
+    };
+
+    checkExistingSession();
   }, []);
 
   return (

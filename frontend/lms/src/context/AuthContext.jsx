@@ -104,7 +104,9 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
 
-      // redirect_to: a donde Supabase manda al usuario tras confirmar su correo
+      // redirect_to: a donde Supabase manda al usuario tras confirmar su correo.
+      // Se envia tanto como query param como en el body, porque distintas
+      // versiones de GoTrue lo leen de distintos lugares.
       const emailRedirectTo = `${window.location.origin}/app/auth/callback`;
       const signupRes = await authApi.post(
         `/signup?redirect_to=${encodeURIComponent(emailRedirectTo)}`,
@@ -118,6 +120,9 @@ export const AuthProvider = ({ children }) => {
             apellido_paterno: apellidoPaterno,
             apellido_materno: apellidoMaterno,
             role: 'student'
+          },
+          options: {
+            emailRedirectTo: emailRedirectTo,
           }
         }
       );
