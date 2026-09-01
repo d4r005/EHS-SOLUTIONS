@@ -11,15 +11,14 @@
 // Evento: payment
 // ============================================
 
+const OK = new Response('ok', { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+const ERROR = new Response('error', { status: 500, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+
 async function processPayment(paymentId, env) {
-  if (!paymentId) {
-    return new Response('ok', { status: 200 });
-  }
+  if (!paymentId) return OK;
 
   const MP_TOKEN = env.MERCADOPAGO_ACCESS_TOKEN;
-  if (!MP_TOKEN) {
-    return new Response('Falta MERCADOPAGO_ACCESS_TOKEN', { status: 500 });
-  }
+  if (!MP_TOKEN) return ERROR;
 
   // Obtener los detalles del pago desde la API de MercadoPago
   const payRes = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
@@ -28,24 +27,19 @@ async function processPayment(paymentId, env) {
 
   if (!payRes.ok) {
     // El id puede ser ficticio (pruebas de MP tipo id=123456) -> respondemos ok
-    // para que MercadoPago valide la URL sin marcarla como error.
-    return new Response('ok', { status: 200 });
+    return OK;
   }
 
   const payment = await payRes.json();
 
   // Solo procesar pagos aprobados
-  if (payment.status !== 'approved') {
-    return new Response('ok', { status: 200 });
-  }
+  if (payment.status !== 'approved') return OK;
 
   const courseId = parseInt(payment.metadata?.course_id);
   const studentId = parseInt(payment.metadata?.student_id);
   const studentEmail = payment.metadata?.student_email || payment.payer?.email;
 
-  if (!courseId || !studentId) {
-    return new Response('ok', { status: 200 });
-  }
+  if (!courseId || !studentId) return OK;
 
   const SUPABASE_URL = env.SUPABASE_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co';
   const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY;
@@ -89,11 +83,10 @@ async function processPayment(paymentId, env) {
     });
   }
 
-  return new Response('ok', { status: 200 });
+  return OK;
 }
 
 // IPN "legacy": MercadoPago manda GET con ?topic=payment&id=123
-// (también usa ?topic=merchant_order, que ignoramos).
 export async function onRequestGet({ request, env }) {
   try {
     const url = new URL(request.url);
@@ -101,16 +94,14 @@ export async function onRequestGet({ request, env }) {
     const id = url.searchParams.get('id') || url.searchParams.get('data.id');
 
     if (topic !== 'payment' || !id) {
-      // Responder 200 para cualquier otro topic (merchant_order, etc.)
-      // o para el test de validación de URL de MercadoPago.
-      return new Response('ok', { status: 200 });
+      // Responder 200 para cualquier otro topic o para el test de validación de URL.
+      return OK;
     }
 
     return await processPayment(id, env);
   } catch (err) {
     console.error('MercadoPago webhook (GET) error:', err);
-    // Nunca devolver error al validador de URL de MercadoPago.
-    return new Response('ok', { status: 200 });
+    return OK; // Nunca devolver error al validador de URL de MercadoPago.
   }
 }
 
@@ -120,12 +111,12 @@ export async function onRequestPost({ request, env }) {
     const body = await request.json().catch(() => null);
 
     if (!body || body.type !== 'payment' || !body.data?.id) {
-      return new Response('ok', { status: 200 });
+      return OK;
     }
 
     return await processPayment(body.data.id, env);
   } catch (err) {
     console.error('MercadoPago webhook (POST) error:', err);
-    return new Response('ok', { status: 200 });
+    return OK;
   }
 }
