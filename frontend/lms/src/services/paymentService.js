@@ -1,7 +1,7 @@
 // ============================================
-// EHS Solutions - Checkout con MercadoPago
+// EHS Solutions - Checkout con Stripe
 // Llama a la Cloudflare Pages Function /api/create-checkout-session
-// que crea la preferencia de pago en el servidor (el ACCESS_TOKEN
+// que crea la Stripe Checkout Session en el servidor (el SECRET_KEY
 // nunca se expone en el navegador)
 // ============================================
 
@@ -24,7 +24,7 @@ export const paymentService = {
 
     const data = await res.json();
     if (data.url) {
-      window.location.href = data.url; // redirige a MercadoPago
+      window.location.href = data.url; // redirige a Stripe Checkout
     } else {
       throw { message: 'Respuesta de pago inválida' };
     }

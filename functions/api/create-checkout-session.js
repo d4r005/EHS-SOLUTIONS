@@ -1,8 +1,8 @@
 // ============================================
 // Cloudflare Pages Function
 // POST /api/create-checkout-session
-// Crea una preferencia de pago en MercadoPago.
-// El ACCESS_TOKEN vive solo en el servidor (variable de entorno).
+// Crea una Stripe Checkout Session para comprar un curso.
+// El STRIPE_SECRET_KEY vive solo en el servidor (variable de entorno).
 // ============================================
 
 export async function onRequestPost({ request, env }) {
@@ -13,9 +13,9 @@ export async function onRequestPost({ request, env }) {
       return json({ message: 'course_id, student_id y student_email son requeridos' }, 400);
     }
 
-    const MP_TOKEN = env.MERCADOPAGO_ACCESS_TOKEN;
-    if (!MP_TOKEN) {
-      return json({ message: 'Pagos no configurados: falta MERCADOPAGO_ACCESS_TOKEN en el servidor' }, 500);
+    const STRIPE_SECRET = env.STRIPE_SECRET_KEY;
+    if (!STRIPE_SECRET) {
+      return json({ message: 'Pagos no configurados: falta STRIPE_SECRET_KEY en el servidor' }, 500);
     }
 
     const SUPABASE_URL = env.SUPABASE_URL || 'https://tsqlpjliqslgzookdqvg.supabase.co';
@@ -43,61 +43,59 @@ export async function onRequestPost({ request, env }) {
 
     const origin = new URL(request.url).origin;
 
-    // Crear preferencia en MercadoPago
-    const preference = {
-      items: [
-        {
-          id: String(course.id),
-          title: course.title,
-          description: `Curso: ${course.title}`,
-          quantity: 1,
-          currency_id: 'MXN',
-          unit_price: parseFloat(course.price),
-        },
-      ],
-      payer: {
-        email: student_email,
-      },
-      back_urls: {
-        success: `${origin}/app/courses/${course_id}?payment=success`,
-        pending: `${origin}/app/courses/${course_id}?payment=pending`,
-        failure: `${origin}/app/courses/${course_id}?payment=failure`,
-      },
-      auto_return: 'approved',
-      notification_url: `${origin}/api/mercadopago-webhook`,
-      metadata: {
-        course_id: String(course_id),
-        student_id: String(student_id),
-        student_email,
-      },
-      statement_descriptor: 'EHS SOLUTIONS',
-    };
+    // Crear Stripe Checkout Session
+    // Usamos la API de Stripe directamente (sin SDK, porque Cloudflare Pages
+    // no soporta el SDK de Stripe que depende de Node streams)
+    const stripePayload = new URLSearchParams();
+    stripePayload.append('mode', 'payment');
+    stripePayload.append('payment_method_types[]', 'card');
+    stripePayload.append('payment_method_types[]', 'oxxo'); // OXXO es popular en México (pagos en efectivo)
+    stripePayload.append('customer_email', student_email);
+    stripePayload.append(
+      'line_items[0][price_data][currency]',
+      'mxn'
+    );
+    stripePayload.append(
+      'line_items[0][price_data][unit_amount]',
+      String(Math.round(parseFloat(course.price) * 100)) // Stripe usa centavos
+    );
+    stripePayload.append(
+      'line_items[0][price_data][product_data][name]',
+      course.title
+    );
+    stripePayload.append(
+      'line_items[0][price_data][product_data][description]',
+      `Curso: ${course.title}`
+    );
+    stripePayload.append('line_items[0][quantity]', '1');
 
-    const mpRes = await fetch('https://api.mercadopago.com/checkout/preferences', {
+    // URLs de retorno
+    stripePayload.append('success_url', `${origin}/app/courses/${course_id}?payment=success`);
+    stripePayload.append('cancel_url', `${origin}/app/courses/${course_id}?payment=cancelled`);
+
+    // Metadata para que el webhook sepa a quién inscribir
+    stripePayload.append('metadata[course_id]', String(course_id));
+    stripePayload.append('metadata[student_id]', String(student_id));
+    stripePayload.append('metadata[student_email]', student_email);
+
+    const stripeRes = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${MP_TOKEN}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${STRIPE_SECRET}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: JSON.stringify(preference),
+      body: stripePayload.toString(),
     });
 
-    const mpData = await mpRes.json();
-    if (!mpRes.ok) {
-      // MercadoPago devuelve detalles en cause[] o message
-      const cause = mpData.cause?.map(c => c.description).join('; ') || '';
+    const stripeData = await stripeRes.json();
+    if (!stripeRes.ok) {
       return json({
-        message: mpData.message || 'Error al crear la preferencia de pago',
-        cause: cause || undefined,
+        message: stripeData.error?.message || 'Error al crear la sesión de pago en Stripe',
       }, 500);
     }
 
-    // Forzar el uso del punto de inicio de sandbox si el token empieza con TEST-
-    const checkoutUrl = MP_TOKEN.startsWith('TEST-')
-      ? mpData.sandbox_init_point
-      : (mpData.init_point || mpData.sandbox_init_point);
-
-    return json({ url: checkoutUrl, preference_id: mpData.id });
+    // url = URL de Checkout hosted (Stripe-hosted page)
+    return json({ url: stripeData.url, session_id: stripeData.id });
   } catch (err) {
     return json({ message: err.message || 'Error inesperado' }, 500);
   }

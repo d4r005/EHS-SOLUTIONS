@@ -34,21 +34,25 @@ En **Settings → Builds & deployments** de tu proyecto (`ehs-solutions`):
 | Variable | Descripción |
 |---|---|
 | `SUPABASE_SERVICE_ROLE_KEY` | Service Role key de Supabase (Dashboard → Settings → API → service_role). La usa el webhook para crear inscripciones automáticamente. |
-| `MERCADOPAGO_ACCESS_TOKEN` | Token de acceso de MercadoPago (https://www.mercadopago.com.mx/developers/panel/app → Credenciales → Access Token) |
+| `STRIPE_SECRET_KEY` | Secret key de Stripe (https://dashboard.stripe.com/apikeys → Secret key). Usa `sk_test_...` para pruebas. |
+| `STRIPE_WEBHOOK_SECRET` | Signing secret del webhook de Stripe (whsec_...). Se obtiene al crear el webhook en Stripe Dashboard. |
 | `RESEND_API_KEY` | API key de Resend (https://resend.com/api-keys) |
 | `RESEND_FROM_EMAIL` | Email remitente, ej: `EHS Solutions <cursos@ehs-solutions.com>` (debe ser un dominio verificado en Resend, o usa `onboarding@resend.dev` para pruebas) |
 
 ---
 
-## Configuración en MercadoPago
+## Configuración en Stripe
 
-1. Entra a https://www.mercadopago.com.mx/developers/panel/app
-2. Crea una aplicación (si no existe)
-3. Copia el **Access Token** y guárdalo como `MERCADOPAGO_ACCESS_TOKEN` en Cloudflare
-4. Ve a **Notificaciones/Webhooks** de tu aplicación
-   - URL: `https://tu-dominio.pages.dev/api/mercadopago-webhook`
-   - Evento: `payment`
-5. Para pruebas usa las credenciales de prueba (sandbox)
+1. Entra a https://dashboard.stripe.com (usa cuenta de prueba para sandbox)
+2. Copia la **Secret key** (`sk_test_...`) y guárdala como `STRIPE_SECRET_KEY` en Cloudflare
+3. Ve a **Developers → Webhooks** y crea un endpoint:
+   - URL: `https://tu-dominio.com/api/stripe-webhook`
+   - Evento: `checkout.session.completed`
+   - Copia el **Signing secret** (`whsec_...`) y guárdalo como `STRIPE_WEBHOOK_SECRET` en Cloudflare
+4. Para pruebas usa tarjetas de prueba de Stripe:
+   - `4242 4242 4242 4242` — Visa (pago aprobado)
+   - `4000 0027 6000 3184` — Tarjeta que requiere 3DS
+   - Cualquier fecha futura, CVC cualquiera, CP: 12345
 
 ---
 
@@ -64,9 +68,12 @@ En **Settings → Builds & deployments** de tu proyecto (`ehs-solutions`):
 ## Configuración en Supabase
 
 1. Ejecuta `database/schema.sql` (si no se ha ejecutado)
-2. Ejecuta `database/fix_admin_access_and_content.sql` (RLS + columna content)
-3. Ejecuta `database/add_orders_table.sql` (tabla de órdenes de MercadoPago)
-4. Copia la **anon key** y la **service_role key** de Settings → API
+2. Ejecuta `database/fix_foundation_v2.sql` (RLS + auto-registro de usuarios)
+3. Ejecuta `database/fix_admin_access_and_content.sql` (RLS + columna content)
+4. Ejecuta `database/fix_rls_policies_v3.sql` (políticas completas)
+5. Ejecuta `database/add_orders_table.sql` (tabla de órdenes de Stripe)
+6. Ejecuta `database/add_dc3_fields.sql` (campos CURP, ocupación, empresa)
+7. Copia la **anon key** y la **service_role key** de Settings → API
 
 ---
 
@@ -100,9 +107,10 @@ EHS-SOLUTIONS/
 ├── logo.png
 ├── build.sh                 ← Build combinado (marketing + LMS)
 ├── _redirects                ← Reglas de rutas SPA para /app
+├── _routes.json              ← Cloudflare Pages Functions routing
 ├── functions/api/            ← Cloudflare Pages Functions (servidor)
-│   ├── create-checkout-session.js  ← Crea preferencia de MercadoPago
-│   ├── mercadopago-webhook.js       ← Procesa pago aprobado → inscribe
+│   ├── create-checkout-session.js  ← Crea Stripe Checkout Session
+│   ├── stripe-webhook.js            ← Procesa pago aprobado → inscribe
 │   └── send-email.js                ← Envía emails con Resend
 ├── frontend/lms/            ← Plataforma LMS (compilado a dist/app)
 │   ├── src/
@@ -111,16 +119,17 @@ EHS-SOLUTIONS/
 │   │   │   ├── courseService.js       ← Supabase REST API
 │   │   │   ├── quizService.js         ← Exámenes
 │   │   │   ├── certificateService.js  ← Certificados PDF (jsPDF)
-│   │   │   ├── paymentService.js      ← Checkout MercadoPago
+│   │   │   ├── dc3Service.js          ← DC-3 oficial (pdf-lib)
+│   │   │   ├── paymentService.js      ← Checkout Stripe
 │   │   │   ├── emailService.js        ← Notificaciones
 │   │   │   └── adminService.js        ← Panel admin
 │   │   └── pages/
-│   │       ├── HomePage.jsx
 │   │       ├── LoginPage.jsx
+│   │       ├── RegisterPage.jsx
+│   │       ├── VerifyPage.jsx
 │   │       ├── ForgotPasswordPage.jsx
 │   │       ├── ResetPasswordPage.jsx
 │   │       ├── DashboardPage.jsx
-│   │       ├── CoursesPage.jsx
 │   │       ├── CourseDetailPage.jsx
 │   │       ├── LessonViewerPage.jsx
 │   │       ├── QuizPage.jsx
@@ -134,12 +143,10 @@ EHS-SOLUTIONS/
 │   └── package.json
 ├── database/
 │   ├── schema.sql
-│   ├── schema_with_seed.sql
-│   ├── fix_admin_access_and_content.sql
-│   ├── update_lessons_content.sql
-│   └── add_orders_table.sql
+│   ├── fix_foundation_v2.sql
+│   ├── fix_rls_policies_v3.sql
+│   ├── add_orders_table.sql     ← Órdenes de Stripe
+│   ├── add_dc3_fields.sql       ← Campos DC-3
+│   └── full_exams_70_questions.sql
 └── DEPLOY.md
 ```
-
-<!-- redeploy trigger 2026-08-27T16:31:47Z -->
--- forzando nuevo deploy --
