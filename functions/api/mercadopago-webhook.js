@@ -9,10 +9,114 @@
 // Configura esta URL en MercadoPago → Tu aplicación → Notificaciones:
 //   https://tu-dominio.com/api/mercadopago-webhook
 // Evento: payment
+//
+// Variable de entorno requerida:
+//   MERCADOPAGO_WEBHOOK_SECRET — clave secreta del webhook (panel de MP)
 // ============================================
 
 const OK = new Response('ok', { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+const FORBIDDEN = new Response('forbidden', { status: 403, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
 const ERROR = new Response('error', { status: 500, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+
+/**
+ * Valida la firma x-signature de MercadoPago.
+ * MP envía un header con formato: "ts=<timestamp>,v1=<hash>"
+ * El hash es HMAC-SHA256 del string: "<data.id><timestamp><secret>"
+ * (usando la parte de query string o el body crudo).
+ */
+function verifySignature(request, body, env) {
+  const secret = env.MERCADOPAGO_WEBHOOK_SECRET;
+  if (!secret) return true; // Si no hay secreto configurado, permitir (modo dev)
+
+  const sigHeader = request.headers.get('x-signature') || request.headers.get('X-Signature');
+  if (!sigHeader) return false;
+
+  // Parsear el header: "ts=1234567890,v1=abcdef..."
+  const parts = {};
+  sigHeader.split(',').forEach(part => {
+    const [key, val] = part.split('=');
+    if (key && val) parts[key.trim()] = val.trim();
+  });
+
+  const ts = parts['ts'];
+  const v1 = parts['v1'];
+  if (!ts || !v1) return false;
+
+  // Construir el manifest: data.id + timestamp + secret
+  // MP usa la query string (para GET) o el body (para POST)
+  const url = new URL(request.url);
+  const dataId = url.searchParams.get('data.id') || url.searchParams.get('id') || '';
+  const manifest = `${dataId}${ts}${secret}`;
+
+  // Calcular HMAC-SHA256
+  const encoder = new TextEncoder();
+  const keyPromise = crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+
+  // Usar sync validation via a simpler method
+  // Cloudflare Workers support crypto.subtle, but it's async
+  // We'll do the async version in the caller
+  return { ts, v1, manifest, dataId };
+}
+
+async function verifySignatureAsync(request, env) {
+  const secret = env.MERCADOPAGO_WEBHOOK_SECRET;
+  if (!secret) return true; // Si no hay secreto configurado, permitir (modo dev)
+
+  const sigHeader = request.headers.get('x-signature') || request.headers.get('X-Signature');
+  if (!sigHeader) return false;
+
+  // Parsear el header: "ts=1234567890,v1=abcdef..."
+  const parts = {};
+  sigHeader.split(',').forEach(part => {
+    const idx = part.indexOf('=');
+    if (idx > 0) {
+      const key = part.slice(0, idx).trim();
+      const val = part.slice(idx + 1).trim();
+      parts[key] = val;
+    }
+  });
+
+  const ts = parts['ts'];
+  const v1 = parts['v1'];
+  if (!ts || !v1) return false;
+
+  // Construir el manifest: data.id + timestamp + secret
+  const url = new URL(request.url);
+  const dataId = url.searchParams.get('data.id') || url.searchParams.get('id') || '';
+
+  // Si no hay data.id en query, intentar del body
+  let bodyDataId = dataId;
+  if (!bodyDataId) {
+    try {
+      const body = await request.clone().json();
+      bodyDataId = body?.data?.id || '';
+    } catch {}
+  }
+
+  const manifest = `${bodyDataId}${ts}${secret}`;
+  const encoder = new TextEncoder();
+
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+
+  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(manifest));
+  const hashHex = [...new Uint8Array(signature)]
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+
+  return hashHex === v1;
+}
 
 async function processPayment(paymentId, env) {
   if (!paymentId) return OK;
@@ -89,6 +193,10 @@ async function processPayment(paymentId, env) {
 // IPN "legacy": MercadoPago manda GET con ?topic=payment&id=123
 export async function onRequestGet({ request, env }) {
   try {
+    // Validar firma x-signature (si hay secreto configurado)
+    const valid = await verifySignatureAsync(request, env);
+    if (!valid) return FORBIDDEN;
+
     const url = new URL(request.url);
     const topic = url.searchParams.get('topic') || url.searchParams.get('type');
     const id = url.searchParams.get('id') || url.searchParams.get('data.id');
@@ -108,6 +216,10 @@ export async function onRequestGet({ request, env }) {
 // Webhooks nuevos: MercadoPago manda POST con { type: "payment", data: { id } }
 export async function onRequestPost({ request, env }) {
   try {
+    // Validar firma x-signature (si hay secreto configurado)
+    const valid = await verifySignatureAsync(request, env);
+    if (!valid) return FORBIDDEN;
+
     const body = await request.json().catch(() => null);
 
     if (!body || body.type !== 'payment' || !body.data?.id) {
