@@ -104,18 +104,23 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
 
-      const signupRes = await authApi.post('/signup', {
-        email,
-        password,
-        data: {
-          first_name: nombres,
-          last_name: `${apellidoPaterno} ${apellidoMaterno}`.trim(),
-          nombres: nombres,
-          apellido_paterno: apellidoPaterno,
-          apellido_materno: apellidoMaterno,
-          role: 'student'
+      // redirect_to: a donde Supabase manda al usuario tras confirmar su correo
+      const emailRedirectTo = `${window.location.origin}/app/auth/callback`;
+      const signupRes = await authApi.post(
+        `/signup?redirect_to=${encodeURIComponent(emailRedirectTo)}`,
+        {
+          email,
+          password,
+          data: {
+            first_name: nombres,
+            last_name: `${apellidoPaterno} ${apellidoMaterno}`.trim(),
+            nombres: nombres,
+            apellido_paterno: apellidoPaterno,
+            apellido_materno: apellidoMaterno,
+            role: 'student'
+          }
         }
-      });
+      );
 
       if (!signupRes.data.access_token) {
         setError('Registro exitoso. Revisa tu correo para confirmar tu cuenta antes de iniciar sesión.');
@@ -164,6 +169,16 @@ export const AuthProvider = ({ children }) => {
     clearSessionAndRedirect();
   };
 
+  // Se usa cuando el usuario vuelve del enlace de confirmación de correo de
+  // Supabase (ver AuthCallbackPage). Guarda los tokens recibidos en el hash
+  // de la URL y dispara la carga del perfil.
+  const confirmSession = (accessToken, refreshToken) => {
+    localStorage.setItem('token', accessToken);
+    if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+    setError(null);
+    setToken(accessToken);
+  };
+
   const value = {
     user,
     token,
@@ -172,6 +187,7 @@ export const AuthProvider = ({ children }) => {
     register,
     login,
     logout,
+    confirmSession,
     isAuthenticated: !!user && !!token,
   };
 

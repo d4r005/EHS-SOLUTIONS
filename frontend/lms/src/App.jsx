@@ -20,6 +20,7 @@ import { InstructorDashboard } from './pages/instructor/InstructorDashboard';
 import { CourseEditorPage } from './pages/instructor/CourseEditorPage';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { VerifyPage } from './pages/VerifyPage';
+import { AuthCallbackPage } from './pages/AuthCallbackPage';
 
 const PublicRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -52,6 +53,7 @@ function AppContent() {
         <Route path="/courses" element={<CoursesPage />} />
         <Route path="/courses/:id" element={<CourseDetailPage />} />
         <Route path="/verify" element={<VerifyPage />} />
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
         {/* Auth Routes */}
         <Route

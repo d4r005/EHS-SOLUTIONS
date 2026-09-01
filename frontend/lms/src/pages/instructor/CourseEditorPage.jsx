@@ -13,6 +13,7 @@ export const CourseEditorPage = () => {
   const [newModuleTitle, setNewModuleTitle] = useState('');
   const [expandedModule, setExpandedModule] = useState(null);
   const [quizByLesson, setQuizByLesson] = useState({});
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -51,6 +52,7 @@ export const CourseEditorPage = () => {
   const handleSaveCourse = async (e) => {
     e.preventDefault();
     setSaving(true);
+    setMessage(null);
     try {
       await rest.patch(`/courses?id=eq.${id}`, {
         title: course.title,
@@ -62,8 +64,10 @@ export const CourseEditorPage = () => {
         duration_hours: parseInt(course.duration_hours) || 0,
         difficulty_level: course.difficulty_level,
       });
+      setMessage({ type: 'success', text: 'Cambios guardados correctamente.' });
     } catch (err) {
       console.error(err);
+      setMessage({ type: 'error', text: 'No se pudieron guardar los cambios.' });
     } finally {
       setSaving(false);
     }
@@ -207,6 +211,11 @@ export const CourseEditorPage = () => {
               <input value={course.thumbnail_url || ''} onChange={(e) => setCourse({ ...course, thumbnail_url: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600" />
             </div>
+            {message && (
+              <div className={`md:col-span-2 px-4 py-2 rounded-lg text-sm ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+                {message.text}
+              </div>
+            )}
             <div className="md:col-span-2">
               <button type="submit" disabled={saving} className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition disabled:opacity-50">
                 {saving ? 'Guardando...' : 'Guardar cambios'}

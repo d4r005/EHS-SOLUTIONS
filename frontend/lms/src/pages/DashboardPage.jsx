@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { courseService } from '../services/courseService';
 import { adminService } from '../services/adminService';
@@ -7,11 +7,13 @@ import { rest } from '../services/api';
 
 export const DashboardPage = () => {
   const { user, isAuthenticated } = useAuth();
+  const location = useLocation();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState(null);
   const [showProfileBanner, setShowProfileBanner] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [showConfirmedBanner, setShowConfirmedBanner] = useState(!!location.state?.justConfirmed);
   const [stats, setStats] = useState({
     totalCourses: 0,
     completedCourses: 0,
@@ -99,6 +101,25 @@ export const DashboardPage = () => {
           </h1>
           <p className="text-gray-600">Aquí está tu progreso de aprendizaje</p>
         </div>
+
+        {/* Cuenta confirmada tras hacer clic en el enlace del correo */}
+        {showConfirmedBanner && (
+          <div className="mb-6 bg-green-50 border border-green-300 rounded-xl p-5 flex items-start gap-4">
+            <div className="text-3xl flex-shrink-0">🎉</div>
+            <div className="flex-grow">
+              <h3 className="font-bold text-green-800 mb-1">¡Tu cuenta ya está activa!</h3>
+              <p className="text-green-700 text-sm leading-relaxed">
+                Confirmamos tu correo con éxito. Ya puedes explorar los cursos e inscribirte.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowConfirmedBanner(false)}
+              className="text-green-500 hover:text-green-700 text-xl flex-shrink-0"
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
         {/* Profile completion banner */}
         {showProfileBanner && !bannerDismissed && (
