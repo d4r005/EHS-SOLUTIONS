@@ -144,14 +144,18 @@ export async function onRequestPost({ request, env }) {
     console.log('[stripe-webhook] Enrollment creado/existente OK');
 
     // Registrar la orden de pago
+    // NOTA: la tabla `orders` real en Supabase solo tiene la columna
+    // `stripe_payment_id` (varchar 100) -- no existen `stripe_payment_intent`
+    // ni `stripe_session_id` como columnas separadas. Antes esto hacia que
+    // el insert fallara silenciosamente (PGRST204: columna no encontrada) y
+    // el pago nunca quedaba registrado, aunque la inscripcion si se creaba.
     const orderRes = await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
       method: 'POST',
       headers: { ...headers, Prefer: 'resolution=ignore-duplicates,return=representation' },
       body: JSON.stringify({
         student_id: studentId,
         course_id: courseId,
-        stripe_payment_intent: String(paymentIntent),
-        stripe_session_id: String(session.id),
+        stripe_payment_id: String(paymentIntent || session.id),
         amount: amountTotal,
         currency: 'MXN',
         status: 'paid',
