@@ -33,9 +33,7 @@ INSERT INTO public.modules (course_id, title, description, order_index) VALUES
    'Fundamentos del Programa CTPAT',
    'Origen, alcance, beneficios y criterios mínimos de seguridad del programa.',
    1),
-  ((SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Seguridad en la Cadena de Suministro y Concientización CTPAT')
-     AND order_index = 2),
+  ((SELECT id FROM public.courses WHERE title = 'Seguridad en la Cadena de Suministro y Concientización CTPAT'),
    'Implementación y Cultura de Seguridad',
    'Análisis de riesgos, plan de seguridad, concientización del personal y vigilancia.',
    2);
