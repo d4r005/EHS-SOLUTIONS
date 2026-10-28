@@ -46,3 +46,16 @@ Los 7 cursos no tienen imagen de portada (`thumbnail_url` en null). La LMS
 muestra un ícono y el sitio de marketing usa una imagen de respaldo, así que
 nada se ve roto. Falta subir las portadas al bucket `thumbnails` y actualizar
 la columna.
+
+## 08. Examenes por leccion (3 preguntas) + examen final (10 preguntas)
+
+`08_examenes_por_leccion.sql` completa el esquema de evaluacion igual que en
+los 7 cursos originales:
+
+| Tipo | Donde se aplica | Preguntas | Aprobacion |
+|------|-----------------|-----------|------------|
+| Examen de leccion | En cada una de las 3 primeras lecciones | 3 | 70% |
+| Examen final | En la ultima leccion del curso | 10 | 80% |
+
+Resultado por curso: 4 examenes y 19 preguntas. No modifica el examen final,
+solo agrega los de leccion. Es idempotente.
