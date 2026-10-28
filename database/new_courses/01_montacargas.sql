@@ -9,24 +9,33 @@
 
 BEGIN;
 
+-- 0. Verificación del título del curso (debe coincidir exactamente)
+DO $guard$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM public.courses WHERE title = 'Manejo Seguro de Montacargas') THEN
+    RAISE EXCEPTION 'Curso no encontrado. Se requiere el título exacto: Manejo Seguro de Montacargas';
+  END IF;
+END
+$guard$;
+
 -- 1. Limpieza del contenido previo de este curso
 DELETE FROM public.quizzes
 WHERE lesson_id IN (
   SELECT l.id FROM public.lessons l
   JOIN public.modules m ON m.id = l.module_id
-  WHERE m.course_id = (SELECT id FROM public.courses WHERE title ILIKE '%Montacargas%')
+  WHERE m.course_id = (SELECT id FROM public.courses WHERE title = 'Manejo Seguro de Montacargas')
 );
 
 DELETE FROM public.modules
-WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%Montacargas%');
+WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Manejo Seguro de Montacargas');
 
 -- 2. Módulos
 INSERT INTO public.modules (course_id, title, description, order_index) VALUES
-  ((SELECT id FROM public.courses WHERE title ILIKE '%Montacargas%'),
+  ((SELECT id FROM public.courses WHERE title = 'Manejo Seguro de Montacargas'),
    'Fundamentos y Marco Legal',
    'Normativa aplicable, tipos de montacargas, componentes y responsabilidades del operador.',
    1),
-  ((SELECT id FROM public.courses WHERE title ILIKE '%Montacargas%'),
+  ((SELECT id FROM public.courses WHERE title = 'Manejo Seguro de Montacargas'),
    'Operación Segura y Prevención',
    'Estabilidad de carga, inspección preoperacional, maniobras críticas y prevención de accidentes.',
    2);
@@ -36,7 +45,7 @@ INSERT INTO public.lessons (module_id, title, description, content_type, content
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%Montacargas%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Manejo Seguro de Montacargas')
      AND order_index = 1),
   'Marco normativo y responsabilidades del operador',
   'Normativa aplicable, obligaciones del patrón y del operador, y consecuencias del incumplimiento.',
@@ -97,7 +106,7 @@ La seguridad con montacargas no depende solo de la habilidad del operador: depen
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%Montacargas%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Manejo Seguro de Montacargas')
      AND order_index = 1),
   'Tipos de montacargas, componentes y revisión preoperacional',
   'Clasificación del equipo, componentes principales y verificación diaria antes de operar.',
@@ -158,7 +167,7 @@ La revisión preoperacional toma entre cinco y diez minutos y previene la mayor�
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%Montacargas%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Manejo Seguro de Montacargas')
      AND order_index = 2),
   'Estabilidad, centro de carga y capacidad nominal',
   'Triángulo de estabilidad, centro de carga, volcaduras y reglas de manejo de carga.',
@@ -217,7 +226,7 @@ La estabilidad se gestiona antes de mover la carga: verificando peso, centro de 
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%Montacargas%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Manejo Seguro de Montacargas')
      AND order_index = 2),
   'Maniobras críticas, peatones y prevención de accidentes',
   'Circulación, visibilidad, interacción con peatones, almacenamiento en racks y carga de transporte.',
@@ -299,7 +308,7 @@ SELECT l.id,
 FROM public.lessons l
 JOIN public.modules m ON m.id = l.module_id
 JOIN public.courses c ON c.id = m.course_id
-WHERE c.title ILIKE '%Montacargas%'
+WHERE c.title = 'Manejo Seguro de Montacargas'
 ORDER BY l.id DESC
 LIMIT 1;
 
@@ -349,4 +358,4 @@ SELECT c.title AS curso,
         JOIN public.modules m ON m.id = l.module_id
         WHERE m.course_id = c.id) AS lecciones
 FROM public.courses c
-WHERE c.title ILIKE '%Montacargas%';
+WHERE c.title = 'Manejo Seguro de Montacargas';

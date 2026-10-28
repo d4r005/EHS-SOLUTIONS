@@ -9,23 +9,32 @@
 
 BEGIN;
 
+-- 0. Verificación del título del curso (debe coincidir exactamente)
+DO $guard$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM public.courses WHERE title = 'Seguridad en la Cadena de Suministro y Concientización CTPAT') THEN
+    RAISE EXCEPTION 'Curso no encontrado. Se requiere el título exacto: Seguridad en la Cadena de Suministro y Concientización CTPAT';
+  END IF;
+END
+$guard$;
+
 DELETE FROM public.quizzes
 WHERE lesson_id IN (
   SELECT l.id FROM public.lessons l
   JOIN public.modules m ON m.id = l.module_id
-  WHERE m.course_id = (SELECT id FROM public.courses WHERE title ILIKE '%CTPAT%')
+  WHERE m.course_id = (SELECT id FROM public.courses WHERE title = 'Seguridad en la Cadena de Suministro y Concientización CTPAT')
 );
 
 DELETE FROM public.modules
-WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%CTPAT%');
+WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Seguridad en la Cadena de Suministro y Concientización CTPAT');
 
 INSERT INTO public.modules (course_id, title, description, order_index) VALUES
-  ((SELECT id FROM public.courses WHERE title ILIKE '%CTPAT%'),
+  ((SELECT id FROM public.courses WHERE title = 'Seguridad en la Cadena de Suministro y Concientización CTPAT'),
    'Fundamentos del Programa CTPAT',
    'Origen, alcance, beneficios y criterios mínimos de seguridad del programa.',
    1),
   ((SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%CTPAT%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Seguridad en la Cadena de Suministro y Concientización CTPAT')
      AND order_index = 2),
    'Implementación y Cultura de Seguridad',
    'Análisis de riesgos, plan de seguridad, concientización del personal y vigilancia.',
@@ -35,7 +44,7 @@ INSERT INTO public.lessons (module_id, title, description, content_type, content
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%CTPAT%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Seguridad en la Cadena de Suministro y Concientización CTPAT')
      AND order_index = 1),
   'Origen, alcance y beneficios del programa CTPAT',
   'Qué es CTPAT, por qué nació, quiénes participan y qué beneficios obtiene la empresa certificada.',
@@ -107,7 +116,7 @@ CTPAT traslada la seguridad de la cadena al origen. Para la empresa significa me
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%CTPAT%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Seguridad en la Cadena de Suministro y Concientización CTPAT')
      AND order_index = 1),
   'Criterios mínimos de seguridad del programa',
   'Categorías de criterios, requisitos de socios comerciales, seguridad física y controles de acceso.',
@@ -199,7 +208,7 @@ Los criterios mínimos no son una lista de compras de seguridad: son un sistema 
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%CTPAT%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Seguridad en la Cadena de Suministro y Concientización CTPAT')
      AND order_index = 2),
   'Análisis de riesgos y plan de seguridad',
   'Metodología de análisis, identificación de vulnerabilidades y estructura del plan de seguridad.',
@@ -276,7 +285,7 @@ El análisis de riesgos es lo que distingue un programa vivo de un manual archiv
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%CTPAT%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Seguridad en la Cadena de Suministro y Concientización CTPAT')
      AND order_index = 2),
   'Concientización del personal y reporte de incidentes',
   'Cultura de seguridad, señales de alerta, canales de reporte y respuesta ante incidentes.',
@@ -355,13 +364,13 @@ La cultura de seguridad se construye cuando el trabajador entiende el porqué de
 
 INSERT INTO public.quizzes (lesson_id, title, description, passing_score, total_questions, is_active)
 SELECT l.id,
-       'Examen Final: Concientización CTPAT',
+       'Examen Final: Seguridad en la Cadena de Suministro y Concientización CTPAT',
        'Evaluación técnica de 10 preguntas. Requiere 80% para aprobar.',
        80, 10, true
 FROM public.lessons l
 JOIN public.modules m ON m.id = l.module_id
 JOIN public.courses c ON c.id = m.course_id
-WHERE c.title ILIKE '%CTPAT%'
+WHERE c.title = 'Seguridad en la Cadena de Suministro y Concientización CTPAT'
 ORDER BY l.id DESC
 LIMIT 1;
 
@@ -400,7 +409,7 @@ CROSS JOIN (VALUES
    'Un proveedor con identificación y cita programada', 'Un conductor distinto al programado que llega sin aviso', 'Un empleado con distintivo visible', 'Un precinto que coincide con la documentación', 'b',
    'Un cambio de conductor no programado o una unidad que llega sin aviso son señales de alerta que deben reportarse y verificarse antes de cargar.', 10)
 ) AS v(qt, a, b, c, d, correct, exp, ord)
-WHERE q.title = 'Examen Final: Concientización CTPAT';
+WHERE q.title = 'Examen Final: Seguridad en la Cadena de Suministro y Concientización CTPAT';
 
 COMMIT;
 
@@ -410,4 +419,4 @@ SELECT c.title AS curso,
         JOIN public.modules m ON m.id = l.module_id
         WHERE m.course_id = c.id) AS lecciones
 FROM public.courses c
-WHERE c.title ILIKE '%CTPAT%';
+WHERE c.title = 'Seguridad en la Cadena de Suministro y Concientización CTPAT';

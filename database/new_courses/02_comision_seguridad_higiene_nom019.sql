@@ -8,22 +8,31 @@
 
 BEGIN;
 
+-- 0. Verificación del título del curso (debe coincidir exactamente)
+DO $guard$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM public.courses WHERE title = 'Formación para Integrantes de la Comisión de Seguridad e Higiene (NOM-019-STPS-2011)') THEN
+    RAISE EXCEPTION 'Curso no encontrado. Se requiere el título exacto: Formación para Integrantes de la Comisión de Seguridad e Higiene (NOM-019-STPS-2011)';
+  END IF;
+END
+$guard$;
+
 DELETE FROM public.quizzes
 WHERE lesson_id IN (
   SELECT l.id FROM public.lessons l
   JOIN public.modules m ON m.id = l.module_id
-  WHERE m.course_id = (SELECT id FROM public.courses WHERE title ILIKE '%NOM-019%')
+  WHERE m.course_id = (SELECT id FROM public.courses WHERE title = 'Formación para Integrantes de la Comisión de Seguridad e Higiene (NOM-019-STPS-2011)')
 );
 
 DELETE FROM public.modules
-WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%NOM-019%');
+WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Formación para Integrantes de la Comisión de Seguridad e Higiene (NOM-019-STPS-2011)');
 
 INSERT INTO public.modules (course_id, title, description, order_index) VALUES
-  ((SELECT id FROM public.courses WHERE title ILIKE '%NOM-019%'),
+  ((SELECT id FROM public.courses WHERE title = 'Formación para Integrantes de la Comisión de Seguridad e Higiene (NOM-019-STPS-2011)'),
    'Marco Normativo y Constitución',
    'Obligaciones del patrón, constitución e integración de la comisión, perfil y funciones de los integrantes.',
    1),
-  ((SELECT id FROM public.courses WHERE title ILIKE '%NOM-019%'),
+  ((SELECT id FROM public.courses WHERE title = 'Formación para Integrantes de la Comisión de Seguridad e Higiene (NOM-019-STPS-2011)'),
    'Operación y Funcionamiento',
    'Recorridos de verificación, reuniones, actas, seguimiento de acciones y registros.',
    2);
@@ -32,7 +41,7 @@ INSERT INTO public.lessons (module_id, title, description, content_type, content
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%NOM-019%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Formación para Integrantes de la Comisión de Seguridad e Higiene (NOM-019-STPS-2011)')
      AND order_index = 1),
   'Marco normativo y obligaciones del patrón',
   'Alcance de la NOM-019-STPS-2011, centros de trabajo obligados y obligaciones del patrón.',
@@ -91,7 +100,7 @@ La Comisión de Seguridad e Higiene es el puente formal entre la dirección y el
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%NOM-019%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Formación para Integrantes de la Comisión de Seguridad e Higiene (NOM-019-STPS-2011)')
      AND order_index = 1),
   'Constitución, integración y funciones de la comisión',
   'Composición, elección de representantes, funciones del coordinador y del secretario, y acta de constitución.',
@@ -165,7 +174,7 @@ La comisión se sostiene sobre tres documentos: el acta de constitución, el lib
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%NOM-019%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Formación para Integrantes de la Comisión de Seguridad e Higiene (NOM-019-STPS-2011)')
      AND order_index = 2),
   'Recorridos de verificación de condiciones de seguridad',
   'Preparación del recorrido, listas de verificación, registro de hallazgos y clasificación por riesgo.',
@@ -232,7 +241,7 @@ Un recorrido bien hecho produce una lista corta de acciones reales, con responsa
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%NOM-019%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Formación para Integrantes de la Comisión de Seguridad e Higiene (NOM-019-STPS-2011)')
      AND order_index = 2),
   'Reuniones, actas y seguimiento',
   'Orden del día, elaboración de actas, acuerdos, difusión y archivo de registros.',
@@ -318,13 +327,13 @@ Una comisión activa es uno de los sistemas de prevención con mejor relación c
 
 INSERT INTO public.quizzes (lesson_id, title, description, passing_score, total_questions, is_active)
 SELECT l.id,
-       'Examen Final: Comisión de Seguridad e Higiene (NOM-019)',
+       'Examen Final: Formación para Integrantes de la Comisión de Seguridad e Higiene (NOM-019-STPS-2011)',
        'Evaluación técnica de 10 preguntas. Requiere 80% para aprobar.',
        80, 10, true
 FROM public.lessons l
 JOIN public.modules m ON m.id = l.module_id
 JOIN public.courses c ON c.id = m.course_id
-WHERE c.title ILIKE '%NOM-019%'
+WHERE c.title = 'Formación para Integrantes de la Comisión de Seguridad e Higiene (NOM-019-STPS-2011)'
 ORDER BY l.id DESC
 LIMIT 1;
 
@@ -363,7 +372,7 @@ CROSS JOIN (VALUES
    'Que la comisión trabaja bien', 'Que se está corrigiendo el síntoma y no la causa raíz', 'Que el hallazgo debe eliminarse del formato', 'Que el riesgo es bajo', 'b',
    'La reincidencia muestra que la corrección fue superficial. Se requiere analizar la causa raíz para evitar que la condición vuelva a presentarse.', 10)
 ) AS v(qt, a, b, c, d, correct, exp, ord)
-WHERE q.title = 'Examen Final: Comisión de Seguridad e Higiene (NOM-019)';
+WHERE q.title = 'Examen Final: Formación para Integrantes de la Comisión de Seguridad e Higiene (NOM-019-STPS-2011)';
 
 COMMIT;
 
@@ -373,4 +382,4 @@ SELECT c.title AS curso,
         JOIN public.modules m ON m.id = l.module_id
         WHERE m.course_id = c.id) AS lecciones
 FROM public.courses c
-WHERE c.title ILIKE '%NOM-019%';
+WHERE c.title = 'Formación para Integrantes de la Comisión de Seguridad e Higiene (NOM-019-STPS-2011)';

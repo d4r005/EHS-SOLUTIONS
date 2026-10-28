@@ -9,22 +9,31 @@
 
 BEGIN;
 
+-- 0. Verificación del título del curso (debe coincidir exactamente)
+DO $guard$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM public.courses WHERE title = 'Ergonomía y Manejo Manual de Cargas (NOM-036-1-STPS-2018)') THEN
+    RAISE EXCEPTION 'Curso no encontrado. Se requiere el título exacto: Ergonomía y Manejo Manual de Cargas (NOM-036-1-STPS-2018)';
+  END IF;
+END
+$guard$;
+
 DELETE FROM public.quizzes
 WHERE lesson_id IN (
   SELECT l.id FROM public.lessons l
   JOIN public.modules m ON m.id = l.module_id
-  WHERE m.course_id = (SELECT id FROM public.courses WHERE title ILIKE '%Ergonom%')
+  WHERE m.course_id = (SELECT id FROM public.courses WHERE title = 'Ergonomía y Manejo Manual de Cargas (NOM-036-1-STPS-2018)')
 );
 
 DELETE FROM public.modules
-WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%Ergonom%');
+WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Ergonomía y Manejo Manual de Cargas (NOM-036-1-STPS-2018)');
 
 INSERT INTO public.modules (course_id, title, description, order_index) VALUES
-  ((SELECT id FROM public.courses WHERE title ILIKE '%Ergonom%'),
+  ((SELECT id FROM public.courses WHERE title = 'Ergonomía y Manejo Manual de Cargas (NOM-036-1-STPS-2018)'),
    'Marco Normativo y Factores de Riesgo',
    'Obligaciones de la NOM-036-1-STPS-2018 y factores ergonómicos del manejo manual de cargas.',
    1),
-  ((SELECT id FROM public.courses WHERE title ILIKE '%Ergonom%'),
+  ((SELECT id FROM public.courses WHERE title = 'Ergonomía y Manejo Manual de Cargas (NOM-036-1-STPS-2018)'),
    'Evaluación, Técnica y Control',
    'Evaluación ergonómica del puesto, técnica de levantamiento y programa de control.',
    2);
@@ -33,7 +42,7 @@ INSERT INTO public.lessons (module_id, title, description, content_type, content
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%Ergonom%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Ergonomía y Manejo Manual de Cargas (NOM-036-1-STPS-2018)')
      AND order_index = 1),
   'Marco normativo y obligaciones en manejo manual de cargas',
   'Alcance de la NOM-036-1-STPS-2018, obligaciones del patrón y derechos del trabajador.',
@@ -101,7 +110,7 @@ La ergonomía se gestiona con datos del puesto, no con percepciones generales. I
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%Ergonom%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Ergonomía y Manejo Manual de Cargas (NOM-036-1-STPS-2018)')
      AND order_index = 1),
   'Factores de riesgo ergonómico y anatomía de la lesión',
   'Cómo se lesiona la columna, tipos de trastorno musculoesquelético y factores que agravan el riesgo.',
@@ -167,7 +176,7 @@ La ergonomía no busca eliminar el esfuerzo, sino mantenerlo dentro de la capaci
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%Ergonom%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Ergonomía y Manejo Manual de Cargas (NOM-036-1-STPS-2018)')
      AND order_index = 2),
   'Evaluación ergonómica del puesto de trabajo',
   'Metodologías de evaluación, criterios de valoración y priorización de puestos.',
@@ -244,7 +253,7 @@ Una evaluación ergonómica bien hecha produce una lista corta y priorizada de i
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%Ergonom%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Ergonomía y Manejo Manual de Cargas (NOM-036-1-STPS-2018)')
      AND order_index = 2),
   'Técnica de levantamiento y programa de prevención',
   'Técnica correcta, uso de ayudas mecánicas, pausas activas y programa de vigilancia.',
@@ -329,13 +338,13 @@ Un programa ergonómico efectivo combina tres cosas: puestos evaluados y redise�
 
 INSERT INTO public.quizzes (lesson_id, title, description, passing_score, total_questions, is_active)
 SELECT l.id,
-       'Examen Final: Ergonomía y Manejo Manual de Cargas (NOM-036-1)',
+       'Examen Final: Ergonomía y Manejo Manual de Cargas (NOM-036-1-STPS-2018)',
        'Evaluación técnica de 10 preguntas. Requiere 80% para aprobar.',
        80, 10, true
 FROM public.lessons l
 JOIN public.modules m ON m.id = l.module_id
 JOIN public.courses c ON c.id = m.course_id
-WHERE c.title ILIKE '%Ergonom%'
+WHERE c.title = 'Ergonomía y Manejo Manual de Cargas (NOM-036-1-STPS-2018)'
 ORDER BY l.id DESC
 LIMIT 1;
 
@@ -374,7 +383,7 @@ CROSS JOIN (VALUES
    'Considerar el caso cerrado', 'Revaluar el puesto para verificar la eficacia de la medida', 'Retirar la ayuda mecánica', 'Suspender los exámenes médicos', 'b',
    'Toda intervención debe revaluarse para comprobar que el nivel de riesgo disminuyó realmente y no solo cambió de lugar.', 10)
 ) AS v(qt, a, b, c, d, correct, exp, ord)
-WHERE q.title = 'Examen Final: Ergonomía y Manejo Manual de Cargas (NOM-036-1)';
+WHERE q.title = 'Examen Final: Ergonomía y Manejo Manual de Cargas (NOM-036-1-STPS-2018)';
 
 COMMIT;
 
@@ -384,4 +393,4 @@ SELECT c.title AS curso,
         JOIN public.modules m ON m.id = l.module_id
         WHERE m.course_id = c.id) AS lecciones
 FROM public.courses c
-WHERE c.title ILIKE '%Ergonom%';
+WHERE c.title = 'Ergonomía y Manejo Manual de Cargas (NOM-036-1-STPS-2018)';

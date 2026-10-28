@@ -8,22 +8,31 @@
 
 BEGIN;
 
+-- 0. Verificación del título del curso (debe coincidir exactamente)
+DO $guard$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM public.courses WHERE title = 'Técnicos en Urgencias Médicas Nivel 1 (Básico)') THEN
+    RAISE EXCEPTION 'Curso no encontrado. Se requiere el título exacto: Técnicos en Urgencias Médicas Nivel 1 (Básico)';
+  END IF;
+END
+$guard$;
+
 DELETE FROM public.quizzes
 WHERE lesson_id IN (
   SELECT l.id FROM public.lessons l
   JOIN public.modules m ON m.id = l.module_id
-  WHERE m.course_id = (SELECT id FROM public.courses WHERE title ILIKE '%Urgencias%')
+  WHERE m.course_id = (SELECT id FROM public.courses WHERE title = 'Técnicos en Urgencias Médicas Nivel 1 (Básico)')
 );
 
 DELETE FROM public.modules
-WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%Urgencias%');
+WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Técnicos en Urgencias Médicas Nivel 1 (Básico)');
 
 INSERT INTO public.modules (course_id, title, description, order_index) VALUES
-  ((SELECT id FROM public.courses WHERE title ILIKE '%Urgencias%'),
+  ((SELECT id FROM public.courses WHERE title = 'Técnicos en Urgencias Médicas Nivel 1 (Básico)'),
    'Fundamentos de la Atención Prehospitalaria',
    'Marco legal, roles del TUM, bioseguridad y evaluación inicial del paciente.',
    1),
-  ((SELECT id FROM public.courses WHERE title ILIKE '%Urgencias%'),
+  ((SELECT id FROM public.courses WHERE title = 'Técnicos en Urgencias Médicas Nivel 1 (Básico)'),
    'Atención de Emergencias y Traslado',
    'Manejo inicial del trauma, búsqueda, rescate y traslado seguro.',
    2);
@@ -32,7 +41,7 @@ INSERT INTO public.lessons (module_id, title, description, content_type, content
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%Urgencias%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Técnicos en Urgencias Médicas Nivel 1 (Básico)')
      AND order_index = 1),
   'Rol del TUM, marco legal y bioseguridad',
   'Funciones del técnico en urgencias médicas, responsabilidad legal, precauciones estándar y control de infecciones.',
@@ -111,7 +120,7 @@ La actuación del TUM se sostiene en tres decisiones previas al contacto con el 
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%Urgencias%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Técnicos en Urgencias Médicas Nivel 1 (Básico)')
      AND order_index = 1),
   'Evaluación inicial del paciente: método ABCDE',
   'Evaluación de la escena, valoración primaria ABCDE, evaluación secundaria y signos vitales.',
@@ -205,7 +214,7 @@ El ABCDE es la herramienta que evita que el primer respondiente se distraiga con
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%Urgencias%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Técnicos en Urgencias Médicas Nivel 1 (Básico)')
      AND order_index = 2),
   'Manejo inicial del trauma y soporte vital básico',
   'Control de hemorragias, inmovilización, reanimación cardiopulmonar y uso de desfibrilador.',
@@ -280,7 +289,7 @@ El soporte vital básico no depende de la tecnología, sino de reconocer rápido
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%Urgencias%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Técnicos en Urgencias Médicas Nivel 1 (Básico)')
      AND order_index = 2),
   'Búsqueda, rescate y traslado seguro del paciente',
   'Extracción, movilización, transporte y entrega formal del paciente al servicio receptor.',
@@ -366,13 +375,13 @@ Un traslado bien ejecutado es aquel donde el paciente llega en igual o mejor con
 
 INSERT INTO public.quizzes (lesson_id, title, description, passing_score, total_questions, is_active)
 SELECT l.id,
-       'Examen Final: Técnicos en Urgencias Médicas Nivel 1',
+       'Examen Final: Técnicos en Urgencias Médicas Nivel 1 (Básico)',
        'Evaluación técnica de 10 preguntas. Requiere 80% para aprobar.',
        80, 10, true
 FROM public.lessons l
 JOIN public.modules m ON m.id = l.module_id
 JOIN public.courses c ON c.id = m.course_id
-WHERE c.title ILIKE '%Urgencias%'
+WHERE c.title = 'Técnicos en Urgencias Médicas Nivel 1 (Básico)'
 ORDER BY l.id DESC
 LIMIT 1;
 
@@ -411,7 +420,7 @@ CROSS JOIN (VALUES
    'Solo de forma verbal', 'De forma verbal y escrita, con hallazgos, signos vitales e intervenciones', 'Dejando al paciente sin informe', 'Solo con la hoja de traslado sin explicación', 'b',
    'La entrega formal es verbal y escrita, e incluye mecanismo, hallazgos, signos vitales, intervenciones y cambios durante el traslado.', 10)
 ) AS v(qt, a, b, c, d, correct, exp, ord)
-WHERE q.title = 'Examen Final: Técnicos en Urgencias Médicas Nivel 1';
+WHERE q.title = 'Examen Final: Técnicos en Urgencias Médicas Nivel 1 (Básico)';
 
 COMMIT;
 
@@ -421,4 +430,4 @@ SELECT c.title AS curso,
         JOIN public.modules m ON m.id = l.module_id
         WHERE m.course_id = c.id) AS lecciones
 FROM public.courses c
-WHERE c.title ILIKE '%Urgencias%';
+WHERE c.title = 'Técnicos en Urgencias Médicas Nivel 1 (Básico)';

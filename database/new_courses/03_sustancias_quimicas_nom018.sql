@@ -10,22 +10,31 @@
 
 BEGIN;
 
+-- 0. Verificación del título del curso (debe coincidir exactamente)
+DO $guard$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM public.courses WHERE title = 'Manejo Seguro de Sustancias Químicas Peligrosas (NOM-018-STPS-2015)') THEN
+    RAISE EXCEPTION 'Curso no encontrado. Se requiere el título exacto: Manejo Seguro de Sustancias Químicas Peligrosas (NOM-018-STPS-2015)';
+  END IF;
+END
+$guard$;
+
 DELETE FROM public.quizzes
 WHERE lesson_id IN (
   SELECT l.id FROM public.lessons l
   JOIN public.modules m ON m.id = l.module_id
-  WHERE m.course_id = (SELECT id FROM public.courses WHERE title ILIKE '%NOM-018%')
+  WHERE m.course_id = (SELECT id FROM public.courses WHERE title = 'Manejo Seguro de Sustancias Químicas Peligrosas (NOM-018-STPS-2015)')
 );
 
 DELETE FROM public.modules
-WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%NOM-018%');
+WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Manejo Seguro de Sustancias Químicas Peligrosas (NOM-018-STPS-2015)');
 
 INSERT INTO public.modules (course_id, title, description, order_index) VALUES
-  ((SELECT id FROM public.courses WHERE title ILIKE '%NOM-018%'),
+  ((SELECT id FROM public.courses WHERE title = 'Manejo Seguro de Sustancias Químicas Peligrosas (NOM-018-STPS-2015)'),
    'Marco Normativo y Comunicación de Peligros',
    'Obligaciones del patrón, sistema armonizado, pictogramas y señalización.',
    1),
-  ((SELECT id FROM public.courses WHERE title ILIKE '%NOM-018%'),
+  ((SELECT id FROM public.courses WHERE title = 'Manejo Seguro de Sustancias Químicas Peligrosas (NOM-018-STPS-2015)'),
    'Identificación, Almacenamiento y Respuesta',
    'Hojas de datos de seguridad, compatibilidad de almacenamiento y atención a derrames.',
    2);
@@ -34,7 +43,7 @@ INSERT INTO public.lessons (module_id, title, description, content_type, content
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%NOM-018%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Manejo Seguro de Sustancias Químicas Peligrosas (NOM-018-STPS-2015)')
      AND order_index = 1),
   'Marco normativo y comunicación de peligros',
   'Alcance de la NOM-018-STPS-2015, inventario de sustancias y obligaciones del patrón.',
@@ -96,7 +105,7 @@ La comunicación de peligros no es un trámite de compras: es el mecanismo que p
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%NOM-018%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Manejo Seguro de Sustancias Químicas Peligrosas (NOM-018-STPS-2015)')
      AND order_index = 1),
   'Sistema armonizado: pictogramas, palabras de advertencia y etiquetas',
   'Los nueve pictogramas del SGA, palabras de advertencia, indicaciones de peligro y consejos de prudencia.',
@@ -174,7 +183,7 @@ El sistema armonizado funciona porque es visual y consistente. Un trabajador que
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%NOM-018%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Manejo Seguro de Sustancias Químicas Peligrosas (NOM-018-STPS-2015)')
      AND order_index = 2),
   'Hojas de datos de seguridad (SDS) y su uso real',
   'Estructura de las 16 secciones de la SDS y cómo usarlas en la operación y en emergencias.',
@@ -241,7 +250,7 @@ La SDS es un documento de consulta operativa, no un requisito de archivo. Un tra
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%NOM-018%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Manejo Seguro de Sustancias Químicas Peligrosas (NOM-018-STPS-2015)')
    AND order_index = 2),
   'Almacenamiento seguro, compatibilidad y respuesta a derrames',
   'Segregación por incompatibilidad, condiciones de almacén y procedimiento ante derrames y exposiciones.',
@@ -316,13 +325,13 @@ Un almacén químico seguro se reconoce por tres señales: etiquetas completas y
 
 INSERT INTO public.quizzes (lesson_id, title, description, passing_score, total_questions, is_active)
 SELECT l.id,
-       'Examen Final: Sustancias Químicas Peligrosas (NOM-018)',
+       'Examen Final: Manejo Seguro de Sustancias Químicas Peligrosas (NOM-018-STPS-2015)',
        'Evaluación técnica de 10 preguntas. Requiere 80% para aprobar.',
        80, 10, true
 FROM public.lessons l
 JOIN public.modules m ON m.id = l.module_id
 JOIN public.courses c ON c.id = m.course_id
-WHERE c.title ILIKE '%NOM-018%'
+WHERE c.title = 'Manejo Seguro de Sustancias Químicas Peligrosas (NOM-018-STPS-2015)'
 ORDER BY l.id DESC
 LIMIT 1;
 
@@ -361,7 +370,7 @@ CROSS JOIN (VALUES
    'Estar archivada en oficina central', 'Estar en español, actualizada y accesible en el área de uso', 'Estar solo en formato digital', 'Estar en el idioma del proveedor', 'b',
    'La SDS debe estar en español, vigente y disponible en el punto de uso, para que pueda consultarse durante una emergencia.', 10)
 ) AS v(qt, a, b, c, d, correct, exp, ord)
-WHERE q.title = 'Examen Final: Sustancias Químicas Peligrosas (NOM-018)';
+WHERE q.title = 'Examen Final: Manejo Seguro de Sustancias Químicas Peligrosas (NOM-018-STPS-2015)';
 
 COMMIT;
 
@@ -371,4 +380,4 @@ SELECT c.title AS curso,
         JOIN public.modules m ON m.id = l.module_id
         WHERE m.course_id = c.id) AS lecciones
 FROM public.courses c
-WHERE c.title ILIKE '%NOM-018%';
+WHERE c.title = 'Manejo Seguro de Sustancias Químicas Peligrosas (NOM-018-STPS-2015)';

@@ -9,22 +9,31 @@
 
 BEGIN;
 
+-- 0. Verificación del título del curso (debe coincidir exactamente)
+DO $guard$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM public.courses WHERE title = 'Seguridad en Trabajos de Operación y Mantenimiento de Instalaciones Eléctricas (NOM-029-STPS-2011)') THEN
+    RAISE EXCEPTION 'Curso no encontrado. Se requiere el título exacto: Seguridad en Trabajos de Operación y Mantenimiento de Instalaciones Eléctricas (NOM-029-STPS-2011)';
+  END IF;
+END
+$guard$;
+
 DELETE FROM public.quizzes
 WHERE lesson_id IN (
   SELECT l.id FROM public.lessons l
   JOIN public.modules m ON m.id = l.module_id
-  WHERE m.course_id = (SELECT id FROM public.courses WHERE title ILIKE '%NOM-029%')
+  WHERE m.course_id = (SELECT id FROM public.courses WHERE title = 'Seguridad en Trabajos de Operación y Mantenimiento de Instalaciones Eléctricas (NOM-029-STPS-2011)')
 );
 
 DELETE FROM public.modules
-WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%NOM-029%');
+WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Seguridad en Trabajos de Operación y Mantenimiento de Instalaciones Eléctricas (NOM-029-STPS-2011)');
 
 INSERT INTO public.modules (course_id, title, description, order_index) VALUES
-  ((SELECT id FROM public.courses WHERE title ILIKE '%NOM-029%'),
+  ((SELECT id FROM public.courses WHERE title = 'Seguridad en Trabajos de Operación y Mantenimiento de Instalaciones Eléctricas (NOM-029-STPS-2011)'),
    'Riesgos Eléctricos y Marco Normativo',
    'Efectos de la corriente en el cuerpo, clasificación de trabajos y distancias de seguridad.',
    1),
-  ((SELECT id FROM public.courses WHERE title ILIKE '%NOM-029%'),
+  ((SELECT id FROM public.courses WHERE title = 'Seguridad en Trabajos de Operación y Mantenimiento de Instalaciones Eléctricas (NOM-029-STPS-2011)'),
    'Trabajo Seguro: Desenergizado y Energizado',
    'Las cinco reglas de oro, bloqueo, verificación, equipo de protección y arco eléctrico.',
    2);
@@ -33,7 +42,7 @@ INSERT INTO public.lessons (module_id, title, description, content_type, content
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%NOM-029%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Seguridad en Trabajos de Operación y Mantenimiento de Instalaciones Eléctricas (NOM-029-STPS-2011)')
      AND order_index = 1),
   'Efectos de la corriente eléctrica y marco normativo',
   'Fisiología del contacto eléctrico, tipos de lesión y obligaciones de la NOM-029-STPS-2011.',
@@ -92,7 +101,7 @@ El riesgo eléctrico no se reduce con experiencia ni con costumbre: se reduce co
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%NOM-029%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Seguridad en Trabajos de Operación y Mantenimiento de Instalaciones Eléctricas (NOM-029-STPS-2011)')
      AND order_index = 1),
   'Clasificación de trabajos eléctricos y distancias de seguridad',
   'Trabajo desenergizado, energizado y en proximidad; niveles de tensión y delimitación de áreas.',
@@ -156,7 +165,7 @@ La clasificación del trabajo eléctrico no es un trámite administrativo: defin
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%NOM-029%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Seguridad en Trabajos de Operación y Mantenimiento de Instalaciones Eléctricas (NOM-029-STPS-2011)')
      AND order_index = 2),
   'Trabajo desenergizado: las cinco reglas de oro',
   'Desconexión, bloqueo y etiquetado, verificación de ausencia de tensión, puesta a tierra y delimitación.',
@@ -232,7 +241,7 @@ Las cinco reglas de oro son un procedimiento repetible que convierte una tarea d
 
 (
   (SELECT id FROM public.modules
-   WHERE course_id = (SELECT id FROM public.courses WHERE title ILIKE '%NOM-029%')
+   WHERE course_id = (SELECT id FROM public.courses WHERE title = 'Seguridad en Trabajos de Operación y Mantenimiento de Instalaciones Eléctricas (NOM-029-STPS-2011)')
      AND order_index = 2),
   'Trabajo energizado, arco eléctrico y equipo de protección',
   'Justificación del trabajo en tensión, EPP dieléctrico, riesgos de arco y respuesta a accidentes eléctricos.',
@@ -310,13 +319,13 @@ La protección eléctrica se construye en capas: evitar el contacto, aislar la e
 
 INSERT INTO public.quizzes (lesson_id, title, description, passing_score, total_questions, is_active)
 SELECT l.id,
-       'Examen Final: Instalaciones Eléctricas (NOM-029)',
+       'Examen Final: Seguridad en Trabajos de Operación y Mantenimiento de Instalaciones Eléctricas (NOM-029-STPS-2011)',
        'Evaluación técnica de 10 preguntas. Requiere 80% para aprobar.',
        80, 10, true
 FROM public.lessons l
 JOIN public.modules m ON m.id = l.module_id
 JOIN public.courses c ON c.id = m.course_id
-WHERE c.title ILIKE '%NOM-029%'
+WHERE c.title = 'Seguridad en Trabajos de Operación y Mantenimiento de Instalaciones Eléctricas (NOM-029-STPS-2011)'
 ORDER BY l.id DESC
 LIMIT 1;
 
@@ -355,7 +364,7 @@ CROSS JOIN (VALUES
    'Por requisito administrativo', 'Porque pueden presentarse arritmias u otras complicaciones horas después', 'Para documentar el incidente', 'Porque la corriente altera la presión arterial de forma permanente', 'b',
    'Las alteraciones cardíacas y otras complicaciones pueden manifestarse horas después de la descarga, por lo que la valoración médica siempre es necesaria.', 10)
 ) AS v(qt, a, b, c, d, correct, exp, ord)
-WHERE q.title = 'Examen Final: Instalaciones Eléctricas (NOM-029)';
+WHERE q.title = 'Examen Final: Seguridad en Trabajos de Operación y Mantenimiento de Instalaciones Eléctricas (NOM-029-STPS-2011)';
 
 COMMIT;
 
@@ -365,4 +374,4 @@ SELECT c.title AS curso,
         JOIN public.modules m ON m.id = l.module_id
         WHERE m.course_id = c.id) AS lecciones
 FROM public.courses c
-WHERE c.title ILIKE '%NOM-029%';
+WHERE c.title = 'Seguridad en Trabajos de Operación y Mantenimiento de Instalaciones Eléctricas (NOM-029-STPS-2011)';
