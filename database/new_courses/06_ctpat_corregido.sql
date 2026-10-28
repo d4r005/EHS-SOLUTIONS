@@ -1,3 +1,10 @@
+-- ############################################################
+-- ###  ARCHIVO CORREGIDO - usar este, no la version anterior
+-- ###  Curso: Seguridad en la Cadena de Suministro y Concientizacion CTPAT
+-- ###  Corrige: el segundo modulo tomaba el id desde public.modules
+-- ###  en vez de public.courses, y dejaba course_id en NULL.
+-- ############################################################
+
 -- ============================================================
 -- EHS SOLUTIONS - CONTENIDO DEL CURSO:
 -- SEGURIDAD EN LA CADENA DE SUMINISTRO Y CONCIENTIZACIÓN CTPAT

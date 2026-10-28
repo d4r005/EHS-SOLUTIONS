@@ -29,7 +29,7 @@ contenido al curso equivocado).
 | `03_sustancias_quimicas_nom018.sql` | Manejo Seguro de Sustancias Químicas Peligrosas (NOM-018-STPS-2015) | 15 |
 | `04_instalaciones_electricas_nom029.sql` | Seguridad en Trabajos de Operación y Mantenimiento de Instalaciones Eléctricas (NOM-029-STPS-2011) | 16 |
 | `05_ergonomia_nom036.sql` | Ergonomía y Manejo Manual de Cargas (NOM-036-1-STPS-2018) | 17 |
-| `06_ctpat.sql` | Seguridad en la Cadena de Suministro y Concientización CTPAT | 18 |
+| `06_ctpat_corregido.sql` | Seguridad en la Cadena de Suministro y Concientización CTPAT | 18 |
 | `07_tecnicos_urgencias_medicas.sql` | Técnicos en Urgencias Médicas Nivel 1 (Básico) | 19 |
 
 ## Qué carga cada curso
